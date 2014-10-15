@@ -235,7 +235,6 @@ var self = new Class({
 		if (bValidation) { 
 			for (var i = 0; i < this._aReportConstraint.length; i++) {
 				if(!this._oQuery.getValue().match("<" + this._aReportConstraint[i].name + ">")) {
-					debugger;;
 					new Alert("Cannot save the report. Constraint not found in query.")
 					return;
 				}

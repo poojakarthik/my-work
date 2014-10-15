@@ -55,6 +55,9 @@ var self = new Class({
 							if (isNaN(oControl.getValue())) {
 								throw new Error("Frequency Multiple should be a number");
 							}
+							else if(oControl.getValue()<=0) {
+								throw new Error("Frequency Multiple should be greater than 0");
+							}
 							return true;
 						}
 					}),

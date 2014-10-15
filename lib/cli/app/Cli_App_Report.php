@@ -17,7 +17,7 @@ class Cli_App_Report extends Cli {
 					$oReportScheduleLogAdd = new Report_Schedule_Log();
 					$oReportScheduleLogAdd->report_schedule_id = $oReportSchedule->id;
 					$oReportScheduleLogAdd->executed_datetime = date("Y-m-d H:i:s");
-					$oReportScheduleLogAdd->is_error = null; //Initial Setup before completion
+					$oReportScheduleLogAdd->is_error = 0; //Initial Setup before completion
 					$oReportScheduleLogAdd->download_path = "";
 					$oReportScheduleLogAdd->save();
 
@@ -139,11 +139,11 @@ class Cli_App_Report extends Cli {
 		$sFrequencyType = strtolower($oReportFrequencyType->name) . "s";
 
 		if ($oReportSchedule->schedule_end_datetime == "NULL") {
-			$iEndScheduletedDateTimeTimestamp = $iNow;
+			$iEndScheduletendDateTimeTimestamp = 0; //Making sure end schedule date time is not affective if NULL
 		}
 		else {
-			$dFinalScheduledDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
-			$iEndScheduletedDateTimeTimestamp = $dFinalScheduledDateTime->getTimestamp();
+			$dFinalSchedulendDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
+			$iEndScheduletendDateTimeTimestamp = $dFinalSchedulendDateTime->getTimestamp();
 		}		
 		//Compute the next scheduled datetime
 		if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
@@ -151,9 +151,9 @@ class Cli_App_Report extends Cli {
 			$dNextScheduledDateTime = date_add(new DateTime($dLastExecutedDateTime), date_interval_create_from_date_string($oReportSchedule->frequency_multiple.' '.$sFrequencyType));
 		}
 		else {
-			$dNextScheduledDateTime = new DateTime($oReportSchedule->scheduled_datetime);
+			$dNextScheduledDateTime = new DateTime($oReportSchedule->schedule_datetime);
 		}
-		if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow <= $iEndScheduletedDateTimeTimestamp) {
+		if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $iEndScheduletendDateTimeTimestamp) {
 			return true;
 		}
 		else {

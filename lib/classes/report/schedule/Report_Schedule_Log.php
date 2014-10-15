@@ -7,11 +7,10 @@ class Report_Schedule_Log extends ORM_Cached {
 		$aReportScheduleLogs = Query::run("
 			SELECT *
 			FROM report_schedule_log
-			WHERE report_schedule_id= <report_schedule_id>
+			WHERE report_schedule_id = <report_schedule_id>
 			ORDER BY executed_datetime DESC
 		", array('report_schedule_id' => $iReportScheduleId));
-		
-		if ($aReportScheduleLogs->num_rows()) {
+		if ($aReportScheduleLogs->num_rows) {
 			$aReportScheduleLog = $aReportScheduleLogs->fetch_assoc();
 		
 			$oReportScheduleLog	= new self($aReportScheduleLog);

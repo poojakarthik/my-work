@@ -40,8 +40,11 @@ var self = new Class({
 							if(oControl.getValue().length>256) {
 								throw new Error("Max length is 256 characters");
 							}
-							if(!/^[a-z ]$/.test(oControl.getValue()))	{
+							if(/[^a-z_]/.test(oControl.getValue()))	{
 								throw new Error("Please use lowercase alphabets only");
+							}
+							if(/^id$/.test(oControl.getValue().toLowerCase())) {
+								throw new Error("Please do not 'id' as alias");
 							}
 							return true;
 						}

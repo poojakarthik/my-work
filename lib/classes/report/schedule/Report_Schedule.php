@@ -14,9 +14,9 @@ class Report_Schedule extends ORM_Cached {
 		//Update Compiled Query into Report Schedule Object if compiled query is not yet set
 		if ($aReportSchedule['compiled_query'] == ""){
 			$aReportSchedule['compiled_query'] = $sCompiledQuery;
-			$this->save();
+			$oReportSchedule = new self($aReportSchedule);
+			$oReportSchedule->save();
 		}
-		
 		try {
 			$oResult = Query::run($sCompiledQuery);
 			
