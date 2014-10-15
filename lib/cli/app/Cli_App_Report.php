@@ -153,11 +153,21 @@ class Cli_App_Report extends Cli {
 		else {
 			$dNextScheduledDateTime = new DateTime($oReportSchedule->schedule_datetime);
 		}
-		if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $iEndScheduletendDateTimeTimestamp) {
-			return true;
+		if ($iEndScheduletendDateTimeTimestamp != 0) {
+			if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $iEndScheduletendDateTimeTimestamp) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		else {
-			return false;
+			if ($iNow > $dNextScheduledDateTime->getTimestamp()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 }

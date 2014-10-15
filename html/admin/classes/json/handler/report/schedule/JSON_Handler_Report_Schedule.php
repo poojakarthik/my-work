@@ -43,7 +43,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 					$oReportScheduleConstraintValue = new Report_Schedule_Constraint_Value();
 					$oReportScheduleConstraintValue->report_constraint_id = $oConstraint->id;
 					$oReportScheduleConstraintValue->report_schedule_id = $oReportSchedule->id;
-					$oReportScheduleConstraintValue->value = Query::prepareByPHPType($mData->{$sConstraintName});
+					$oReportScheduleConstraintValue->value = $mData->{$sConstraintName};
 
 					$oReportScheduleConstraintValue->save();
 				}
