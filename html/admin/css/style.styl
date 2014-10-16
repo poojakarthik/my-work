@@ -13522,3 +13522,11 @@
 	& h2
 		flex-grow 1
 		appearance-flex-page-heading-label()
+
+/************** Confirm Popup Component CSS ****************************/
+.admin-popup-confirm-buttons
+	appearance-flex-form-buttonpanel()
+	& button[name="yes"]::before
+		button-icon('/admin/img/template/confirm_yes.png', 16px, 16px)
+	& button[name="no"]::before
+		button-icon('/admin/img/template/confirm_no.png', 16px, 16px)

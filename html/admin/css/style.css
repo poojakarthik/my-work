@@ -14130,3 +14130,26 @@ background #fcfaf9 {
   flex-grow: 1;
   margin-bottom: 0;
 }
+/************** Confirm Popup Component CSS ****************************/
+.admin-popup-confirm-buttons {
+  border: 0;
+  margin: 0;
+  padding: 1em 0.5em;
+  text-align: center;
+}
+.admin-popup-confirm-buttons button[name="yes"]::before {
+  content: url("/admin/img/template/confirm_yes.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.admin-popup-confirm-buttons button[name="no"]::before {
+  content: url("/admin/img/template/confirm_no.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}

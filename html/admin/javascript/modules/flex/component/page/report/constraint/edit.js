@@ -28,6 +28,7 @@ var self = new Class({
 	},
 
 	_buildUI : function() {
+		this._iConstraintCount = 0;
 		this._oForm = new Form({onsubmit: this._save.bind(this, null)},
 			H.fieldset({'class': 'flex-page-report-constraint-edit-details'},
 				H.label({class: 'flex-page-report-constraint-edit-details-name'},
@@ -40,8 +41,8 @@ var self = new Class({
 							if(oControl.getValue().length>256) {
 								throw new Error("Max length is 256 characters");
 							}
-							if(/[^a-z_]/.test(oControl.getValue()))	{
-								throw new Error("Please use lowercase alphabets only");
+							if(!/^[\w\-]+$/.test(oControl.getValue()))	{
+								throw new Error("Please use alphanumeric characters combined by hyphen or underscore only");
 							}
 							if(/^id$/.test(oControl.getValue().toLowerCase())) {
 								throw new Error("Please do not 'id' as alias");
@@ -50,7 +51,7 @@ var self = new Class({
 						}
 					})
 				),
-				H.label({class: 'flex-page-report-constraint-edit-details-type'}, 
+				H.label({class: 'flex-page-report-constraint-edit-details-type'},
 					H.span({class: 'flex-page-report-constraint-edit-details-type-label'}, 'Type'),
 					this._oReportConstraintType = new Select({
 						sName       : 'report_constraint_type_id',
@@ -237,14 +238,17 @@ var self = new Class({
 			this._oConstraintList.appendChild(
 				H.tr({class: 'flex-component-report-constraint-list', id: 'flex-component-report-constraint-list-row-'+oReportConstraint.id},
 					H.td(
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: oReportConstraint.name}),
 						H.span(oReportConstraint.name)
 					),
 					H.td(
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: oReportConstraint.report_constraint_type_id}),
 						H.span(oReportConstraint.constraint_name)
 					),
 					H.td(
+						new Hidden({sName: 'constraint['+this._iConstraintCount+'].placeholder', mValue: oReportConstraint.placeholder}),
+						new Hidden({sName: 'constraint['+this._iConstraintCount+'].validation_regex', mValue: oReportConstraint.validation_regex}),
+						new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: oReportConstraint.source_query}),
+						new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: oReportConstraint.name}),
+						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: oReportConstraint.report_constraint_type_id}),
 						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function(){ this.parentElement.parentElement.remove(); })
 					)
 				)
@@ -256,7 +260,10 @@ var self = new Class({
 	_add : function() {
 		var bValidation = this._oForm.validate();
 		if (bValidation) {
-			
+			if (this._checkForDuplicateConstraint(this._oForm.control('name').getValue())) {
+				new Alert('Cannot add a duplicate constraint alias');
+				return;
+			}
 			if (this._oForm.control('report_constraint_type_id').getValue() == self.REPORT_CONSTRAINT_TYPE_DATABASELIST) {
 				if (this._oForm.control('source_query').getValue() == "") {
 					new Alert('Source query cannnot be empty');
@@ -300,6 +307,31 @@ var self = new Class({
 			this._iConstraintCount++;
 		}
 	},
+	_checkForDuplicateConstraint: function(sConstraintName) {
+		var bIsDuplicate = false;
+		var oList = this._oConstraint.select('.flex-component-report-constraint-list tr');
+		for (var i in oList) {
+			if (oList.hasOwnProperty(i)) {
+				var aInputData = oList[i].select('.fw-control > input');
+				var oData = {};
+				for (var x in aInputData) {
+					if(aInputData.hasOwnProperty(x)) {
+						var oElement = aInputData[x];
+						var sName = oElement.name;
+						var sValue = oElement.value;
+						var aName = sName.split('.');
+						var sShortName = aName[1];
+						if (sShortName == 'name' && sValue == sConstraintName) {
+							bIsDuplicate = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+		return bIsDuplicate;
+	},
+
 	_cancel : function(event) {
 		this.fire('complete');
 	},

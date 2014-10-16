@@ -22,14 +22,8 @@ var	self = new Class({
 			$D.div(
 				this._oContentDiv = $D.div(),
 				$D.div({'class': 'admin-popup-confirm-buttons'},
-					$D.button({onclick: this._confirmed.bind(this, 'yes')},
-						$D.img({src: './img/template/confirm_yes.png'}),
-						$D.span('Yes')
-					),
-					$D.button({onclick: this._confirmed.bind(this, 'no')},
-						$D.img({src: './img/template/confirm_no.png'}),
-						$D.span('No')
-					)
+					$D.button({type: 'button', name: 'yes', onclick: this._confirmed.bind(this, 'yes')}, 'Yes'),
+					$D.button({type: 'button', name: 'no', onclick: this._confirmed.bind(this, 'no')}, 'Yes')
 				)
 			)
 		);
