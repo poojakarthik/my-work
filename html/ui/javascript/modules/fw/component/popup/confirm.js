@@ -23,7 +23,7 @@ var	self = new Class({
 				this._oContentDiv = $D.div(),
 				$D.div({'class': 'admin-popup-confirm-buttons'},
 					$D.button({type: 'button', name: 'yes', onclick: this._confirmed.bind(this, 'yes')}, 'Yes'),
-					$D.button({type: 'button', name: 'no', onclick: this._confirmed.bind(this, 'no')}, 'Yes')
+					$D.button({type: 'button', name: 'no', onclick: this._confirmed.bind(this, 'no')}, 'No')
 				)
 			)
 		);
