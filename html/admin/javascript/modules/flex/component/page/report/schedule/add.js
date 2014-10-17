@@ -1,5 +1,5 @@
 "use strict";
-var H = require('fw/dom/factory'), // HTML
+var	H = require('fw/dom/factory'), // HTML
 	Class = require('fw/class'),
 	Component = require('fw/component'),
 	Alert = require('fw/component/popup/alert'),
@@ -304,8 +304,7 @@ var self = new Class({
 								})
 							)
 						);
-					}
-					else if(oServerResponse[i]['component_type'] == "DateTime") {
+					} else if(oServerResponse[i]['component_type'] == "DateTime") {
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
 								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),

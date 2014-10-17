@@ -1,6 +1,6 @@
 "use strict";
 
-var H = require('fw/dom/factory'), // HTML
+var	H = require('fw/dom/factory'), // HTML
 	Class = require('fw/class'),
 	Component = require('fw/component'),
 	XHRRequest = require('fw/xhrrequest'),

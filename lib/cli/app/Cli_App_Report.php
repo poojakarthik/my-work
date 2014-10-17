@@ -65,14 +65,14 @@ class Cli_App_Report extends Cli {
 						//Use Proper Delivery Method
 						if (strtolower($oReportDeliveryMethod->name) == 'email') {
 							$sAttachmentContent = file_get_contents($sFilename);
-							$sCurrentTimestamp = date('d/m/Y h:i:s');
+							$sCurrentTimestamp = date('d/m/Y H:i:s');
 							
-							$arrHeaders = Array	(
-									'From'		=> "reports@yellowbilling.com.au",
-									'Subject'	=> "{$oReport->name} executed on {$sCurrentTimestamp}"
+							$aHeaders = array(
+									'From' => "reports@yellowbilling.com.au",
+									'Subject' => "{$oReport->name} executed on {$sCurrentTimestamp}"
 								);
-							$oEmailFlex	= new Email_Flex();
-							$oEmailFlex->setSubject($arrHeaders['Subject']);
+							$oEmailFlex = new Email_Flex();
+							$oEmailFlex->setSubject($aHeaders['Subject']);
 
 							$aReportDeliveryEmployees = Report_Delivery_Employee::getForReportScheduleId($oReportSchedule->id); 		
 							$aReceivers = array();
@@ -80,7 +80,7 @@ class Cli_App_Report extends Cli {
 								$oEmployee = Employee::getForId($oReportDeliveryEmployee->employee_id);
 								$aEmployee = $oEmployee->toArray();
 								$oEmailFlex->addTo($oEmployee->Email);
-								$oEmailFlex->setFrom($arrHeaders['From']);
+								$oEmailFlex->setFrom($aHeaders['From']);
 								// Generate Content
 					 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
 								$strContent .= "Attached is the Scheduled Report ({$oReport->name}) .";
@@ -120,11 +120,6 @@ class Cli_App_Report extends Cli {
 			$this->showUsage($oException->getMessage());
 			return 1;
 		}
-	}
-
-	function getCommandLineArguments() {
-		return array(
-		);
 	}
 
 	function _isScheduledToRun($oReportSchedule){

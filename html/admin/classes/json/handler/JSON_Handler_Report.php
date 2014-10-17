@@ -311,7 +311,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			} else {
 				$aRow['message'] = "There are no reports added for you";
 				$bCanManage = false;
-				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)){
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {
 					
 					$bCanManage = true;
 				}
@@ -367,7 +367,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			}
 		}
 		$oResult = Query::run($oReport->query, $aConstraintValues);
-		if ($oResult){
+		if ($oResult) {
 			$iResultCount = $oResult->num_rows;
 			
 			if ($iResultCount > 0) {
@@ -432,9 +432,9 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$oEmailFlex->addTo($oEmployee->Email);
 						$oEmailFlex->setFrom($aHeaders['From']);
 						// Generate Content
-			 			$strContent	=	"Dear {$aEmployee['FirstName']},\n\n";
+			 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
 						$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
-						$strContent 	.= "\n\nPablo\nYellow Billing Mascot";
+						$strContent .= "\n\nPablo\nYellow Billing Mascot";
 						$oEmailFlex->setBodyText($strContent);
 						// Attachment (file to deliver)
 						if (strtoupper($oReportDeliveryFormat->name) == "XLS") {
