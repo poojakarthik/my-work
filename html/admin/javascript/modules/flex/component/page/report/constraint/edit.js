@@ -38,13 +38,13 @@ var self = new Class({
 						sLabel      : 'Name',
 						mMandatory  : true,
 						fnValidate  : function(oControl) {
-							if(oControl.getValue().length>256) {
+							if (oControl.getValue().length>256) {
 								throw new Error("Max length is 256 characters");
 							}
-							if(!/^[\w\-]+$/.test(oControl.getValue()))	{
+							if (!/^[\w\-]+$/.test(oControl.getValue()))	{
 								throw new Error("Please use alphanumeric characters combined by hyphen or underscore only");
 							}
-							if(/^id$/.test(oControl.getValue().toLowerCase())) {
+							if (/^id$/.test(oControl.getValue().toLowerCase())) {
 								throw new Error("Please do not 'id' as alias");
 							}
 							return true;
@@ -70,8 +70,7 @@ var self = new Class({
 							fnValidate  : function(oControl) {
 								if (oControl.getValue().length>10000) {
 									throw new Error("Max length is 10000 characters");
-								}
-								else if (/^update |delete |alter |insert |drop |create |replace /.test(oControl.getValue().toLowerCase())) {
+								} else if (/^update |delete |alter |insert |drop |create |replace /.test(oControl.getValue().toLowerCase())) {
 									throw new Error("Only Select statements are allowed");
 								}
 								return true;
@@ -87,7 +86,7 @@ var self = new Class({
 							sLabel      : 'Regex Pattern',
 							mMandatory  : false,
 							fnValidate  : function(oControl) {
-								if(oControl.getValue().length>200) {
+								if (oControl.getValue().length>200) {
 									throw new Error("Max length is 200 characters");
 								}
 								return true;
@@ -103,7 +102,7 @@ var self = new Class({
 							sLabel      : 'Hint Text',
 							mMandatory  : false,
 							fnValidate  : function(oControl) {
-								if(oControl.getValue().length>100) {
+								if (oControl.getValue().length>100) {
 									throw new Error("Max length is 100 characters");
 								}
 								return true;
@@ -144,7 +143,7 @@ var self = new Class({
 		this._oValidationContainer.hide();
 		this._oPlaceholderContainer.hide();
 		if (!this._bInitialised || !this._onReady) {
-			if(this.get('aReportConstraint')) {
+			if (this.get('aReportConstraint')) {
 				this._getConstraintTypes.bind(this, this._populateReportConstraint(this.get('aReportConstraint')));
 			}
 			this._onReady();
@@ -152,7 +151,7 @@ var self = new Class({
 		}
 	},
 
-	_onConstraintTypeChange: function(){
+	_onConstraintTypeChange: function() {
 		
 		switch(parseInt(this._oForm.control('report_constraint_type_id').getValue())) {
 			case self.REPORT_CONSTRAINT_TYPE_FREETEXT:
@@ -179,8 +178,8 @@ var self = new Class({
 
 	_setFrequencyTypesPropertyForArray : function(aData) {
 		var aFrequencyTypes = {};
-		for (var i in aData){
-			if(aData.hasOwnProperty(i)){
+		for (var i in aData) {
+			if (aData.hasOwnProperty(i)) {
 				// Save Frequency Type
 				var iId = aData[i].id;
 				var oFrequencyType = aData[i];
@@ -200,7 +199,7 @@ var self = new Class({
 			var oResponse   = oEvent.getData();
 			var aData   = oResponse.getData();
 			this._setConstraintTypesPropertyForArray(aData.report_constraint_types);
-			if(fnCallback) {
+			if (fnCallback) {
 				fnCallback(mData);
 			}
 		}
@@ -217,8 +216,8 @@ var self = new Class({
 			var aData   = oResponse.getData();
 			var aOptions = [];
 
-			for (var i in aData.report_constraint_types){
-				if(aData.report_constraint_types.hasOwnProperty(i)){
+			for (var i in aData.report_constraint_types) {
+				if (aData.report_constraint_types.hasOwnProperty(i)) {
 					aOptions.push(
 						H.option({value: aData.report_constraint_types[i].id},
 							aData.report_constraint_types[i].name
@@ -249,7 +248,7 @@ var self = new Class({
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: oReportConstraint.source_query}),
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: oReportConstraint.name}),
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: oReportConstraint.report_constraint_type_id}),
-						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function(){ this.parentElement.parentElement.remove(); })
+						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function() { this.parentElement.parentElement.remove(); })
 					)
 				)
 			);
@@ -268,8 +267,7 @@ var self = new Class({
 				if (this._oForm.control('source_query').getValue() == "") {
 					new Alert('Source query cannnot be empty');
 					return;
-				}
-				else {
+				} else {
 					jhr('Report_Constraint', 'validateSourceQuery', {arguments: [this._oForm.control('source_query').getValue()]}).then(
 						function success(request) {
 							var response = request.parseJSONResponse();
@@ -300,7 +298,7 @@ var self = new Class({
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: this._oForm.control('source_query').getValue()}),
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: this._oForm.control('name').getValue()}),
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: this._oForm.control('report_constraint_type_id').getValue()}),
-						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function(){ this.parentElement.parentElement.remove(); })
+						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function() { this.parentElement.parentElement.remove(); })
 					)
 				)
 			);
@@ -315,7 +313,7 @@ var self = new Class({
 				var aInputData = oList[i].select('.fw-control > input');
 				var oData = {};
 				for (var x in aInputData) {
-					if(aInputData.hasOwnProperty(x)) {
+					if (aInputData.hasOwnProperty(x)) {
 						var oElement = aInputData[x];
 						var sName = oElement.name;
 						var sValue = oElement.value;
@@ -344,7 +342,7 @@ var self = new Class({
 				var aInputData = oList[i].select('.fw-control > input');
 				var oData = {};
 				for (var x in aInputData) {
-					if(aInputData.hasOwnProperty(x)) {
+					if (aInputData.hasOwnProperty(x)) {
 						var oElement = aInputData[x];
 						var sName = oElement.name;
 						var sValue = oElement.value;

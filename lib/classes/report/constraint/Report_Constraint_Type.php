@@ -1,5 +1,4 @@
 <?php
-
 class Report_Constraint_Type extends ORM_Cached {
 	protected $_strTableName = "report_constraint_type";
 	protected static $_strStaticTableName = "report_constraint_type";

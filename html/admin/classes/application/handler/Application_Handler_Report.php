@@ -10,8 +10,7 @@ class Application_Handler_Report extends Application_Handler {
 		try	{
 			$aDetailsToRender = array();
 			$this->LoadPage('report_manage', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
-		}
-		catch (Exception $e) {
+		} catch (Exception $e) {
 			$aDetailsToRender['Message'] = "An error occured";
 			$aDetailsToRender['ErrorMessage'] = $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
@@ -30,16 +29,18 @@ class Application_Handler_Report extends Application_Handler {
 				// Defined 'Content-type'
 				if ((int)$_REQUEST['iCSV'] == 1) {
 					header('Content-type: text/csv');
-				}
-				else {
+				} else {
 					header('Content-type: application/x-msexcel');
 				}
 				
 				// Set the file to be downloaded as an attachment
 				header('Content-Disposition: attachment; filename="'.addslashes($sFileName).'"');
+				if (false === @file_get_contents($sDecodedPath)) {
+				    throw new Exception('Couldn\'t get file ' . $sDecodedPath. ' contents: ' . ($php_errormsg ? $php_errormsg : 'Unknown Error'));
+				}
 				echo @file_get_contents($sDecodedPath);
 				@unlink($sDecodedPath);
-				die;
+				exit(0);
 			}
 			echo $sDecodedPath;		
 		}

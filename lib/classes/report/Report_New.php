@@ -7,8 +7,7 @@ class Report_New extends ORM_Cached {
 		try {
 			$oResult = Query::run($this->query,$aValues);
 			return $oResult;
-		}
-		catch (Exception $e) {
+		} catch (Exception $e) {
 			// Save Report Schedule Log
 			return false;
 		}

@@ -11,8 +11,8 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 			if (property_exists($mData->report, "id")) {
 				// Clear existing data
-				DataAccess::get()->query("DELETE FROM report_employee WHERE report_id = {$mData->report->id}");
-				DataAccess::get()->query("DELETE FROM report_constraint WHERE report_id = {$mData->report->id}");
+				DataAccess::get()->query("DELETE FROM report_employee WHERE report_id = <report_id>", array('report_id' => $mData->report->id));
+				DataAccess::get()->query("DELETE FROM report_constraint WHERE report_id = <report_id>", array('report_id' => $mData->report->id));
 				
 				// Save existing Report.
 				$aRow = (array)$mData->report;
@@ -23,7 +23,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$oReport->created_employee_id = $aRow['created_employee_id'];
 				$oReport->created_datetime = $aRow['created_datetime'];
 				$oReport->is_enabled = $aRow['is_enabled'];
-				$oReport->report_category_id =$mData->category;
+				$oReport->report_category_id = $mData->category;
 				$oReport->save();
 
 				// Create Report Employee
@@ -59,7 +59,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$oReport->created_datetime = date("Y-m-d H:i:s");
 				$oReport->created_employee_id = Flex::getUserId();
 				$oReport->is_enabled = 1;
-				$oReport->report_category_id =$mData->category;
+				$oReport->report_category_id = $mData->category;
 				$oReport->save();
 
 				// Create Report Employee
@@ -87,19 +87,19 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				}
 			}
 			return array(
-				'bSuccess'	=> true
+				'bSuccess' => true
 			);
 		} catch (JSON_Handler_Account_Run_Exception $oException) {
 			return 	array(
-						'Success'	=> false,
-						'bSuccess'	=> false,
-						'sMessage'	=> $oException->getMessage()
+						'Success' => false,
+						'bSuccess' => false,
+						'sMessage' => $oException->getMessage()
 					);
 		} catch (Exception $e) {
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 			return 	array(
-				'bSuccess'	=> false,
-				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+				'bSuccess' => false,
+				'sMessage' => $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
 			);
 		}
 	}
@@ -114,7 +114,8 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				'aReportSchedule' =>$this->_getScheduleForReportId($mData->iReportId)
 				);
 	}
-	public function getEmployees($bReportingUserOnly = false) {
+
+	public function getEmployees($bReportingUserOnly=false) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
@@ -126,7 +127,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			if ($employee->Archived) {
 				continue;
 			}
-			if(($employee->Privileges & PERMISSION_GOD) == PERMISSION_GOD) {
+			if (($employee->Privileges & PERMISSION_GOD) == PERMISSION_GOD) {
 				continue;
 			}
 			if ($bReportingUserOnly && (($employee->Privileges & PERMISSION_REPORT_USER) != PERMISSION_REPORT_USER)) {
@@ -146,21 +147,17 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
-		$sSQL	= "
-			SELECT e.*,
-				re.report_id
+		$rQuery	= DataAccess::get()->query('
+			SELECT e.*,	re.report_id
 			FROM Employee e
 				LEFT JOIN report_employee re ON (
 					re.employee_id = e.Id
-					AND re.report_id = {$iReportId}
+					AND re.report_id = <report_id>
 				)
-			WHERE e.Archived = 0
-		";
-
-		$rQuery	= DataAccess::get()->query($sSQL);
-		$aDataSet= array();
-		while($aResultSet = $rQuery->fetch_assoc()) {
-			if(($aResultSet['Privileges'] & PERMISSION_GOD) == PERMISSION_GOD) {
+			WHERE e.Archived = 0', array('report_id' => $iReportId));
+		$aDataSet = array();
+		while ($aResultSet = $rQuery->fetch_assoc()) {
+			if (($aResultSet['Privileges'] & PERMISSION_GOD) == PERMISSION_GOD) {
 				continue;
 			}
 			if (($aResultSet['Privileges'] & PERMISSION_REPORT_USER) != PERMISSION_REPORT_USER) {
@@ -175,35 +172,33 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
-		$sSQL	= "
+		
+		$rQuery	= DataAccess::get()->query("
 			SELECT rs.*, rft.name as 'frequency_type'
 			FROM report_schedule rs
 			LEFT JOIN report_frequency_type rft ON rft.id = rs.report_frequency_type_id
-			WHERE report_id = {$iReportId} AND is_enabled = 1";
-		
-		$rQuery	= DataAccess::get()->query($sSQL);
+			WHERE report_id = <report_id> AND is_enabled = 1", array('report_id' => $iReportId));
 		$aDataSet= array();
-		while($aResultSet = $rQuery->fetch_assoc()) {
+		while ($aResultSet = $rQuery->fetch_assoc()) {
 			$aDataSet[] = $aResultSet;
 		}
 		return $aDataSet;
 	}
+
 	public function _getConstraintForReportId($iReportId) {
-		$sSQL	= "
+		$rQuery	= DataAccess::get()->query("
 			SELECT rc.*, rct.Name AS 'constraint_name'
 			FROM report_constraint rc
 			LEFT JOIN report_constraint_type rct ON rct.id = rc.report_constraint_type_id
-			WHERE report_id = {$iReportId}";
-
-		$rQuery	= DataAccess::get()->query($sSQL);
+			WHERE report_id = <report_id>", array('report_id' => $iReportId));
 		$aDataSet= array();
-		while($aResultSet = $rQuery->fetch_assoc()) {
+		while ($aResultSet = $rQuery->fetch_assoc()) {
 			$aDataSet[] = $aResultSet;
 		}
 		return $aDataSet;
 	}
 
-	public function _getReportFrequencyTypes($iReportId) {
+	public function _getReportFrequencyTypes() {
 		$aReportFrequencyType = Report_Frequency_Type::getAll();
 		$aResultSet = array();
 		foreach ($aReportFrequencyType as $iKey=>$oReportFrequencyType) {
@@ -218,12 +213,10 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
-			$strSQL	= "
+			$resQuery = Query::run("
 				SELECT r.*
 				FROM report r
-				WHERE id = {$mData->iReportId}";
-
-			$resQuery = Query::run($strSQL);
+				WHERE id = <report_id>", array('report_id', $mData->iReportId));
 			if ($resQuery === false) {
 				throw new Exception($qryQuery->Error());
 			}
@@ -235,7 +228,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$aReportFrequencyType = $this->_getReportFrequencyTypes();
 
 			return array(
-				'bSuccess'	=> true,
+				'bSuccess' => true,
 				"aReport" => $aReport,
 				"aEmployee" => $aEmployee,
 				"aReportConstraint" => $aReportConstraint,
@@ -245,16 +238,15 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 		} catch (JSON_Handler_Account_Run_Exception $oException) {
 			return 	array(
-						'Success'	=> false,
-						'bSuccess'	=> false,
-						'sMessage'	=> $oException->getMessage()
+						'Success' => false,
+						'bSuccess' => false,
+						'sMessage' => $oException->getMessage()
 					);
 		} catch (Exception $e) {
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-			var_dump($e);
 			return 	array(
-				'bSuccess'	=> false,
-				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+				'bSuccess' => false,
+				'sMessage' => $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
 			);
 		}
 	}
@@ -279,8 +271,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			if ($sOrderBy != "") {
 				$sOrderBy = " ORDER BY " . $sOrderBy;
 			}
-			//$sLimit	= Statement::generateLimit($iLimit, $iOffset);
-			// TODO send customer group id as part of request.
+			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {					
 				$mResult = Query::run(
 					"SELECT	r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
@@ -290,8 +281,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					 JOIN report_category rc ON 
 					 	rc.id = r.report_category_id
 					" . $sOrderBy);
-			}
-			else {
+			} else {
 				$mResult = Query::run(
 					"SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
 					 FROM		report r
@@ -318,8 +308,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$aRow['bCanManage'] = $bCanManage; 
 					$aReport[] = $aRow;
 				}
-			}
-			else {
+			} else {
 				$aRow['message'] = "There are no reports added for you";
 				$bCanManage = false;
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)){
@@ -332,23 +321,23 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			
 
 			return array(
-				'bSuccess'	=> true,
+				'bSuccess' => true,
 				"aRecords" => $aReport,
-				'iRecordCount'	=> $mResult->num_rows,
-				'sOrderBy'	=> $sOrderBy
+				'iRecordCount' => $mResult->num_rows,
+				'sOrderBy' => $sOrderBy
 			);
 		} catch (JSON_Handler_Account_Run_Exception $oException) {
 			return 	array(
-						'Success'	=> false,
-						'bSuccess'	=> false,
-						'sMessage'	=> $oException->getMessage()
+						'Success' => false,
+						'bSuccess' => false,
+						'sMessage' => $oException->getMessage()
 					);
 		} catch (Exception $e) {
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 			return 	array(
-				'bSuccess'	=> false,
-				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
-				'sOrderBy'	=> $sOrderBy
+				'bSuccess' => false,
+				'sMessage' => $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
+				'sOrderBy' => $sOrderBy
 			);
 		}
 	}
@@ -366,14 +355,13 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			foreach ($aConstraintResult as $oConstraint) {
 				$sConstraintName = $oConstraint->name;
 
-				if(isset($mData->{$sConstraintName})) {
+				if (isset($mData->{$sConstraintName})) {
 					$aConstraintValues[$sConstraintName] = Query::prepareByPHPType($mData->{$sConstraintName});
-				}
-				else {
+				} else {
 					return 	array(
-						'success'	=> true,
-						'bSuccess'	=> false,
-						'sMessage'	=> "Constraint Missing:"
+						'success' => true,
+						'bSuccess' => false,
+						'sMessage' => "Constraint Missing:"
 					);
 				}
 			}
@@ -394,7 +382,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$aValues = array_values($aRow);
 
 					//Get the Field names if first row and write them to sheet before inserting any data
-					if(!$iRow) {
+					if (!$iRow) {
 						$oSpreadsheet->addRecord($aKeys);
 					}
 
@@ -426,23 +414,23 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				if (strtoupper($oReportDeliveryMethod->name) == 'EMAIL') {
 					
 					$sAttachmentContent = file_get_contents($sTmpFilePath);
-					$sCurrentTimestamp = date('d/m/Y h:i:s');
-					$arrHeaders = Array	(
-							'From'		=> "reports@yellowbilling.com.au",
-							'Subject'	=> "{$oReport->name} requested on {$sCurrentTimestamp}"
+					$sCurrentTimestamp = date('d/m/Y H:i:s');
+					$aHeaders = array(
+							'From' => "reports@yellowbilling.com.au",
+							'Subject' => "{$oReport->name} requested on {$sCurrentTimestamp}"
 						);
 
 
 					$oEmailFlex	= new Email_Flex();
-					$oEmailFlex->setSubject($arrHeaders['Subject']);
+					$oEmailFlex->setSubject($aHeaders['Subject']);
 
-					$delivery_employees = explode(",",$mData->selectedDeliveryEmployees);
+					$delivery_employees = explode(",", $mData->selectedDeliveryEmployees);
 					$aReceivers = array();
 					for ($i=0; $i<count($delivery_employees);$i++) {
 						$oEmployee = Employee::getForId($delivery_employees[$i]);
 						$aEmployee = $oEmployee->toArray();
 						$oEmailFlex->addTo($oEmployee->Email);
-						$oEmailFlex->setFrom($arrHeaders['From']);
+						$oEmailFlex->setFrom($aHeaders['From']);
 						// Generate Content
 			 			$strContent	=	"Dear {$aEmployee['FirstName']},\n\n";
 						$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
@@ -451,8 +439,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						// Attachment (file to deliver)
 						if (strtoupper($oReportDeliveryFormat->name) == "XLS") {
 							$sMimeType = "application/x-msexcel";
-						}
-						else if (strtoupper($oReportDeliveryFormat->name) == "CSV") {
+						} else if (strtoupper($oReportDeliveryFormat->name) == "CSV") {
 							$sMimeType = "text/csv";
 						}
 						$oEmailFlex->createAttachment(
@@ -469,41 +456,38 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
  						} catch (Zend_Mail_Transport_Exception $oException) {
 							// Sending the email failed
 							return 	array(
-								'success'	=> true,
-								'bSuccess'	=> false,
-								'sMessage'	=> $oException->getMessage()
+								'success' => true,
+								'bSuccess' => false,
+								'sMessage' => $oException->getMessage()
 							);
 						}
 					}
 					return 	array(
-							'success'	=> true,
-							'bSuccess'	=> true,
-							'bIsEmail'	=> true,
-							'sMessage'	=> "Report emailed successfully to " . implode(", ",$aReceivers)
+							'success' => true,
+							'bSuccess' => true,
+							'bIsEmail' => true,
+							'sMessage' => "Report emailed successfully to " . implode(", ",$aReceivers)
 						);
-				}
-				else if(strtoupper($oReportDeliveryMethod->name) == "DOWNLOAD") {
+				} else if (strtoupper($oReportDeliveryMethod->name) == "DOWNLOAD") {
 					return 	array(
-							'success'	=> true,
-							'bSuccess'	=> true,
-							'bIsEmail'	=> false,
-							'sFilename'	=> $sFilename
+							'success' => true,
+							'bSuccess' => true,
+							'bIsEmail' => false,
+							'sFilename' => $sFilename
 						);
 				}
-			}
-			else {
+			} else {
 				return 	array(
-						'success'	=> true,
-						'bSuccess'	=> false,
-						'sMessage'	=> "No Result Available for Report"
+						'success' => true,
+						'bSuccess' => false,
+						'sMessage' => "No Result Available for Report"
 				);
 			}
-		}
-		else {
+		} else {
 			return 	array(
-					'success'	=> true,
-					'bSuccess'	=> false,
-					'sMessage'	=> "Error While Generating report"
+					'success' => true,
+					'bSuccess' => false,
+					'sMessage' => "Error While Generating report"
 				);
 		}
 	}

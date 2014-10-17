@@ -13,7 +13,7 @@ var H = require('fw/dom/factory'), // HTML
 	Edit = require('./edit'),
 	Run	= require('./run'),
 	Schedule = require('./schedule/add'),
-    Popup = require('fw/component/popup'),
+	Popup = require('fw/component/popup'),
 	Form = require('fw/component/form');
 
 var self = new Class({
@@ -87,7 +87,7 @@ var self = new Class({
 		
 
 		// Bind events to the pagination buttons
-		var aTopPageButtons		= this.NODE.select('div.caption_options button.flex-page-report-manage-pagination-button');
+		var aTopPageButtons = this.NODE.select('div.caption_options button.flex-page-report-manage-pagination-button');
 		
 		// First
 		aTopPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
@@ -155,8 +155,7 @@ var self = new Class({
 		var oLoading	= this.NODE.select('span.pagination-loading').first();
 		if (bShow) {
 			oLoading.show();
-		}
-		else {
+		} else {
 			oLoading.hide();
 		}
 	},
@@ -176,8 +175,7 @@ var self = new Class({
 		if (iPageCount == undefined) {
 			// Get the page count
 			this.oPagination.getPageCount(this._updatePagination.bind(this));
-		}
-		else {
+		} else {
 			// Update Page ? of ?, show 1 for page count if it is 0 because there is technically still a page even though it's empty
 			var oPageInfo		= this.NODE.select('span.flex-page-report-manage-pagination-info').first();
 			oPageInfo.innerHTML	= ' (Page '+ (this.oPagination.iCurrentPage + 1) +' of ' + (iPageCount == 0 ? 1 : iPageCount) + ')';
@@ -287,8 +285,8 @@ var self = new Class({
 		this._oReports.innerHTML = '';
 		this._aReportTitles = new Array();
 		var bCanAdd = false;
-		for (var i in aData){
-			if (aData.hasOwnProperty(i)){
+		for (var i in aData) {
+			if (aData.hasOwnProperty(i)) {
 
 				if (aData[i].message != undefined) {
 					var oReportNode = H. tr(
@@ -318,8 +316,7 @@ var self = new Class({
 						)
 					);
 					bCanAdd = true;
-				}
-				else {
+				} else {
 					oReportNode.appendChild(
 						H.td(
 							H.button({type: 'button', name: 'schedule'}, 'Schedule').observe('click', this._schedule.bind(this, aData[i].id)),

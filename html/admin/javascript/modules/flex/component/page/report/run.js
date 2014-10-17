@@ -5,8 +5,8 @@ var H = require('fw/dom/factory'), // HTML
 	Component = require('fw/component'),
 	jhr	= require('xhr/json-handler'),
 	jsonForm = require('json-form'),
-    Popup = require('fw/component/popup'),
-    Alert = require('fw/component/popup/alert'),
+	Popup = require('fw/component/popup'),
+	Alert = require('fw/component/popup/alert'),
 	Hidden = require('fw/component/control/hidden'),
 	Select = require('fw/component/control/select'),
 	Checkbox = require('fw/component/control/checkbox'),
@@ -29,7 +29,7 @@ var self = new Class({
 	},
 
 	_buildUI: function () {
-		this._oForm = new Form(//{onsubmit: this._save.bind(this, null)},
+		this._oForm = new Form(
 			new Hidden({
 				sName : 'id',
 				mValue: this.get('iReportId')
@@ -81,8 +81,7 @@ var self = new Class({
 		if(sReportDeliveryName == "Email") {
 			$('.flex-page-report-run-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
-		}
-		else {
+		} else {
 			$('.flex-page-report-run-details-deliveryemployee').hide();
 		}
 	},
@@ -107,7 +106,7 @@ var self = new Class({
 				}
 			}.bind(this),
 			function (error) {
-				// TODO: Handle Error
+				
 			}
 		);
 	},
@@ -133,7 +132,7 @@ var self = new Class({
 				}
 			}.bind(this),
 			function (error) {
-				// TODO: Handle Error
+				
 			}
 		);
 	},
@@ -143,7 +142,7 @@ var self = new Class({
 			function success(request) {
 				var response = request.parseJSONResponse();
 				while (this._oEmployeeContainer.firstChild) {
-				    this._oEmployeeContainer.removeChild(this._oEmployeeContainer.firstChild);
+					this._oEmployeeContainer.removeChild(this._oEmployeeContainer.firstChild);
 				}
 				response.employees.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
@@ -161,7 +160,7 @@ var self = new Class({
 				}.bind(this));
 			}.bind(this),
 			function (error) {
-				// TODO: Handle Error
+				
 			}
 		);
 	},
@@ -175,7 +174,7 @@ var self = new Class({
 			method		: 'post',
 			contentType	: 'application/x-www-form-urlencoded',
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-			onSuccess: function (oResponse){
+			onSuccess: function (oResponse) {
 				var oServerResponse = JSON.parse(oResponse.responseText);
 				if (oServerResponse.length) {
 					$('.flex-page-report-run-details-constraints').show();
@@ -196,8 +195,7 @@ var self = new Class({
 									})
 								)
 							);
-						}
-						else {
+						} else {
 							this._oConstraintContainer.appendChild(
 								H.label({class: 'flex-page-report-run-details-constraintContainer'},
 									H.span({class: 'flex-page-report-run-details-constraintContainer-label'}, oServerResponse[i]['name']),
@@ -216,8 +214,7 @@ var self = new Class({
 								)
 							);
 						}
-					}
-					else if (oServerResponse[i]['component_type'] == "Select") {
+					} else if (oServerResponse[i]['component_type'] == "Select") {
 						//debugger;
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-run-details-constraintContainer'},
@@ -241,9 +238,7 @@ var self = new Class({
 								})
 							)
 						);
-
-					}
-					else if (oServerResponse[i]['component_type'] == "Date") {	
+					} else if (oServerResponse[i]['component_type'] == "Date") {	
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-run-details-constraintContainer'},
 								H.span({class: 'flex-page-report-run-details-constraintContainer-label'}, oServerResponse[i]['name']),
@@ -256,8 +251,7 @@ var self = new Class({
 								})
 							)
 						);
-					}
-					else if (oServerResponse[i]['component_type'] == "DateTime") {
+					} else if (oServerResponse[i]['component_type'] == "DateTime") {
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-run-details-constraintContainer'},
 								H.span({class: 'flex-page-report-run-details-constraintContainer-label'}, oServerResponse[i]['name']),
@@ -311,25 +305,20 @@ var self = new Class({
 					this.fire('complete');
 				}.bind(this),
 				function (error) {
-					// TODO: Handle Error
+					
 				}
 			);
 		}
 	},
 
-	_executeReponse	: function(oResponse)
-	{
-		if (oResponse.bSuccess)
-		{
-			if (oResponse.bIsEmail)
-			{
+	_executeReponse	: function(oResponse) {
+		if (oResponse.bSuccess) {
+			if (oResponse.bIsEmail) {
 				new Alert(oResponse.sMessage);
-			}
-			else {
+			} else {
 				window.location = 'reflex.php/Report/Download/?sFileName=' + encodeURIComponent(oResponse.sFilename) + '&iCSV=' + (oResponse.sFilename.match(/\.csv/) ? 1 : 0);
 			}
-		}
-		else
+		} else
 		{
 			// Error occurred in execution
 			new Alert(oResponse.sMessage);

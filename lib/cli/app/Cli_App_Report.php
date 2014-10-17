@@ -36,8 +36,7 @@ class Cli_App_Report extends Cli {
 
 						if ($oReportSchedule->filename == "NULL") {
 							$sReportName = str_replace(" ", "_", $oReport->name);
-						}
-						else {
+						} else {
 							$sReportName = str_replace(" ", "_", $oReportSchedule->filename);
 						}
 
@@ -83,15 +82,14 @@ class Cli_App_Report extends Cli {
 								$oEmailFlex->addTo($oEmployee->Email);
 								$oEmailFlex->setFrom($arrHeaders['From']);
 								// Generate Content
-					 			$strContent	=	"Dear {$aEmployee['FirstName']},\n\n";
+					 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
 								$strContent .= "Attached is the Scheduled Report ({$oReport->name}) .";
 								$strContent .= "\n\nPablo\nYellow Billing Mascot";
 								$oEmailFlex->setBodyText($strContent);
 								// Attachment (file to deliver)
 								if (strtoupper($oReportDeliveryFormat->name) == "XLS") {
 									$sMimeType = "application/x-msexcel";
-								}
-								else if (strtoupper($oReportDeliveryFormat->name) == "CSV") {
+								} else if (strtoupper($oReportDeliveryFormat->name) == "CSV") {
 									$sMimeType = "text/csv";
 								}
 								$oEmailFlex->createAttachment(
@@ -112,15 +110,13 @@ class Cli_App_Report extends Cli {
 								}
 							}
 						}
-					}
-					else {
+					} else {
 						Log::getLog()->log("Failed to execute the query");
 					}
 				}
 			}
 			return 0;
-		}
-		catch (Exception $oException) {
+		} catch (Exception $oException) {
 			$this->showUsage($oException->getMessage());
 			return 1;
 		}
@@ -140,8 +136,7 @@ class Cli_App_Report extends Cli {
 
 		if ($oReportSchedule->schedule_end_datetime == "NULL") {
 			$iEndScheduletendDateTimeTimestamp = 0; //Making sure end schedule date time is not affective if NULL
-		}
-		else {
+		} else {
 			$dFinalSchedulendDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
 			$iEndScheduletendDateTimeTimestamp = $dFinalSchedulendDateTime->getTimestamp();
 		}		
@@ -149,26 +144,21 @@ class Cli_App_Report extends Cli {
 		if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
 			$dLastExecutedDateTime = $oReportScheduleLog->executed_datetime;
 			$dNextScheduledDateTime = date_add(new DateTime($dLastExecutedDateTime), date_interval_create_from_date_string($oReportSchedule->frequency_multiple.' '.$sFrequencyType));
-		}
-		else {
+		} else {
 			$dNextScheduledDateTime = new DateTime($oReportSchedule->schedule_datetime);
 		}
 		if ($iEndScheduletendDateTimeTimestamp != 0) {
 			if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $iEndScheduletendDateTimeTimestamp) {
 				return true;
-			}
-			else {
+			} else {
 				return false;
 			}
-		}
-		else {
+		} else {
 			if ($iNow > $dNextScheduledDateTime->getTimestamp()) {
 				return true;
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
 	}
 }
-?>

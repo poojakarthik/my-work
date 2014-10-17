@@ -54,8 +54,7 @@ var self = new Class({
 						fnValidate	: function(oControl) {
 							if (isNaN(oControl.getValue())) {
 								throw new Error("Frequency Multiple should be a number");
-							}
-							else if(oControl.getValue()<=0) {
+							} else if (oControl.getValue()<=0) {
 								throw new Error("Frequency Multiple should be greater than 0");
 							}
 							return true;
@@ -165,7 +164,7 @@ var self = new Class({
 			method		: 'post',
 			contentType	: 'application/x-www-form-urlencoded',
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-			onSuccess: function (oResponse){
+			onSuccess: function (oResponse) {
 				var oServerResponse = JSON.parse(oResponse.responseText);
 				this._populateReportSchedule(oServerResponse.aReportSchedule);
 			}.bind(this)
@@ -192,7 +191,7 @@ var self = new Class({
 				}
 			}.bind(this),
 			function (error) {
-				// TODO: Handle Error
+				
 			}
 		);
 	},
@@ -218,7 +217,7 @@ var self = new Class({
 				}
 			}.bind(this),
 			function (error) {
-				// TODO: Handle Error
+				
 			}
 		);
 	},
@@ -231,7 +230,7 @@ var self = new Class({
 			method		: 'post',
 			contentType	: 'application/x-www-form-urlencoded',
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-			onSuccess: function (oResponse){
+			onSuccess: function (oResponse) {
 				var oServerResponse = JSON.parse(oResponse.responseText);
 				if (oServerResponse.length) {
 					$('.flex-page-report-schedule-add-details-constraints').show();
@@ -251,8 +250,7 @@ var self = new Class({
 									})
 								)
 							);
-						}
-						else {
+						} else {
 							this._oConstraintContainer.appendChild(
 								H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
 									H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
@@ -270,8 +268,7 @@ var self = new Class({
 								)
 							);
 						}
-					}
-					else if (oServerResponse[i]['component_type'] == "Select") {
+					} else if (oServerResponse[i]['component_type'] == "Select") {
 						//debugger;
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
@@ -294,9 +291,7 @@ var self = new Class({
 								})
 							)
 						);
-
-					}
-					else if (oServerResponse[i]['component_type'] == "Date") {	
+					} else if (oServerResponse[i]['component_type'] == "Date") {	
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
 								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
@@ -332,8 +327,8 @@ var self = new Class({
 
 	_setFrequencyTypesPropertyForArray : function(aData) {
 		var aFrequencyTypes	= {};
-		for(var i in aData){
-			if(aData.hasOwnProperty(i)){
+		for (var i in aData) {
+			if(aData.hasOwnProperty(i)) {
 				// Save Frequency Type
 				var iId = aData[i].id;
 				var oFrequencyType = aData[i];
@@ -370,8 +365,8 @@ var self = new Class({
 			var aData	= oResponse.getData();
 			var aOptions = [];
 
-			for (var i in aData.report_frequency_types){
-				if (aData.report_frequency_types.hasOwnProperty(i)){
+			for (var i in aData.report_frequency_types) {
+				if (aData.report_frequency_types.hasOwnProperty(i)) {
 					aOptions.push(
 						H.option({value: aData.report_frequency_types[i].id},
 							aData.report_frequency_types[i].name
@@ -401,7 +396,7 @@ var self = new Class({
 						H.span(oReportSchedule.schedule_datetime)
 					),
 					H.td(
-						H.button({type: 'button', name: 'archive'}, 'Archive').observe('click', this._archiveSchedule.bind(this,oReportSchedule.id)) // Original function(){ this.parentElement.parentElement.remove();
+						H.button({type: 'button', name: 'archive'}, 'Archive').observe('click', this._archiveSchedule.bind(this,oReportSchedule.id));
 					)
 				)
 					
@@ -419,7 +414,7 @@ var self = new Class({
 			method		: 'post',
 			contentType	: 'application/x-www-form-urlencoded',
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-			onSuccess: function (oResponse){
+			onSuccess: function (oResponse) {
 
 			}.bind(this)
 		});
@@ -429,8 +424,7 @@ var self = new Class({
 		if(sReportDeliveryName == "Email") {
 			$('.flex-page-report-schedule-add-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
-		}
-		else {
+		} else {
 			$('.flex-page-report-schedule-add-details-deliveryemployee').hide();
 		}
 	},
@@ -458,7 +452,6 @@ var self = new Class({
 				}.bind(this));
 			}.bind(this),
 			function (error) {
-				// TODO: Handle Error
 			}
 		);
 	},
@@ -486,7 +479,7 @@ var self = new Class({
 					this.fire('complete');
 				}.bind(this),
 				function (error) {
-					// TODO: Handle Error
+					
 				}
 			);
 		}
@@ -496,7 +489,7 @@ var self = new Class({
 		var aElements = this._oEmployeeContainer.select('input:checked');
 		var aEmployee = [];
 		for(var i in aElements) {
-			if(aElements.hasOwnProperty(i)) {
+			if (aElements.hasOwnProperty(i)) {
 				var oElement = aElements[i];
 				var iEmployeeId = parseInt(oElement.value);
 				aEmployee.push(iEmployeeId);

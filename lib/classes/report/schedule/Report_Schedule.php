@@ -3,11 +3,6 @@ class Report_Schedule extends ORM_Cached {
 	protected $_strTableName = "report_schedule";
 	protected static $_strStaticTableName = "report_schedule";
 
-	/*
-		generate()
-		Report Generate function
-		Compiles the query as per the constraints allocated to the query and executes the compiled query to return the result set of the required report
-	*/
 	public function generate() {
 		$sCompiledQuery = $this->getCompiledQuery();
 		$aReportSchedule = $this->toArray();
@@ -21,8 +16,7 @@ class Report_Schedule extends ORM_Cached {
 			$oResult = Query::run($sCompiledQuery);
 			
 			return $oResult;
-		}
-		catch (Exception $e) {
+		} catch (Exception $e) {
 			// Update  ReportScheduleLog Entry
 			$oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($this->id);
 			$oReportScheduleLog->is_error = 1; //Set the error flag
@@ -31,10 +25,6 @@ class Report_Schedule extends ORM_Cached {
 		}
 	}
 
-	/*
-		getCompiledQuery()
-		Compile the Query for the Schedule as per the constraint  value
-	*/
 	private function getCompiledQuery() {
 		//Get the report from reports table
 		

@@ -7,9 +7,9 @@ var H = require('fw/dom/factory'), // HTML
 	jhr = require('xhr/json-handler'),
 	Constraint = require('./constraint/edit'),
 	jsonForm = require('json-form'),
-    Popup = require('fw/component/popup'),
-    Alert = require('fw/component/popup/alert'),
-    Confirm = require('fw/component/popup/confirm'),
+	Popup = require('fw/component/popup'),
+	Alert = require('fw/component/popup/alert'),
+	Confirm = require('fw/component/popup/confirm'),
 	Hidden = require('fw/component/control/hidden'),
 	Checkbox = require('fw/component/control/checkbox'),
 	Select = require('fw/component/control/select'),
@@ -48,7 +48,7 @@ var self = new Class({
 						sLabel		: 'Name',
 						mMandatory	: true,
 						fnValidate	: function(oControl) {
-							if(oControl.getValue().length>256) {
+							if (oControl.getValue().length>256) {
 								throw new Error("Max length is 256 characters");
 							}
 							return true;
@@ -62,7 +62,7 @@ var self = new Class({
 						sLabel		: 'Name',
 						mMandatory	: true,
 						fnValidate	: function(oControl) {
-							if(oControl.getValue().length>512) {
+							if (oControl.getValue().length>512) {
 								throw new Error("Max length is 512 characters");
 							}
 							return true;
@@ -78,8 +78,7 @@ var self = new Class({
 						fnValidate	: function(oControl) {
 							if (oControl.getValue().length>10000) {
 								throw new Error("Max length is 10000 characters");
-							}
-							else if (/^update |delete |alter |insert |drop |create |replace /.test(oControl.getValue().toLowerCase())) {
+							} else if (/^update |delete |alter |insert |drop |create |replace /.test(oControl.getValue().toLowerCase())) {
 								throw new Error("Only Select statements are allowed");
 							}
 							return true;
@@ -116,7 +115,7 @@ var self = new Class({
 		if (!this._bInitialised || !this._bReady) {
 			if (this.get('iReportId')) {
 				// Load existing
-				this._loadReport(function(){});
+				this._loadReport(function() {});
 			} else {
 				// Create new
 				jhr('Report', 'getEmployees', {arguments: [true]}).then(
@@ -138,7 +137,6 @@ var self = new Class({
 						}.bind(this));
 					}.bind(this),
 					function (error) {
-						// TODO: Handle Error
 					}
 				);
 			}
@@ -157,8 +155,8 @@ var self = new Class({
 			var aData	= oResponse.getData();
 			var aOptions = [];
 
-			for (var i in aData.report_categories){
-				if(aData.report_categories.hasOwnProperty(i)){
+			for (var i in aData.report_categories) {
+				if(aData.report_categories.hasOwnProperty(i)) {
 					aOptions.push(
 						H.option({value: aData.report_categories[i].id},
 							aData.report_categories[i].name
@@ -180,7 +178,7 @@ var self = new Class({
 			method		: 'post',
 			contentType	: 'application/x-www-form-urlencoded',
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-			onSuccess: function (oResponse){
+			onSuccess: function (oResponse) {
 				var oServerResponse = JSON.parse(oResponse.responseText);
 				// Load report
 				this._oForm.control('id').set('mValue', oServerResponse.aReport.id);
@@ -252,7 +250,7 @@ var self = new Class({
 				method		: 'post',
 				contentType	: 'application/x-www-form-urlencoded',
 				postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-				onSuccess: function (oResponse){
+				onSuccess: function (oResponse) {
 					var oServerResponse = JSON.parse(oResponse.responseText);
 					this.fire('complete');
 				}.bind(this)
@@ -264,8 +262,7 @@ var self = new Class({
 		if(this._bSaveChangesTrigger) {
 			var oConfirm = new Confirm({sIconURI : './img/template/confirm.png'}, 'There are some unsaved changes in Report Constraints. Are you sure you want cancel?');
 			oConfirm.observe('yes', this._close.bind(this));
-		}
-		else {
+		} else {
 			this._close();
 		}			
 	},
