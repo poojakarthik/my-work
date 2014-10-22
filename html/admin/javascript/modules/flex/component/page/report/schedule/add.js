@@ -291,7 +291,7 @@ var self = new Class({
 								})
 							)
 						);
-					} else if (oServerResponse[i]['component_type'] == "Date") {	
+					} else if (oServerResponse[i]['component_type'] == "Date") {
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
 								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
@@ -319,7 +319,7 @@ var self = new Class({
 						);
 
 					}
-				}	
+				}
 			}.bind(this)
 		});
 	},
@@ -348,7 +348,7 @@ var self = new Class({
 			var aData	= oResponse.getData();
 			this._setFrequencyTypesPropertyForArray(aData.report_frequency_types);
 			if (fnCallback) {
-				fnCallback(mData);
+				fnCallback(oData);
 			}
 		}
 	},
@@ -395,7 +395,7 @@ var self = new Class({
 						H.span(oReportSchedule.schedule_datetime)
 					),
 					H.td(
-						H.button({type: 'button', name: 'archive'}, 'Archive').observe('click', this._archiveSchedule.bind(this,oReportSchedule.id));
+						H.button({type: 'button', name: 'archive'}, 'Archive').observe('click', this._archiveSchedule.bind(this,oReportSchedule.id))
 					)
 				)
 					
