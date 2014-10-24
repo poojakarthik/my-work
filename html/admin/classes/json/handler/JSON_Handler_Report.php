@@ -298,7 +298,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$iLimit	= ($iLimit === null ? 0 : $iLimit);
 			$iOffset = ($iOffset === null ? 0 : $iOffset);
 			$i = $iOffset;
-			if ($mResult) {
+			if ($mResult->num_rows>0) {
 				while ($aRow = $mResult->fetch_assoc()) {
 					$bCanManage = false;
 

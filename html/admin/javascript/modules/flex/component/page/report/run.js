@@ -318,8 +318,7 @@ var self = new Class({
 			} else {
 				window.location = 'reflex.php/Report/Download/?sFileName=' + encodeURIComponent(oResponse.sFilename) + '&iCSV=' + (oResponse.sFilename.match(/\.csv/) ? 1 : 0);
 			}
-		} else
-		{
+		} else {
 			// Error occurred in execution
 			new Alert(oResponse.sMessage);
 		}

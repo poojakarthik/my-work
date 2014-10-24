@@ -52,16 +52,16 @@ var self = new Class({
 								H.span({class: 'pagination-loading'},
 									'Loading...'
 								),
-								H.button({class: 'flex-page-report-manage-pagination-button'},
+								H.button({class: 'flex-page-report-manage-pagination-button-first'},
 									H.img({src: sButtonPathBase + 'first.png'})
 								),
-								H.button({class: 'flex-page-report-manage-pagination-button'},
+								H.button({class: 'flex-page-report-manage-pagination-button-previous'},
 									H.img({src: sButtonPathBase + 'previous.png'})
 								),
-								H.button({class: 'flex-page-report-manage-pagination-button'},
+								H.button({class: 'flex-page-report-manage-pagination-button-next'},
 									H.img({src: sButtonPathBase + 'next.png'})
 								),
-								H.button({class: 'flex-page-report-manage-pagination-button'},
+								H.button({class: 'flex-page-report-manage-pagination-button-last'},
 									H.img({src: sButtonPathBase + 'last.png'})
 								)
 							)
@@ -87,27 +87,29 @@ var self = new Class({
 		
 
 		// Bind events to the pagination buttons
-		var aTopPageButtons = this.NODE.select('div.caption_options button.flex-page-report-manage-pagination-button');
-		
 		// First
-		aTopPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
+		var oPaginationButtonFirst = this.NODE.select('button.flex-page-report-manage-pagination-button-first');
+		oPaginationButtonFirst.observe('click', this._changePage.bind(this, 'firstPage'));
 		
 		//Previous		
-		aTopPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
+		var oPaginationButtonPrevious = this.NODE.select('button.flex-page-report-manage-pagination-button-previous');
+		oPaginationButtonPrevious.observe('click', this._changePage.bind(this, 'previousPage'));
 		
 		// Next
-		aTopPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
+		var oPaginationButtonNext = this.NODE.select('button.flex-page-report-manage-pagination-button-next');
+		oPaginationButtonNext.observe('click', this._changePage.bind(this, 'nextPage'));
 		
 		// Last
-		aTopPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
+		var oPaginationButtonLast = this.NODE.select('button.flex-page-report-manage-pagination-button-last');
+		oPaginationButtonLast.observe('click', this._changePage.bind(this, 'lastPage'));
 		
 		// Setup pagination button object
 		this.oPaginationButtons = {
 			oTop	: {
-				oFirstPage		: aTopPageButtons[0],
-				oPreviousPage	: aTopPageButtons[1],
-				oNextPage		: aTopPageButtons[2],
-				oLastPage		: aTopPageButtons[3]
+				oFirstPage		: oPaginationButtonFirst,
+				oPreviousPage	: oPaginationButtonPrevious,
+				oNextPage		: oPaginationButtonNext,
+				oLastPage		: oPaginationButtonLast
 			}
 		};
 		// Add to DOM

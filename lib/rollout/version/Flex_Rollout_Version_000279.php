@@ -128,7 +128,7 @@ class Flex_Rollout_Version_000279 extends Flex_Rollout_Version {
 						`report_delivery_format_id` INT UNSIGNED NOT NULL,
 						`report_delivery_method_id` INT UNSIGNED NOT NULL,
 						`schedule_end_datetime` DATETIME NULL,
-						`filename VARCHAR(100)` NULL,
+						`filename` VARCHAR(100) NULL,
 						PRIMARY KEY (`id`),
 						INDEX `fk_report_schedule_report_id` (`report_id` ASC),
 						INDEX `fk_report_schedule_report_frequency_type_id` (`report_frequency_type_id` ASC),
