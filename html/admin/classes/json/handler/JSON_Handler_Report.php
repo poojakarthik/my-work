@@ -216,7 +216,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$resQuery = Query::run("
 				SELECT r.*
 				FROM report r
-				WHERE id = <report_id>", array('report_id', $mData->iReportId));
+				WHERE id = <report_id>", array('report_id' => $mData->iReportId));
 			if ($resQuery === false) {
 				throw new Exception($qryQuery->Error());
 			}
