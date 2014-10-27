@@ -127,7 +127,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			if ($employee->Archived) {
 				continue;
 			}
-			if (($employee->Privileges & PERMISSION_GOD) == PERMISSION_GOD) {
+			if ($employee->Id == 0) {
 				continue;
 			}
 			if ($bReportingUserOnly && (($employee->Privileges & PERMISSION_REPORT_USER) != PERMISSION_REPORT_USER)) {
