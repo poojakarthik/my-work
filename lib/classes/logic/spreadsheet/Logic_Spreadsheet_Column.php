@@ -25,9 +25,15 @@ class Logic_Spreadsheet_Column {
     }
 
 
-    public function setCellValue($iRow, $mValue)
-    {
-         $sheet = $this->oSpreadsheet->getActiveSheet()-> setCellValue(chr($this->getPosition()) . $iRow,$mValue);
+    public function setCellValue($iRow, $mValue) {
+        $iPosition = $this->getPosition() - 64;
+        $sPosition = '';
+        while ($iPosition > 0) {
+            $iRemainder = ($iPosition -1) % 26;
+            $sPosition = chr($iRemainder + 65) . $sPosition;
+            $iPosition = intval(($iPosition - $iRemainder) / 26);
+        }
+        $sheet = $this->oSpreadsheet->getActiveSheet()-> setCellValue($sPosition . $iRow,$mValue);
     }
 
     public function applyFormatting($oCellRange)
