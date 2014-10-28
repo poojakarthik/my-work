@@ -11,6 +11,7 @@ class Cli_App_Report extends Cli {
 			$aReportSchedules = Report_Schedule::getScheduledReports();
 			foreach ($aReportSchedules as $oReportSchedule) {
 				if ($this->_isScheduledToRun($oReportSchedule)) {
+					echo "Running Scheduled Report";
 					//Creating the current report Schedule instance					
 					$oReportScheduleInstance = new Report_Schedule($oReportSchedule->toArray(),TRUE); //bolLoadById set true
 					//Create ReportScheduleLog Entry
@@ -129,7 +130,7 @@ class Cli_App_Report extends Cli {
 		$iFrequencyMultiple = $oReportSchedule->frequency_multiple;
 		$sFrequencyType = strtolower($oReportFrequencyType->name) . "s";
 
-		if ($oReportSchedule->schedule_end_datetime == "NULL") {
+		if ($oReportSchedule->schedule_end_datetime == "0000-00-00 00:00:00") {
 			$iEndScheduletendDateTimeTimestamp = 0; //Making sure end schedule date time is not affective if NULL
 		} else {
 			$dFinalSchedulendDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
