@@ -57,14 +57,14 @@ class Cli_App_Report extends Cli {
 							$iRow++;
 						}		
 						// Set File type for Logic Spreadsheet as Selected Delivery Format Type
-						$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->name === 'XLS'?'Excel2007':$oReportDeliveryFormat->name));
+						$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
 						chmod($sFilename,0777);
 						// Update Download Path for ReportScheduleLog Entry
 						$oReportScheduleLogAdd->is_error = 0;
 						$oReportScheduleLogAdd->download_path = $sFilename;
 						$oReportScheduleLogAdd->save();
 						//Use Proper Delivery Method
-						if (strtolower($oReportDeliveryMethod->name) == 'email') {
+						if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_EMAIL) {
 							$sAttachmentContent = file_get_contents($sFilename);
 							$sCurrentTimestamp = date('d/m/Y H:i:s');
 							
@@ -88,9 +88,9 @@ class Cli_App_Report extends Cli {
 								$strContent .= "\n\nPablo\nYellow Billing Mascot";
 								$oEmailFlex->setBodyText($strContent);
 								// Attachment (file to deliver)
-								if (strtoupper($oReportDeliveryFormat->name) == "XLS") {
+								if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
 									$sMimeType = "application/x-msexcel";
-								} else if (strtoupper($oReportDeliveryFormat->name) == "CSV") {
+								} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
 									$sMimeType = "text/csv";
 								}
 								$oEmailFlex->createAttachment(

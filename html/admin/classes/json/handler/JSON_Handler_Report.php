@@ -407,11 +407,11 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				@unlink($sFilename);
 
 				// Set File type for Logic Spreadsheet as CSV
-				$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->name === 'XLS'?'Excel2007':$oReportDeliveryFormat->name));
+				$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
 				chmod($sTmpFilePath, 0777);
 
 				//Use Proper Delivery Method
-				if (strtoupper($oReportDeliveryMethod->name) == 'EMAIL') {
+				if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_EMAIL) {
 					
 					$sAttachmentContent = file_get_contents($sTmpFilePath);
 					$sCurrentTimestamp = date('d/m/Y H:i:s');
@@ -437,9 +437,9 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$strContent .= "\n\nPablo\nYellow Billing Mascot";
 						$oEmailFlex->setBodyText($strContent);
 						// Attachment (file to deliver)
-						if (strtoupper($oReportDeliveryFormat->name) == "XLS") {
+						if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
 							$sMimeType = "application/x-msexcel";
-						} else if (strtoupper($oReportDeliveryFormat->name) == "CSV") {
+						} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
 							$sMimeType = "text/csv";
 						}
 						$oEmailFlex->createAttachment(
@@ -468,7 +468,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 							'bIsEmail' => true,
 							'sMessage' => "Report emailed successfully to " . implode(", ",$aReceivers)
 						);
-				} else if (strtoupper($oReportDeliveryMethod->name) == "DOWNLOAD") {
+				} else if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_FTP) {
 					return 	array(
 							'success' => true,
 							'bSuccess' => true,
