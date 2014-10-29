@@ -366,129 +366,137 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				}
 			}
 		}
-		$oResult = Query::run($oReport->query, $aConstraintValues);
-		if ($oResult) {
-			$iResultCount = $oResult->num_rows;
-			
-			if ($iResultCount > 0) {
-				$oReportDeliveryFormat = Report_Delivery_Format::getForId($mData->delivery_format);
-				$oReportDeliveryMethod = Report_Delivery_Method::getForId($mData->delivery_method);
+		try {
+			$oResult = Query::run($oReport->query, $aConstraintValues);
+			if ($oResult) {
+				$iResultCount = $oResult->num_rows;
 				
-				$oSpreadsheet = new Logic_Spreadsheet(array());
-			
-				$iRow = 0;
-				while ($aRow = $oResult->fetch_assoc())	{
-					$aKeys = array_keys($aRow);
-					$aValues = array_values($aRow);
-
-					//Get the Field names if first row and write them to sheet before inserting any data
-					if (!$iRow) {
-						$oSpreadsheet->addRecord($aKeys);
-					}
-
-					$oSpreadsheet->addRecord($aValues);
-
-					$iRow++;
-				}
-
-				$sReportTempPath = FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j')."/";
-
-				//Create required file path folder if it doesn't exist
-				while (!is_dir($sReportTempPath)) {
-					mkdir($sReportTempPath, '0777',true);
-					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y'), 0777);
-					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
-					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
-				}
-
-				//Create Workbook
-				$sFilename = str_replace(" ", "_", $oReport->name) . "." .strtolower($oReportDeliveryFormat->name);
-				$sTmpFilePath = $sReportTempPath . $sFilename;
-				@unlink($sFilename);
-
-				// Set File type for Logic Spreadsheet as CSV
-				$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
-				chmod($sTmpFilePath, 0777);
-
-				//Use Proper Delivery Method
-				if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_EMAIL) {
+				if ($iResultCount > 0) {
+					$oReportDeliveryFormat = Report_Delivery_Format::getForId($mData->delivery_format);
+					$oReportDeliveryMethod = Report_Delivery_Method::getForId($mData->delivery_method);
 					
-					$sAttachmentContent = file_get_contents($sTmpFilePath);
-					$sCurrentTimestamp = date('d/m/Y H:i:s');
-					$aHeaders = array(
-							'From' => "reports@yellowbilling.com.au",
-							'Subject' => "{$oReport->name} requested on {$sCurrentTimestamp}"
-						);
+					$oSpreadsheet = new Logic_Spreadsheet(array());
+				
+					$iRow = 0;
+					while ($aRow = $oResult->fetch_assoc())	{
+						$aKeys = array_keys($aRow);
+						$aValues = array_values($aRow);
 
-
-					$oEmailFlex	= new Email_Flex();
-					$oEmailFlex->setSubject($aHeaders['Subject']);
-
-					$delivery_employees = explode(",", $mData->selectedDeliveryEmployees);
-					$aReceivers = array();
-					for ($i=0; $i<count($delivery_employees);$i++) {
-						$oEmployee = Employee::getForId($delivery_employees[$i]);
-						$aEmployee = $oEmployee->toArray();
-						$oEmailFlex->addTo($oEmployee->Email);
-						$oEmailFlex->setFrom($aHeaders['From']);
-						// Generate Content
-			 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
-						$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
-						$strContent .= "\n\nPablo\nYellow Billing Mascot";
-						$oEmailFlex->setBodyText($strContent);
-						// Attachment (file to deliver)
-						if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
-							$sMimeType = "application/x-msexcel";
-						} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
-							$sMimeType = "text/csv";
+						//Get the Field names if first row and write them to sheet before inserting any data
+						if (!$iRow) {
+							$oSpreadsheet->addRecord($aKeys);
 						}
-						$oEmailFlex->createAttachment(
-							$sAttachmentContent,
-							$sMimeType,
-							Zend_Mime::DISPOSITION_ATTACHMENT,
-							Zend_Mime::ENCODING_BASE64,
-							$sFilename
-						);
-						// Send the email
-						try {
-							$oEmailFlex->send();
-							$aReceivers[] = $aEmployee['FirstName'];
- 						} catch (Zend_Mail_Transport_Exception $oException) {
-							// Sending the email failed
-							return 	array(
-								'success' => true,
-								'bSuccess' => false,
-								'sMessage' => $oException->getMessage()
-							);
-						}
+
+						$oSpreadsheet->addRecord($aValues);
+
+						$iRow++;
 					}
+
+					$sReportTempPath = FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j')."/";
+
+					//Create required file path folder if it doesn't exist
+					while (!is_dir($sReportTempPath)) {
+						mkdir($sReportTempPath, '0777',true);
+						chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y'), 0777);
+						chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
+						chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
+					}
+
+					//Create Workbook
+					$sFilename = str_replace(" ", "_", $oReport->name) . "." .strtolower($oReportDeliveryFormat->name);
+					$sTmpFilePath = $sReportTempPath . $sFilename;
+					@unlink($sFilename);
+
+					// Set File type for Logic Spreadsheet as CSV
+					$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
+					chmod($sTmpFilePath, 0777);
+
+					//Use Proper Delivery Method
+					if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_EMAIL) {
+						
+						$sAttachmentContent = file_get_contents($sTmpFilePath);
+						$sCurrentTimestamp = date('d/m/Y H:i:s');
+						$aHeaders = array(
+								'From' => "reports@yellowbilling.com.au",
+								'Subject' => "{$oReport->name} requested on {$sCurrentTimestamp}"
+							);
+
+
+						$oEmailFlex	= new Email_Flex();
+						$oEmailFlex->setSubject($aHeaders['Subject']);
+
+						$delivery_employees = explode(",", $mData->selectedDeliveryEmployees);
+						$aReceivers = array();
+						for ($i=0; $i<count($delivery_employees);$i++) {
+							$oEmployee = Employee::getForId($delivery_employees[$i]);
+							$aEmployee = $oEmployee->toArray();
+							$oEmailFlex->addTo($oEmployee->Email);
+							$oEmailFlex->setFrom($aHeaders['From']);
+							// Generate Content
+				 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
+							$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
+							$strContent .= "\n\nPablo\nYellow Billing Mascot";
+							$oEmailFlex->setBodyText($strContent);
+							// Attachment (file to deliver)
+							if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
+								$sMimeType = "application/x-msexcel";
+							} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
+								$sMimeType = "text/csv";
+							}
+							$oEmailFlex->createAttachment(
+								$sAttachmentContent,
+								$sMimeType,
+								Zend_Mime::DISPOSITION_ATTACHMENT,
+								Zend_Mime::ENCODING_BASE64,
+								$sFilename
+							);
+							// Send the email
+							try {
+								$oEmailFlex->send();
+								$aReceivers[] = $aEmployee['FirstName'];
+	 						} catch (Zend_Mail_Transport_Exception $oException) {
+								// Sending the email failed
+								return 	array(
+									'success' => true,
+									'bSuccess' => false,
+									'sMessage' => $oException->getMessage()
+								);
+							}
+						}
+						return 	array(
+								'success' => true,
+								'bSuccess' => true,
+								'bIsEmail' => true,
+								'sMessage' => "Report emailed successfully to " . implode(", ",$aReceivers)
+							);
+					} else if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_FTP) {
+						return 	array(
+								'success' => true,
+								'bSuccess' => true,
+								'bIsEmail' => false,
+								'sFilename' => $sFilename
+							);
+					}
+				} else {
 					return 	array(
 							'success' => true,
-							'bSuccess' => true,
-							'bIsEmail' => true,
-							'sMessage' => "Report emailed successfully to " . implode(", ",$aReceivers)
-						);
-				} else if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_FTP) {
-					return 	array(
-							'success' => true,
-							'bSuccess' => true,
-							'bIsEmail' => false,
-							'sFilename' => $sFilename
-						);
+							'bSuccess' => false,
+							'sMessage' => "No Result Available for Report"
+					);
 				}
 			} else {
 				return 	array(
 						'success' => true,
 						'bSuccess' => false,
-						'sMessage' => "No Result Available for Report"
-				);
+						'sMessage' => "Error While Generating report"
+					);
 			}
-		} else {
+		} catch (Exception $oException) {
 			return 	array(
-					'success' => true,
-					'bSuccess' => false,
-					'sMessage' => "Error While Generating report"
-				);
+				'success' => true,
+				'bSuccess' => false,
+				'sMessage' => $oException->getMessage()
+			);
 		}
 	}
 }

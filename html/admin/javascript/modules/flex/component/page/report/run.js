@@ -12,6 +12,7 @@ var	H = require('fw/dom/factory'), // HTML
 	Checkbox = require('fw/component/control/checkbox'),
 	Text = require('fw/component/control/text'),
 	Radio = require('fw/component/control/radio'),
+	Datetime = require('fw/component/control/datetime'),
 	Form = require('fw/component/form');
 
 var self = new Class({
@@ -238,7 +239,7 @@ var self = new Class({
 								})
 							)
 						);
-					} else if (oServerResponse[i]['component_type'] == "Date") {	
+					} else if (oServerResponse[i]['component_type'] == "Date") {
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-run-details-constraintContainer'},
 								H.span({class: 'flex-page-report-run-details-constraintContainer-label'}, oServerResponse[i]['name']),
