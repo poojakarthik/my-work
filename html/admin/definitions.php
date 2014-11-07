@@ -200,11 +200,11 @@ define("PERMISSION_KB_USER"					, 0x400);	$arrPermissions[PERMISSION_KB_USER] = 
 define("PERMISSION_KB_ADMIN_USER"			, 0x800);	$arrPermissions[PERMISSION_KB_ADMIN_USER] = "KB Admin User"; // 2048
 define("PERMISSION_SALES_ADMIN"				, 0x1000);	$arrPermissions[PERMISSION_SALES_ADMIN] = "Sales Admin"; // 4096
 define("PERMISSION_PROPER_ADMIN"			, 0x2000);	$arrPermissions[PERMISSION_PROPER_ADMIN] = "Proper Admin"; // 8192
-define("PERMISSION_SUPER_ADMIN"				, 0x7FFFFFFF);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 2147483647 (All permissions except DEBUG and GOD) 
-define("PERMISSION_REPORT_USER", 0x80000000);	$arrPermissions[PERMISSION_REPORT_USER]	= "Reporting User"; //2147483648
-define("PERMISSION_DEBUG"					, 0x800000000);
+define("PERMISSION_REPORT_USER", 0x4000);	$arrPermissions[PERMISSION_REPORT_USER]	= "Reporting User"; // 16384
+define("PERMISSION_SUPER_ADMIN"				, 0x7FFFFFFF);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 2147483647 (All permissions except DEBUG, REPORT, USER_MGMT and GOD) 
+define("PERMISSION_DEBUG", 0x800000000);
 define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFF); // This constant is legacy
-define("PERMISSION_GOD"						, 0x7FFFFFFFFFFF);
+define("PERMISSION_GOD"						, 0x7FFFFFFFFFFF); //140737488355327
 
 
 $GLOBALS['Permissions']	= $arrPermissions;
