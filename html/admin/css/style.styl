@@ -86,6 +86,7 @@
 		filter: alpha(opacity=25)
 		-moz-opacity: .25;
 		opacity: .25;
+		z-index: 50;
 	}
 	.fw-layer-window {
 		margin: auto;
@@ -120,6 +121,7 @@
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		text-indent: 0.5em;
 	}
 	.fw-popup-header-close {
 		float: right;
@@ -788,6 +790,7 @@
 
 	table.reflex caption {
 		text-align	: left;
+		margin-top  : 10px;
 	}
 
 	table.reflex caption div.caption_bar {
@@ -11961,11 +11964,17 @@
 
 .fw-control.-novalue input[required],
 .fw-control.-novalue select[required],
-.fw-control.-novalue textarea[required]
+.fw-control.-novalue textarea[required],
+
 	background #fcfaf9
 	color #111
 	border .1em solid #da8
 
+.fw-control.-invalid input[required]
+.fw-control.-invalid textarea[required]
+	background #ffecf0
+	border .1em solid #d30
+	
 .fw-control.-invalid input,
 .fw-control.-invalid select,
 .fw-control.-invalid textarea
@@ -13213,3 +13222,311 @@
 	& fieldset
 		defieldsetify()
 		text-align center
+/*************************Reporting UI****************************/
+.flex-page-report-edit-details
+.flex-page-report-run-details
+.flex-page-report-schedule-add-details
+.flex-page-report-constraint-edit-details
+.flex-page-report-schedule-add-details-constraints
+.flex-page-report-run-details-constraints
+	appearance-flex-form-fieldset()
+	margin-left: -.5em
+	margin-right: -.5em
+	border-left-width: 0
+	border-right-width: 0
+
+.flex-page-report-run-details-constraints
+.flex-page-report-schedule-add-details-constraints
+	margin-top: 10px
+	display: none
+	
+.flex-page-report-edit-details-name
+.flex-page-report-edit-details-summary
+.flex-page-report-edit-details-query
+.flex-page-report-edit-details-category
+.flex-page-report-run-details-constraintContainer 
+.flex-page-report-schedule-add-details-schedule-datetime
+.flex-page-report-schedule-add-details-schedule-end-datetime
+.flex-page-report-schedule-add-details-filename
+.flex-page-report-schedule-add-details-constraintContainer
+.flex-page-report-constraint-edit-details-name
+.flex-page-report-constraint-edit-details-type
+.flex-page-report-constraint-edit-details-query
+.flex-page-report-constraint-edit-details-validation
+.flex-page-report-constraint-edit-details-placeholder
+	appearance-flex-form-fieldset-field()
+
+.flex-page-report-edit-details-name-label
+.flex-page-report-edit-details-summary-label
+.flex-page-report-edit-details-query-label
+.flex-page-report-edit-details-category-label
+.flex-page-report-run-details-constraintContainer-label
+.flex-page-report-schedule-add-details-constraintContainer-label
+.flex-page-report-schedule-add-details-schedule-datetime > span
+.flex-page-report-schedule-add-details-schedule-end-datetime > span
+.flex-page-report-schedule-add-details-filename > span
+.flex-page-report-constraint-edit-details-name-label
+.flex-page-report-constraint-edit-details-type-label
+.flex-page-report-constraint-edit-details-query-label
+.flex-page-report-constraint-edit-details-validation-label
+.flex-page-report-constraint-edit-details-placeholder-label
+	appearance-flex-form-fieldset-field-label()
+	width: 12.0em
+	align-self flex-start
+	padding-top 2px
+
+.flex-page-report-edit-details-name 
+.flex-page-report-edit-details-summary
+.flex-page-report-schedule-add-details-filename
+.flex-page-report-run-details-constraintContainer
+.flex-page-report-schedule-add-details-constraintContainer
+.flex-page-report-constraint-edit-details-name
+.flex-page-report-constraint-edit-details-validation
+.flex-page-report-constraint-edit-details-placeholder
+	& input
+		appearance-flex-form-fieldset-field-control()
+		width: 10.0em
+
+.flex-page-report-schedule-add-details-schedule-datetime
+.flex-page-report-schedule-add-details-schedule-end-datetime
+.flex-page-report-run-details-constraintContainer-datetime
+.flex-page-report-schedule-add-details-constraintContainer-datetime
+	& input
+		appearance-flex-form-fieldset-field-control()
+		width: 10.0em
+		float left
+
+	& img
+		float left
+		align-self flex-end
+
+.flex-page-report-edit-details-query
+	& textarea
+		appearance-flex-form-fieldset-field-control()
+		width: 30.0em
+		resize: vertical
+		height: 100px
+
+.flex-page-report-edit-details-summary
+.flex-page-report-constraint-edit-details-query
+	& textarea
+		appearance-flex-form-fieldset-field-control()
+		width: 18.0em
+		resize: vertical
+		height: 60px
+
+.flex-page-report-edit-details-category 
+.flex-page-report-run-details-constraintContainer
+.flex-page-report-constraint-edit-details-type
+	& select
+		appearance-flex-form-fieldset-field-control()
+		width: 12.0em
+
+.flex-page-report-schedule-add-details-constraintContainer
+	& select
+		appearance-flex-form-fieldset-field-control()
+		width: 11.0em
+
+.flex-page-report-edit-details-reportemployee
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-edit-details-reportemployee-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+		align-self flex-start
+		padding-top 2px
+
+.flex-page-report-run-details-deliveryformat
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-run-details-deliveryformat-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+
+.flex-page-report-schedule-add-details-deliveryformat
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-schedule-add-details-deliveryformat-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+
+.flex-page-report-run-details-deliverymethod
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-run-details-deliverymethod-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+
+.flex-page-report-schedule-add-details-deliverymethod
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-schedule-add-details-deliverymethod-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+
+.flex-page-report-run-details-deliveryemployee
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-run-details-deliveryemployee-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+		align-self flex-start
+		padding-top 2px
+
+.flex-page-report-schedule-add-details-deliveryemployee
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-schedule-add-details-deliveryemployee-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+		align-self flex-start
+		padding-top 2px
+
+.flex-page-report-schedule-add-details-frequency
+	appearance-flex-form-fieldset-field()
+	align-items baseline
+	& .flex-page-report-schedule-add-details-frequency-label
+		appearance-flex-form-fieldset-field-label()
+		width 12.0em
+	& input
+		width 10.0em
+
+.flex-page-report-edit-details-reportemployee-controlset
+.flex-page-report-run-details-deliveryemployee-controlset
+.flex-page-report-schedule-add-details-deliveryemployee-controlset
+	appearance-flex-form-controlset()
+	max-height 150px
+	width 200px 
+	overflow-y scroll 
+	overflow-x hidden 
+	background: #fff
+	color: #111
+	border-color: #666
+	border-width: 1px
+	border-style: solid
+
+	& label
+		padding 0.6em 0.3em
+		margin-right 10px
+		margin-bottom: 0.5em
+
+.flex-page-report-run-details-deliverymethod-container
+.flex-page-report-run-details-deliveryformat-container
+.flex-page-report-schedule-add-details-deliverymethod-container
+.flex-page-report-schedule-add-details-deliveryformat-container
+	appearance-flex-form-controlset()
+	& label
+		margin-right 10px
+		margin-bottom: .5em
+	& input[type="radio"]
+		margin-right: .5ch
+
+.flex-page-report-edit-buttonset
+	appearance-flex-form-buttonpanel()
+
+	& button[name="editConstraint"]::before
+		button-icon('/admin/img/template/options.png', 16px, 16px)
+	& button[name="save"]::before
+		button-icon('/admin/img/template/approve.png', 16px, 16px)
+	& button[name="cancel"]::before
+		button-icon('/admin/img/template/decline.png', 16px, 16px)
+
+.flex-page-report-manage-buttons
+	border: 0
+	margin:0 auto
+	float: right
+	display:none
+	& button::before
+		button-icon('/admin/img/template/new.png', 16px, 16px)
+
+.flex-page-report-manage
+	& table
+		& button[name="configure"]::before
+			button-icon('/admin/img/template/options.png', 16px, 16px)
+		& button[name="schedule"]::before
+			button-icon('/admin/img/template/clock.png', 16px, 16px)
+		& button[name="run"]::before
+			button-icon('/admin/img/template/play.png', 16px, 16px)
+
+.flex-page-report-run-buttonset
+	appearance-flex-form-buttonpanel()
+	& button[name="run"]::before
+		button-icon('/admin/img/template/play.png', 16px, 16px)
+	& button[name="cancel"]::before
+		button-icon('/admin/img/template/decline.png', 16px, 16px)
+
+.flex-page-report-schedule-add-buttonset
+	appearance-flex-form-buttonpanel()
+	& button[name="run"]::before
+		button-icon('/admin/img/template/approve.png', 16px, 16px)
+	& button[name="cancel"]::before
+		button-icon('/admin/img/template/decline.png', 16px, 16px)
+
+.flex-page-report-schedule-add
+	& table
+		& button[name="archive"]::before
+			button-icon('/admin/img/template/archive.png', 16px, 16px)
+
+.flex-page-report-constraint-edit-buttonset
+	appearance-flex-form-buttonpanel()
+	& button[name="add"]::before
+		button-icon('/admin/img/template/new.png', 16px, 16px)
+	& button[name="cancel"]::before
+		button-icon('/admin/img/template/decline.png', 16px, 16px)
+
+.flex-page-report-constraint-edit
+	& table
+		& button[name="remove"]::before
+			button-icon('/admin/img/template/delete.png', 16px, 16px)
+
+.flex-page-report-edit
+	width: 600px;
+
+.flex-page-report-constraint-edit
+.flex-page-report-schedule-edit
+.flex-page-report-schedule-add
+	width: 500px;
+
+.flex-page-report-run
+	width: 400px;
+
+.flex-page-report-edit-report-employee input
+.flex-page-report-run-delivery-employee input
+.flex-page-report-schedule-add-details-deliveryemployee input
+	float:left;
+	margin-right 0.5em
+
+.flex-page-report-schedule-add table
+.flex-page-report-manage table
+.flex-page-report-constraint-edit table
+	skin-flex-table()
+
+	& .First
+		& th 
+			text-align left
+
+.flex-page-report-manage table
+	& tr
+		td:nth-child(2)
+		td:nth-child(3)
+		td:nth-child(4) 
+			width 160px
+		td:nth-child(5)
+			width 245px
+
+.flex-page-report-manage-heading
+	appearance-flex-page-heading()
+	display flex
+	align-items flex-end
+
+	& h2
+		flex-grow 1
+		appearance-flex-page-heading-label()
+
+/************** Confirm Popup Component CSS ****************************/
+.admin-popup-confirm-buttons
+	appearance-flex-form-buttonpanel()
+	& button[name="yes"]::before
+		button-icon('/admin/img/template/confirm_yes.png', 16px, 16px)
+	& button[name="no"]::before
+		button-icon('/admin/img/template/confirm_no.png', 16px, 16px)

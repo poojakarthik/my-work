@@ -3445,6 +3445,12 @@ class MenuItems {
 		return self::NEW_FRAMEWORK . "reflex.php/DataReport/ListAll/";
 	}
 
+	function manageAllReports() {
+		$this->strContextMenuLabel = "Manage Reports";
+		$this->strLabel = "Manage Reports";
+		return self::NEW_FRAMEWORK . "reflex.php/Report/Manage/";
+	}
+
 	//------------------------------------------------------------------------//
 	// ManageEmployees
 	//------------------------------------------------------------------------//

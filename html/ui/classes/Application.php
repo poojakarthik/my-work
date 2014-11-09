@@ -175,6 +175,9 @@ class Application
 			ContextMenu()->Ticketing->Administration->TicketingAdmin();
 			ContextMenu()->Ticketing->Administration->TicketingAttachmentTypes();
 		}
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {
+			ContextMenu()->Admin->Reports->manageAllReports();
+		}
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
@@ -196,7 +199,7 @@ class Application
 
 
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
-			ContextMenu()->Admin->DataReports();
+			
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
 
@@ -483,7 +486,7 @@ class Application
 
 
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
-			ContextMenu()->Admin->DataReports();
+			ContextMenu()->Admin->Reports->manageAllReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
 
