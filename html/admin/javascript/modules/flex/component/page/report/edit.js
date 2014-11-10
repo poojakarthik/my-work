@@ -35,6 +35,7 @@ var self = new Class({
 		this._oReport = null;
 		this._bSaveChangesTrigger = false;
 		this._aReportConstraint = Array();
+		this._iReportConstraintCount = 0;
 
 		this._oForm = new Form({onsubmit: this._save.bind(this, null)},
 			new Hidden({
