@@ -276,7 +276,7 @@ var self = new Class({
 
 	_populateReports : function(aData) {
 		this._oReports.innerHTML = '';
-		this._aReportTitles = new Array();
+		this._aReportTitles = [];
 		var bCanAdd = false;
 		for (var i in aData) {
 			if (aData.hasOwnProperty(i)) {

@@ -34,7 +34,8 @@ var self = new Class({
 	_buildUI: function () {
 		this._oReport = null;
 		this._bSaveChangesTrigger = false;
-		this._aReportConstraint = Array();
+		this._aReportConstraint = [];
+		this._iReportConstraintCount = 0;
 
 		this._oForm = new Form({onsubmit: this._save.bind(this, null)},
 			new Hidden({
