@@ -1,5 +1,5 @@
 #!/bin/bash
 exec add-apt-repository --yes ppa:ondrej/php5-5.6 &&
-	apt-get --quiet --quiet update &&
-	apt-get --quiet --quiet --yes install \
-	  php5-fpm;
+    apt-get --quiet --quiet update &&
+    apt-get --quiet --quiet --yes install \
+      php5-fpm;

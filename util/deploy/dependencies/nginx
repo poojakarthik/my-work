@@ -1,5 +1,5 @@
 #!/bin/bash
 exec add-apt-repository --yes ppa:ondrej/nginx &&
-	apt-get --quiet --quiet update &&
-	apt-get --quiet --quiet --yes install \
-	  nginx;
+    apt-get --quiet --quiet update &&
+    apt-get --quiet --quiet --yes install \
+      nginx;
