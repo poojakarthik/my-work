@@ -1,0 +1,12 @@
+#!/bin/bash
+exec add-apt-repository ppa:ondrej/php5-5.6 &&
+	apt-get update &&
+	apt-get install \
+	  php5-cli\
+	  php5-readline\
+	  php5-curl\
+	  libssh2-php \
+	  php5-mcrypt\
+	  php5-mysqlnd\
+	  php5-pgsql\
+	  php5-xsl;
