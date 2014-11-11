@@ -72,7 +72,7 @@ fi
 
 # Runtime directories
 log 'Creating runtime directories…';
-mkdir -p --mode=0777 \
+sudo mkdir -p --mode=0777 \
 	"$deploymentPath/files" \
 	"$deploymentPath/logs" \
 	"$deploymentPath/log" \
@@ -81,8 +81,8 @@ mkdir -p --mode=0777 \
 
 # Configuration
 log 'Checking Flex Configuration…';
-if [ ! -f "$deploymentPath/customer.cfg" ]; then
-	echo '<?php' > "$deploymentPath"/customer.cfg;
+if [ ! -f "$deploymentPath/customer.cfg.php" ]; then
+	sudo sh -c "echo '<?php' > $deploymentPath/customer.cfg.php;"
 fi
 
 if [ ! -f "$deploymentPath/flex.cfg.php" ]; then
@@ -91,8 +91,8 @@ if [ ! -f "$deploymentPath/flex.cfg.php" ]; then
 		cfgSCPPath="$deploymentPath/util/flex.template.cfg.php"
 	fi
 
-	scp "$cfgSCPPath" "$deploymentPath/flex.cfg.php" &&
-	editor "$deploymentPath/flex.cfg.php";
+	sudo scp "$cfgSCPPath" "$deploymentPath/flex.cfg.php" &&
+	sudo editor "$deploymentPath/flex.cfg.php";
 fi
 
 # Database
@@ -124,7 +124,7 @@ if [ "$rolloutVersionsPending" -gt 0 ]; then
 	if [ ! "$shouldCreateDB" = 'n' ]; then
 		log "WARNING: Not performing Rollout can leave the database and codebase out of sync!"
 	else
-		wouldrun -- php rollout.php -v;
+		wouldrun -- sudo php rollout.php -v;
 		if [ $? -gt 0 ]; then
 			exit 1;
 		fi
@@ -133,7 +133,7 @@ fi
 
 if [ `ls -1 "$deploymentPath/lib/data/model/type" | wc --lines` -eq 0 ]; then
 	log "Building Flex data model…";
-	wouldrun -- php rollout.php -m -v;
+	wouldrun -- sudo php rollout.php -m -v;
 	if [ $? -gt 0 ]; then
 		exit 1;
 	fi
@@ -141,7 +141,7 @@ fi
 
 if [ `ls -1 "$deploymentPath/classes/do/sales/base" | wc --lines` -eq 0 ]; then
 	log "Building Flex/Sales Portal data model…";
-	wouldrun -- php build_do_model.php -v;
+	wouldrun -- sudo php build_do_model.php -v;
 	if [ $? -gt 0 ]; then
 		exit 1;
 	fi
@@ -155,14 +155,14 @@ if [ ! -f "$deploymentPath/crontab" ]; then
 		crontabSCPPath="$deploymentPath/util/flex.template.cfg.php"
 	fi
 
-	scp "$crontabSCPPath" "$deploymentPath/crontab" &&
-	editor "$deploymentPath/crontab";
+	sudo scp "$crontabSCPPath" "$deploymentPath/crontab" &&
+	sudo editor "$deploymentPath/crontab";
 fi
 
 if [ ! -L "/etc/cron.d/$deploymentBasename" ]; then
 	log "Creating crontab symlink…";
-	ln -s "$deploymentPath/crontab" "/etc/cron.d/$deploymentBasename";
-	service cron reload;
+	sudo ln -s "$deploymentPath/crontab" "/etc/cron.d/$deploymentBasename";
+	sudo service cron reload;
 fi
 
 log "Deployment Complete!";
