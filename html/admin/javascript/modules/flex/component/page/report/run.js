@@ -38,29 +38,36 @@ var self = new Class({
 			new Hidden({
 				sName : 'selectedDeliveryEmployees'
 			}),
-			H.fieldset({'class': 'flex-page-report-run-details'},
-				H.div({role:'group', class: 'flex-page-report-run-details-deliveryformat'},
-					H.span({class: 'flex-page-report-run-details-deliveryformat-label'}, 'Delivery Format'),
-					this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-run-details-deliveryformat-container'})
+			this._obody = H.div(
+				H.fieldset({'class': 'flex-page-report-run-details'},
+					H.div({role:'group', class: 'flex-page-report-run-details-deliveryformat'},
+						H.span({class: 'flex-page-report-run-details-deliveryformat-label'}, 'Delivery Format'),
+						this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-run-details-deliveryformat-container'})
+					),
+					H.div({role:'group', class: 'flex-page-report-run-details-deliverymethod'},
+						H.span({class: 'flex-page-report-run-details-deliverymethod-label'}, 'Delivery Method'),
+						this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-run-details-deliverymethod-container'})
+					),
+					this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-run-details-deliveryemployee'},
+						H.span({class: 'flex-page-report-run-details-deliveryemployee-label'}, 'Deliver To'),
+						this._oEmployeeContainer = H.div({class: 'flex-page-report-run-details-deliveryemployee-controlset'})
+					)
 				),
-				H.div({role:'group', class: 'flex-page-report-run-details-deliverymethod'},
-					H.span({class: 'flex-page-report-run-details-deliverymethod-label'}, 'Delivery Method'),
-					this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-run-details-deliverymethod-container'})
+				H.fieldset({'class': 'flex-page-report-run-details-constraints'},
+					this._oConstraintContainer = H.div()
 				),
-				this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-run-details-deliveryemployee'},
-					H.span({class: 'flex-page-report-run-details-deliveryemployee-label'}, 'Deliver To'),
-					this._oEmployeeContainer = H.div({class: 'flex-page-report-run-details-deliveryemployee-controlset'})
+				H.div({class: 'flex-page-report-run-buttonset'},
+					H.button({type: 'button', name: 'run'}, 'Run').observe('click',this._executeReport.bind(this, null)),
+					H.button({type: 'button', name: 'cancel'}, 'Cancel').observe('click',this._cancel.bind(this, null))
 				)
 			),
-			H.fieldset({'class': 'flex-page-report-run-details-constraints'},
-				this._oConstraintContainer = H.div()
-			),
-			H.div({class: 'flex-page-report-run-buttonset'},
-				H.button({type: 'button', name: 'run'}, 'Run').observe('click',this._executeReport.bind(this, null)),
-				H.button({type: 'button', name: 'cancel'}, 'Cancel').observe('click',this._cancel.bind(this, null))
+			this._oloading = H.div({'class': 'reflex-loading-image'},
+				H.div('Executing Report'),
+				H.div('Please wait.')
 			)
 		);
 		this.NODE = this._oForm.getNode();
+		this._oloading.hide();
 	},
 
 	_syncUI: function () {
@@ -298,7 +305,8 @@ var self = new Class({
 				return;
 			}
 			this._oForm.control('selectedDeliveryEmployees').set('mValue', this._getSelectedDeliveryEmployees());
-			
+			this._obody.hide();
+			this._oloading.show();
 			jhr('Report', 'generate', {arguments: this._oForm.getData()}).then(
 				function success(request) {
 					var oResponse = request.parseJSONResponse();
@@ -337,7 +345,7 @@ var self = new Class({
 					sExtraClass     : 'flex-page-report-run-popup',
 					sTitle          : 'Run Report',
 					sIconURI        : './img/template/play.png',
-					bCloseButton    : true
+					bCloseButton    : false
 				}, oComponent.getNode()
 			);
 			return oPopup;
