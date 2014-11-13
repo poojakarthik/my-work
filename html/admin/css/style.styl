@@ -13229,6 +13229,9 @@
 .flex-page-report-constraint-edit-details
 .flex-page-report-schedule-add-details-constraints
 .flex-page-report-run-details-constraints
+.flex-page-report-run-deliveryemployee
+.flex-page-report-schedule-add-deliveryemployee
+.flex-page-report-edit-reportemployee
 	appearance-flex-form-fieldset()
 	margin-left: -.5em
 	margin-right: -.5em
@@ -13237,9 +13240,14 @@
 
 .flex-page-report-run-details-constraints
 .flex-page-report-schedule-add-details-constraints
+.flex-page-report-run-deliveryemployee
+.flex-page-report-schedule-add-deliveryemployee
 	margin-top: 10px
 	display: none
-	
+
+.flex-page-report-edit-reportemployee
+	margin-top: 10px
+
 .flex-page-report-edit-details-name
 .flex-page-report-edit-details-summary
 .flex-page-report-edit-details-query
@@ -13396,19 +13404,24 @@
 .flex-page-report-schedule-add-details-deliveryemployee-controlset
 	appearance-flex-form-controlset()
 	max-height 150px
-	width 230px 
 	overflow-y scroll 
 	overflow-x hidden 
 	background: #fff
 	color: #111
-	border-color: #666
-	border-width: 1px
-	border-style: solid
 
 	& label
 		padding 0.6em 0.3em
 		margin-right 10px
 		margin-bottom: 0.5em
+
+.flex-page-report-edit-details-reportemployee-controlset
+	box-sizing border-box
+	width 20em
+
+.flex-page-report-run-details-deliveryemployee-controlset
+.flex-page-report-schedule-add-details-deliveryemployee-controlset
+	box-sizing border-box
+	width 100%
 
 .flex-page-report-run-details-deliverymethod-container
 .flex-page-report-run-details-deliveryformat-container
@@ -13495,6 +13508,19 @@
 .flex-page-report-schedule-add-details-deliveryemployee input
 	float:left;
 	margin-right 0.5em
+
+.flex-page-report-run-details-deliveryemployee-filter 
+.flex-page-report-schedule-add-details-deliveryemployee-filter
+	box-sizing border-box
+	width 100%
+	& input
+		width 100%
+
+.flex-page-report-edit-details-reportemployee-filter
+	box-sizing border-box
+	width 19em
+	& input
+		width 100%
 
 .flex-page-report-schedule-add table
 .flex-page-report-manage table

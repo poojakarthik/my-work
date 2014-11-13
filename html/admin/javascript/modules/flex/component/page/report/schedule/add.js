@@ -107,10 +107,22 @@ var self = new Class({
 				H.div({role:'group', class: 'flex-page-report-schedule-add-details-deliverymethod'},
 					H.span({class: 'flex-page-report-schedule-add-details-deliverymethod-label'}, 'Delivery Method'),
 					this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-schedule-add-details-deliverymethod-container'})
-				),
+				)
+			),
+			H.fieldset({class: 'flex-page-report-schedule-add-deliveryemployee'},
 				this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-schedule-add-details-deliveryemployee'},
 					H.span({class: 'flex-page-report-schedule-add-details-deliveryemployee-label'}, 'Deliver To'),
-					this._oEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryemployee-controlset'})
+					H.div(
+						H.div({class: 'flex-page-report-schedule-add-details-deliveryemployee-filter'},
+							this._oNameFilter = new Text({
+								sName		: 'filter',
+								sLabel		: 'Name Filter',
+								sPlaceholder: 'Filter by name',
+								mMandatory	: false
+							})
+						),
+						this._oEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryemployee-controlset'})
+					)
 				)
 			),
 			H.fieldset({'class': 'flex-page-report-schedule-add-details-constraints'},
@@ -140,6 +152,7 @@ var self = new Class({
 			)
 		);
 		this.NODE = this._oForm.getNode();
+		this._oNameFilter.observe('change', this._filterDeliveryEmployees.bind(this));
 	},
 
 	_syncUI : function() {
@@ -153,6 +166,18 @@ var self = new Class({
 				this._loadDeliveryMethods();
 			}
 			this._onReady();
+		}
+	},
+
+	_filterDeliveryEmployees: function() {
+		var aEmployeeElement = $('.flex-component-report-schedule-add-deliveryemployee-div-container-label');
+		for (var i = 0; i < aEmployeeElement.length; i++) {
+			var oRegExp = new RegExp(this._oNameFilter.getValue(), 'i');
+			if (this._oNameFilter.getValue() !== "" && !aEmployeeElement[i].innerHTML.match(oRegExp)) {
+				aEmployeeElement[i].parentNode.hide();
+			} else {
+				aEmployeeElement[i].parentNode.show();
+			}
 		}
 	},
 		
@@ -421,6 +446,7 @@ var self = new Class({
 
 	_showDeliveryEmployees: function(sReportDeliveryName) {
 		if(sReportDeliveryName == "Email") {
+			$('.flex-page-report-schedule-add-deliveryemployee').show();
 			$('.flex-page-report-schedule-add-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
 		} else {

@@ -13502,7 +13502,10 @@ background #fcfaf9 {
 .flex-page-report-schedule-add-details,
 .flex-page-report-constraint-edit-details,
 .flex-page-report-schedule-add-details-constraints,
-.flex-page-report-run-details-constraints {
+.flex-page-report-run-details-constraints,
+.flex-page-report-run-deliveryemployee,
+.flex-page-report-schedule-add-deliveryemployee,
+.flex-page-report-edit-reportemployee {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -13520,7 +13523,10 @@ background #fcfaf9 {
 .flex-page-report-schedule-add-details input,
 .flex-page-report-constraint-edit-details input,
 .flex-page-report-schedule-add-details-constraints input,
-.flex-page-report-run-details-constraints input {
+.flex-page-report-run-details-constraints input,
+.flex-page-report-run-deliveryemployee input,
+.flex-page-report-schedule-add-deliveryemployee input,
+.flex-page-report-edit-reportemployee input {
   padding: 0.25em;
 }
 .flex-page-report-edit-details :not(:disabled):required,
@@ -13528,7 +13534,10 @@ background #fcfaf9 {
 .flex-page-report-schedule-add-details :not(:disabled):required,
 .flex-page-report-constraint-edit-details :not(:disabled):required,
 .flex-page-report-schedule-add-details-constraints :not(:disabled):required,
-.flex-page-report-run-details-constraints :not(:disabled):required {
+.flex-page-report-run-details-constraints :not(:disabled):required,
+.flex-page-report-run-deliveryemployee :not(:disabled):required,
+.flex-page-report-schedule-add-deliveryemployee :not(:disabled):required,
+.flex-page-report-edit-reportemployee :not(:disabled):required {
   background: #fff;
   color: #111;
   border: 1px solid #da8;
@@ -13538,7 +13547,10 @@ background #fcfaf9 {
 .flex-page-report-schedule-add-details :not(:disabled):invalid,
 .flex-page-report-constraint-edit-details :not(:disabled):invalid,
 .flex-page-report-schedule-add-details-constraints :not(:disabled):invalid,
-.flex-page-report-run-details-constraints :not(:disabled):invalid {
+.flex-page-report-run-details-constraints :not(:disabled):invalid,
+.flex-page-report-run-deliveryemployee :not(:disabled):invalid,
+.flex-page-report-schedule-add-deliveryemployee :not(:disabled):invalid,
+.flex-page-report-edit-reportemployee :not(:disabled):invalid {
   background: #ffecf0;
   color: #111;
   border: 1px solid #d30;
@@ -13548,7 +13560,10 @@ background #fcfaf9 {
 .flex-page-report-schedule-add-details :not(:disabled):invalid:required,
 .flex-page-report-constraint-edit-details :not(:disabled):invalid:required,
 .flex-page-report-schedule-add-details-constraints :not(:disabled):invalid:required,
-.flex-page-report-run-details-constraints :not(:disabled):invalid:required {
+.flex-page-report-run-details-constraints :not(:disabled):invalid:required,
+.flex-page-report-run-deliveryemployee :not(:disabled):invalid:required,
+.flex-page-report-schedule-add-deliveryemployee :not(:disabled):invalid:required,
+.flex-page-report-edit-reportemployee :not(:disabled):invalid:required {
   border: 1px solid #da8;
 }
 .flex-page-report-edit-details :not(:disabled):valid,
@@ -13556,15 +13571,23 @@ background #fcfaf9 {
 .flex-page-report-schedule-add-details :not(:disabled):valid,
 .flex-page-report-constraint-edit-details :not(:disabled):valid,
 .flex-page-report-schedule-add-details-constraints :not(:disabled):valid,
-.flex-page-report-run-details-constraints :not(:disabled):valid {
+.flex-page-report-run-details-constraints :not(:disabled):valid,
+.flex-page-report-run-deliveryemployee :not(:disabled):valid,
+.flex-page-report-schedule-add-deliveryemployee :not(:disabled):valid,
+.flex-page-report-edit-reportemployee :not(:disabled):valid {
   background: #ecfff0;
   color: #111;
   border-color: #00c72b;
 }
 .flex-page-report-run-details-constraints,
-.flex-page-report-schedule-add-details-constraints {
+.flex-page-report-schedule-add-details-constraints,
+.flex-page-report-run-deliveryemployee,
+.flex-page-report-schedule-add-deliveryemployee {
   margin-top: 10px;
   display: none;
+}
+.flex-page-report-edit-reportemployee {
+  margin-top: 10px;
 }
 .flex-page-report-edit-details-name,
 .flex-page-report-edit-details-summary,
@@ -13823,14 +13846,10 @@ background #fcfaf9 {
   border: 0;
   padding: 0;
   max-height: 150px;
-  width: 230px;
   overflow-y: scroll;
   overflow-x: hidden;
   background: #fff;
   color: #111;
-  border-color: #666;
-  border-width: 1px;
-  border-style: solid;
 }
 .flex-page-report-edit-details-reportemployee-controlset label,
 .flex-page-report-run-details-deliveryemployee-controlset label,
@@ -13838,6 +13857,15 @@ background #fcfaf9 {
   padding: 0.6em 0.3em;
   margin-right: 10px;
   margin-bottom: 0.5em;
+}
+.flex-page-report-edit-details-reportemployee-controlset {
+  box-sizing: border-box;
+  width: 20em;
+}
+.flex-page-report-run-details-deliveryemployee-controlset,
+.flex-page-report-schedule-add-details-deliveryemployee-controlset {
+  box-sizing: border-box;
+  width: 100%;
 }
 .flex-page-report-run-details-deliverymethod-container,
 .flex-page-report-run-details-deliveryformat-container,
@@ -14029,6 +14057,22 @@ background #fcfaf9 {
 .flex-page-report-schedule-add-details-deliveryemployee input {
   float: left;
   margin-right: 0.5em;
+}
+.flex-page-report-run-details-deliveryemployee-filter,
+.flex-page-report-schedule-add-details-deliveryemployee-filter {
+  box-sizing: border-box;
+  width: 100%;
+}
+.flex-page-report-run-details-deliveryemployee-filter input,
+.flex-page-report-schedule-add-details-deliveryemployee-filter input {
+  width: 100%;
+}
+.flex-page-report-edit-details-reportemployee-filter {
+  box-sizing: border-box;
+  width: 19em;
+}
+.flex-page-report-edit-details-reportemployee-filter input {
+  width: 100%;
 }
 .flex-page-report-schedule-add table,
 .flex-page-report-manage table,

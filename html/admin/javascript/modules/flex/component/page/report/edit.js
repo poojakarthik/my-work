@@ -94,10 +94,22 @@ var self = new Class({
 							mMandatory	: true,
 							fnPopulate	: this._populateReportCategory.bind(this)
 						})
-				),
-				H.div({role: 'group', class: 'flex-page-report-edit-details-reportemployee'},
+				)
+			),
+			H.fieldset({class: 'flex-page-report-edit-reportemployee'},
+				this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-edit-details-reportemployee'},
 					H.span({class: 'flex-page-report-edit-details-reportemployee-label'}, 'Runnable By'),
-					this._oEmployeeContainer = H.div({class: 'flex-page-report-edit-details-reportemployee-controlset'})
+					H.div(
+						H.div({class: 'flex-page-report-edit-details-reportemployee-filter'},
+							this._oNameFilter = new Text({
+								sName		: 'filter',
+								sLabel		: 'Name Filter',
+								sPlaceholder: 'Filter by name',
+								mMandatory	: false
+							})
+						),
+						this._oEmployeeContainer = H.div({class: 'flex-page-report-edit-details-reportemployee-controlset'})
+					)
 				)
 			),
 			H.div({class: 'flex-page-report-edit-buttonset'},
@@ -110,6 +122,7 @@ var self = new Class({
 		this.NODE = this._oForm.getNode();
 		// Add to DOM
 		$$('.flex-page')[0].appendChild(this.NODE);
+		this._oNameFilter.observe('change', this._filterDeliveryEmployees.bind(this));
 	},
 
 	_syncUI: function () {
@@ -142,6 +155,18 @@ var self = new Class({
 				);
 			}
 			this._onReady();
+		}
+	},
+
+	_filterDeliveryEmployees: function() {
+		var aEmployeeElement = $('.flex-component-report-add-reportemployee-div-container-label');
+		for (var i = 0; i < aEmployeeElement.length; i++) {
+			var oRegExp = new RegExp(this._oNameFilter.getValue(), 'i');
+			if (this._oNameFilter.getValue() !== "" && !aEmployeeElement[i].innerHTML.match(oRegExp)) {
+				aEmployeeElement[i].parentNode.hide();
+			} else {
+				aEmployeeElement[i].parentNode.show();
+			}
 		}
 	},
 

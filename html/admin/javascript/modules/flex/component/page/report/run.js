@@ -39,7 +39,7 @@ var self = new Class({
 				sName : 'selectedDeliveryEmployees'
 			}),
 			this._obody = H.div(
-				H.fieldset({'class': 'flex-page-report-run-details'},
+				H.fieldset({class: 'flex-page-report-run-details'},
 					H.div({role:'group', class: 'flex-page-report-run-details-deliveryformat'},
 						H.span({class: 'flex-page-report-run-details-deliveryformat-label'}, 'Delivery Format'),
 						this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-run-details-deliveryformat-container'})
@@ -47,13 +47,25 @@ var self = new Class({
 					H.div({role:'group', class: 'flex-page-report-run-details-deliverymethod'},
 						H.span({class: 'flex-page-report-run-details-deliverymethod-label'}, 'Delivery Method'),
 						this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-run-details-deliverymethod-container'})
-					),
-					this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-run-details-deliveryemployee'},
-						H.span({class: 'flex-page-report-run-details-deliveryemployee-label'}, 'Deliver To'),
-						this._oEmployeeContainer = H.div({class: 'flex-page-report-run-details-deliveryemployee-controlset'})
 					)
 				),
-				H.fieldset({'class': 'flex-page-report-run-details-constraints'},
+				H.fieldset({class: 'flex-page-report-run-deliveryemployee'},
+					this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-run-details-deliveryemployee'},
+						H.span({class: 'flex-page-report-run-details-deliveryemployee-label'}, 'Deliver To'),
+						H.div(
+							H.div({class: 'flex-page-report-run-details-deliveryemployee-filter'},
+								this._oNameFilter = new Text({
+									sName		: 'filter',
+									sLabel		: 'Name Filter',
+									sPlaceholder: 'Filter by name',
+									mMandatory	: false
+								})
+							),
+							this._oEmployeeContainer = H.div({class: 'flex-page-report-run-details-deliveryemployee-controlset'})
+						)
+					)
+				),
+				H.fieldset({class: 'flex-page-report-run-details-constraints'},
 					this._oConstraintContainer = H.div()
 				),
 				H.div({class: 'flex-page-report-run-buttonset'},
@@ -68,6 +80,7 @@ var self = new Class({
 		);
 		this.NODE = this._oForm.getNode();
 		this._oloading.hide();
+		this._oNameFilter.observe('change', this._filterDeliveryEmployees.bind(this));
 	},
 
 	_syncUI: function () {
@@ -85,8 +98,21 @@ var self = new Class({
 		}
 	},
 
+	_filterDeliveryEmployees: function() {
+		var aEmployeeElement = $('.flex-component-report-run-deliveryemployee-div-container-label');
+		for (var i = 0; i < aEmployeeElement.length; i++) {
+			var oRegExp = new RegExp(this._oNameFilter.getValue(), 'i');
+			if (this._oNameFilter.getValue() !== "" && !aEmployeeElement[i].innerHTML.match(oRegExp)) {
+				aEmployeeElement[i].parentNode.hide();
+			} else {
+				aEmployeeElement[i].parentNode.show();
+			}
+		}
+	},
+
 	_showDeliveryEmployees: function(sReportDeliveryName) {
 		if(sReportDeliveryName == "Email") {
+			$('.flex-page-report-run-deliveryemployee').show();
 			$('.flex-page-report-run-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
 		} else {
