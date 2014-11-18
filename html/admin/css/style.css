@@ -65,8 +65,7 @@ li {
 		clear	: both;
 	}
 
-	a,
-.pointer {
+	a,.pointer {
 		cursor : pointer;
 	}
 
@@ -736,9 +735,7 @@ li {
 		height: 2em;
 	}
 
-	div#person a,
-div#person a:link,
-div#person a:visited {
+	div#person a,div#person a:link,div#person a:visited {
 		color: #ffffff;
 		text-decoration: none;
 		font-weight: normal;
@@ -941,8 +938,7 @@ div#person a:visited {
 		margin-right	: 0.25em;
 	}
 
-	table.reflex thead,
-table.reflex tfoot {
+	table.reflex thead,table.reflex tfoot {
 
 		color: #ffffff;
 		background-color: #499FCF;
@@ -959,8 +955,7 @@ table.reflex tfoot {
 		text-align: right;
 	}
 
-	table.reflex thead tr th,
-table.reflex tfoot tr th {
+	table.reflex thead tr th,table.reflex tfoot tr th {
 		padding-top: .25em;
 		padding-bottom: .25em;
 		background-repeat: repeat-x;
@@ -1027,12 +1022,7 @@ table.reflex tfoot tr th {
 		text-align		: left;
 	}
 
-	table.reflex tbody tr td.input input[type="text"],
-table.reflex tbody tr td.input input[type="number"],
-table.reflex tbody tr td.input input[type="date"],
-table.reflex tbody tr td.input input[type="password"],
-table.reflex tbody tr td.input textarea,
-table.reflex tbody tr td.input select {
+	table.reflex tbody tr td.input input[type="text"],table.reflex tbody tr td.input input[type="number"],table.reflex tbody tr td.input input[type="date"],table.reflex tbody tr td.input input[type="password"],table.reflex tbody tr td.input textarea,table.reflex tbody tr td.input select {
 		width			: 98%;
 	}
 
@@ -1042,9 +1032,7 @@ table.reflex tbody tr td.input select {
 		vertical-align	: text-bottom;
 	}
 
-	table.reflex th.reflex-unsorted,
-table.reflex th.reflex-sorted-ascending,
-table.reflex th.reflex-sorted-descending {
+	table.reflex th.reflex-unsorted,table.reflex th.reflex-sorted-ascending,table.reflex th.reflex-sorted-descending {
 		cursor: pointer;
 		background-position: 0% 50%;
 		background-repeat: no-repeat;
@@ -1062,15 +1050,12 @@ table.reflex th.reflex-sorted-descending {
 		background-image: url(../img/template/order_desc.png);
 	}
 
-	table.reflex tfoot a,
-table.reflex tfoot a:visited,
-table.reflex tfoot a:link {
+	table.reflex tfoot a,table.reflex tfoot a:visited,table.reflex tfoot a:link {
 		color: #ffffff !important;
 	}
 
 
-	table.reflex td,
-table.reflex th {
+	table.reflex td,table.reflex th {
 		padding		: .25em .5em;
 		font-size	: inherit;
 	}
@@ -1102,110 +1087,44 @@ table.reflex th {
 		background-color: #fcc;
 	}
 
-	tbody.alternating > tr:nth-child(odd) > td,
-tbody.alternating > tr.reflex-alternate-row > td {
+	tbody.alternating > tr:nth-child(odd) > td,tbody.alternating > tr.reflex-alternate-row > td {
 		background-color	: #fff;
 	}
 
-	table.reflex th .subscript,
-table.reflex td .subscript {
+	table.reflex th .subscript,table.reflex td .subscript {
 		font-size	: 0.8em;
 	}
 
 	/************************** END - Reflex Table - END **************************/
 
 	/******************* START - Reflex Input Controls - START ********************/
-	input[type='color'],
-input[type='date'],
-input[type='datetime'],
-input[type='datetime-local'],
-input[type='email'],
-input[type='month'],
-input[type='number'],
-input[type='password'],
-input[type='range'],
-input[type='search'],
-input[type='tel'],
-input[type='text'],
-input[type='time'],
-input[type='url'],
-input[type='week'],
-select,
-textarea {
+	input[type='color'],input[type='date'],input[type='datetime'],input[type='datetime-local'],input[type='email'],input[type='month'],input[type='number'],input[type='password'],input[type='range'],input[type='search'],input[type='tel'],input[type='text'],input[type='time'],input[type='url'],input[type='week'],select,textarea {
 		border : .1em solid #333;
 	}
-	input,
-select,
-textarea {
+	input,select,textarea {
 		background-color: #FFFFFF;
 		color: #111111;
 		font-size: 1em;
 	}
 
-	input[type='color'][disabled],
-input[type='date'][disabled],
-input[type='datetime'][disabled],
-input[type='datetime-local'][disabled],
-input[type='email'][disabled],
-input[type='month'][disabled],
-input[type='number'][disabled],
-input[type='password'][disabled],
-input[type='range'][disabled],
-input[type='search'][disabled],
-input[type='tel'][disabled],
-input[type='text'][disabled],
-input[type='time'][disabled],
-input[type='url'][disabled],
-input[type='week'][disabled],
-select[disabled],
-textarea[disabled],
-.control-field.mandatory input[type='text'][disabled],
-.control-field.mandatory input[type='number'][disabled],
-.control-field.mandatory input[type='date'][disabled],
-.control-field.mandatory select[disabled],
-.control-field.mandatory textarea[disabled],
-.control-field.invalid input[type='text'][disabled],
-.control-field.invalid input[type='number'][disabled],
-.control-field.invalid input[type='date'][disabled],
-.control-field.invalid select[disabled],
-.control-field.invalid textarea[disabled],
-.control-field.valid input[type='text'][disabled],
-.control-field.valid input[type='number'][disabled],
-.control-field.valid input[type='date'][disabled],
-.control-field.valid select[disabled],
-.control-field.valid textarea[disabled] {
+	input[type='color'][disabled],input[type='date'][disabled],input[type='datetime'][disabled],input[type='datetime-local'][disabled],input[type='email'][disabled],input[type='month'][disabled],input[type='number'][disabled],input[type='password'][disabled],input[type='range'][disabled],input[type='search'][disabled],input[type='tel'][disabled],input[type='text'][disabled],input[type='time'][disabled],input[type='url'][disabled],input[type='week'][disabled],select[disabled],textarea[disabled],.control-field.mandatory input[type='text'][disabled],.control-field.mandatory input[type='number'][disabled],.control-field.mandatory input[type='date'][disabled],.control-field.mandatory select[disabled],.control-field.mandatory textarea[disabled],.control-field.invalid input[type='text'][disabled],.control-field.invalid input[type='number'][disabled],.control-field.invalid input[type='date'][disabled],.control-field.invalid select[disabled],.control-field.invalid textarea[disabled],.control-field.valid input[type='text'][disabled],.control-field.valid input[type='number'][disabled],.control-field.valid input[type='date'][disabled],.control-field.valid select[disabled],.control-field.valid textarea[disabled] {
 		background-color: #EFEBE7;
 		color			: #888;
 	}
 
-	input.required,
-select.required,
-textarea.required,
-.control-field.mandatory input,
-.control-field.mandatory select,
-.control-field.mandatory textarea {
+	input.required,select.required,textarea.required,.control-field.mandatory input,.control-field.mandatory select,.control-field.mandatory textarea {
 		background	: #fff;
 		color		: #111;
 		border		: .1em solid #da8;
 	}
 
-	input.invalid,
-select.invalid,
-textarea.invalid,
-.control-field.invalid input,
-.control-field.invalid select,
-.control-field.invalid textarea {
+	input.invalid,select.invalid,textarea.invalid,.control-field.invalid input,.control-field.invalid select,.control-field.invalid textarea {
 		background	: #ffecf0;
 		color		: #111;
 		border		: .1em solid #d30;
 	}
 
-	input.valid,
-select.valid,
-textarea.valid,
-.control-field.valid input,
-.control-field.valid select,
-.control-field.valid textarea {
+	input.valid,select.valid,textarea.valid,.control-field.valid input,.control-field.valid select,.control-field.valid textarea {
 		background: #ecfff0;
 		color: #111;
 		/* border: .1em solid #3d0; */
@@ -1263,8 +1182,7 @@ textarea.valid,
 		box-sizing	: border-box;
 	}
 
-	.control-field-radiobutton > input[type="radio"],
-.control-field > input[type="checkbox"] {
+	.control-field-radiobutton > input[type="radio"],.control-field > input[type="checkbox"] {
 		margin	: 0em;
 		padding	: 0em;
 	}
@@ -1281,11 +1199,7 @@ textarea.valid,
 	/********************* END - Reflex Input Controls - END **********************/
 
 	/************************** START - Buttons - START ***************************/
-	input[type='button'],
-input[type='submit'],
-input.normal-button[type='submit'],
-a.button,
-button {
+	input[type='button'],input[type='submit'],input.normal-button[type='submit'],a.button,button {
 		background-image:	url('../img/template/transparent-bg.png') !important;
 		background-repeat:	repeat-x !important;
 		background-color:	#ddd !important;
@@ -1520,8 +1434,7 @@ button {
 	}
 
 	/* Vixen popup work around */
-	div.reflex-popup > div.reflex-popup-content > div#PopupPageBody,
-div.reflex-popup > div.reflex-popup-content > div#GroupedContent {
+	div.reflex-popup > div.reflex-popup-content > div#PopupPageBody,div.reflex-popup > div.reflex-popup-content > div#GroupedContent {
 		background-color	: inherit;
 	}
 
@@ -2223,8 +2136,7 @@ div.reflex-popup > div.reflex-popup-content > div#GroupedContent {
 		background-color: #EEE;
 	}
 
-	div.tab-collection div.tab-header-container div.selected,
-div.tab-collection div.tab-header-container div.selected:hover {
+	div.tab-collection div.tab-header-container div.selected,div.tab-collection div.tab-header-container div.selected:hover {
 		background-color: #CCC;
 		border-bottom: solid 1px #CCC;
 	}
@@ -2239,25 +2151,11 @@ div.tab-collection div.tab-header-container div.selected:hover {
 
 
 	/********************** START - Sale Statuses - START *************************/
-	.sale-item-status-submitted,
-.sale-item-status-verified,
-.sale-item-status-awaiting-dispatch,
-.sale-item-status-dispatched,
-.sale-item-status-completed,
-.sale-status-submitted,
-.sale-status-verified,
-.sale-status-awaiting-dispatch,
-.sale-status-dispatched,
-.sale-status-completed {
+	.sale-item-status-submitted,.sale-item-status-verified,.sale-item-status-awaiting-dispatch,.sale-item-status-dispatched,.sale-item-status-completed,.sale-status-submitted,.sale-status-verified,.sale-status-awaiting-dispatch,.sale-status-dispatched,.sale-status-completed {
 		color: #060;
 	}
 
-	.sale-item-status-manual-intervention,
-.sale-item-status-rejected,
-.sale-item-status-cancelled,
-.sale-status-manual-intervention,
-.sale-status-rejected,
-.sale-status-cancelled {
+	.sale-item-status-manual-intervention,.sale-item-status-rejected,.sale-item-status-cancelled,.sale-status-manual-intervention,.sale-status-rejected,.sale-status-cancelled {
 		color: #f00;
 	}
 	/************************ END - Sale Statuses - END ***************************/
@@ -2304,8 +2202,7 @@ div.tab-collection div.tab-header-container div.selected:hover {
 		font-weight	: bold;
 	}
 
-	div.console-calendar div.day tbody td.department-responsible,
-div.console-calendar div.day tbody th.department-responsible {
+	div.console-calendar div.day tbody td.department-responsible,div.console-calendar div.day tbody th.department-responsible {
 		min-width	: 25%;
 		max-width	: 25%;
 		width		: 25%;
@@ -2379,18 +2276,15 @@ div.console-calendar div.day tbody th.department-responsible {
 	/***************** END - Dodgey Date Time Picker Control - END ****************/
 
 	/****************** START - Separators and Seperators - START *****************/
-	.Separator,
-.Seperator {
+	.Separator,.Seperator {
 		height:				20px;
 	}
 
-	.SmallSeparator,
-.SmallSeperator {
+	.SmallSeparator,.SmallSeperator {
 		height:				10px;
 	}
 
-	.TinySeparator,
-.TinySeperator {
+	.TinySeparator,.TinySeperator {
 		height:				5px;
 	}
 	/******************** END - Separators and Seperators - END *******************/
@@ -2431,8 +2325,7 @@ div.console-calendar div.day tbody th.department-responsible {
 		margin-right	: auto;
 	}
 
-	table.form-data td,
-table.form-data th {
+	table.form-data td,table.form-data th {
 		padding	: 0em 0em;
 	}
 
@@ -2441,9 +2334,7 @@ table.form-data th {
 		font-weight		: bold;
 	}
 
-	table.form-data input[disabled],
-table.form-data select[disabled],
-table.form-data textarea[disabled] {
+	table.form-data input[disabled],table.form-data select[disabled],table.form-data textarea[disabled] {
 		background-color: #DDDDDD;
 	}
 
@@ -2554,8 +2445,7 @@ table.form-data textarea[disabled] {
 		font-size		: inherit;
 	}
 
-	table.input thead,
-table.input tfoot {
+	table.input thead,table.input tfoot {
 		background-color	: #202020;
 		color				: #eee;
 		text-align			: left;
@@ -2565,11 +2455,7 @@ table.input tfoot {
 		text-align	: right;
 	}
 
-	table.input tbody tr td input[type="text"],
-table.input tbody tr td input[type="number"],
-table.input tbody tr td input[type="password"],
-table.input tbody tr td textarea,
-table.input tbody tr td select {
+	table.input tbody tr td input[type="text"],table.input tbody tr td input[type="number"],table.input tbody tr td input[type="password"],table.input tbody tr td textarea,table.input tbody tr td select {
 		width			: 98%;
 	}
 
@@ -2581,9 +2467,7 @@ table.input tbody tr td select {
 		cursor			: pointer;
 	}
 
-	table.input tfoot a,
-table.input tfoot a:visited,
-table.input tfoot a:link {
+	table.input tfoot a,table.input tfoot a:visited,table.input tfoot a:link {
 		color	: #ffde05;
 	}
 
@@ -2601,14 +2485,11 @@ table.input tfoot a:link {
 		vertical-align		: top;
 	}
 
-	table.input tbody tr td .hide,
-div .hide {
+	table.input tbody tr td .hide,div .hide {
 		display				: none;
 	}
 
-	table.input tbody tr td div input,
-table.input tbody tr td div select,
-table.input tbody tr td div textarea {
+	table.input tbody tr td div input,table.input tbody tr td div select,table.input tbody tr td div textarea {
 		vertical-align	: top;
 	}
 
@@ -2617,25 +2498,19 @@ table.input tbody tr td div textarea {
 		vertical-align	: middle;
 	}
 
-	table.input tbody tr td div.mandatory input,
-table.input tbody tr td div.mandatory select,
-table.input tbody tr td div.mandatory textarea {
+	table.input tbody tr td div.mandatory input,table.input tbody tr td div.mandatory select,table.input tbody tr td div.mandatory textarea {
 		background	: #fff;
 		color		: #111;
 		border		: .1em solid #da8;
 	}
 
-	table.input tbody tr td div.invalid input,
-table.input tbody tr td div.invalid select,
-table.input tbody tr td div.invalid textarea {
+	table.input tbody tr td div.invalid input,table.input tbody tr td div.invalid select,table.input tbody tr td div.invalid textarea {
 		background	: #ffecf0;
 		color		: #111;
 		border		: .1em solid #d30;
 	}
 
-	table.input tbody tr td div.valid input,
-table.input tbody tr td div.valid select,
-table.input tbody tr td div.valid textarea {
+	table.input tbody tr td div.valid input,table.input tbody tr td div.valid select,table.input tbody tr td div.valid textarea {
 		background	: #ecfff0;
 		color		: #111;
 		border		: .1em solid #3d0;
@@ -2845,9 +2720,7 @@ table.input tbody tr td div.valid textarea {
 		font-weight	: bolder;
 	}
 
-	div.reflex-datepicker div.footer div.reflex-datepicker-datetime,
-div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datepicker-datetime-date,
-div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datepicker-datetime-time {
+	div.reflex-datepicker div.footer div.reflex-datepicker-datetime,div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datepicker-datetime-date,div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datepicker-datetime-time {
 		display	: inline-block;
 	}
 	div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datepicker-datetime-time {
@@ -2982,8 +2855,7 @@ div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datep
 		-webkit-user-select	:	none;
 	}
 
-	div.reflex-slider-rail,
-div.reflex-slider-rail-handle {
+	div.reflex-slider-rail,div.reflex-slider-rail-handle {
 		-moz-border-radius-topright			: 0.25em;
 		-moz-border-radius-bottomright		: 0.25em;
 		-moz-border-radius-topleft			: 0.25em;
@@ -3067,8 +2939,7 @@ div.reflex-slider-rail-handle {
 		border-spacing	: 0;
 	}
 
-	table.listing-fw3 td,
-table.listing-fw3 th {
+	table.listing-fw3 td,table.listing-fw3 th {
 		padding	: 3px;
 	}
 
@@ -3097,14 +2968,12 @@ table.listing-fw3 th {
 		text-decoration:	 none;
 	}
 
-	table.listing-fw3 tbody tr:nth-child(odd) th,
-table.listing-fw3 tbody tr:nth-child(odd) td {
+	table.listing-fw3 tbody tr:nth-child(odd) th,table.listing-fw3 tbody tr:nth-child(odd) td {
 		background-color:	#FFFFFF;
 		vertical-align:			top;
 	}
 
-	table.listing-fw3 tbody tr:nth-child(even) th,
-table.listing-fw3 tbody tr:nth-child(even) td {
+	table.listing-fw3 tbody tr:nth-child(even) th,table.listing-fw3 tbody tr:nth-child(even) td {
 		background-color:	#ddd;
 		vertical-align:			top;
 	}
@@ -3131,21 +3000,18 @@ table.listing-fw3 tbody tr:nth-child(even) td {
 		vertical-align:			top;
 	}
 
-	table.listing-fw3 tbody tr.Selected th,
-table.listing-fw3 tbody tr.Selected td {
+	table.listing-fw3 tbody tr.Selected th,table.listing-fw3 tbody tr.Selected td {
 		background-color:	#99FF33;
 		vertical-align:		top;
 	}
 
-	table.listing-fw3 tbody tr.PrimarySelected th,
-table.listing-fw3 tbody tr.PrimarySelected td {
+	table.listing-fw3 tbody tr.PrimarySelected th,table.listing-fw3 tbody tr.PrimarySelected td {
 		background-color:	#bcd;
 		vertical-align:		top;
 	}
 
 
-	table.listing-fw3 tbody tr.Hover th,
-table.listing-fw3 tbody tr.Hover td {
+	table.listing-fw3 tbody tr.Hover th,table.listing-fw3 tbody tr.Hover td {
 		background-color:	#FFFFAA;
 		vertical-align:			top;
 	}
@@ -3168,9 +3034,7 @@ table.listing-fw3 tbody tr.Hover td {
 		list-style-type	: none;
 	}
 
-	div.reflex-tree ul.reflex-tree-header > li,
-div.reflex-tree ul.reflex-tree-footer > li,
-ul.reflex-tree-node-columns > li.reflex-tree-node-column {
+	div.reflex-tree ul.reflex-tree-header > li,div.reflex-tree ul.reflex-tree-footer > li,ul.reflex-tree-node-columns > li.reflex-tree-node-column {
 		display			: inline-block;
 		overflow		: hidden;
 		white-space		: nowrap;
@@ -3191,13 +3055,11 @@ ul.reflex-tree-node-columns > li.reflex-tree-node-column {
 		background-image	: url(../img/template/background.png);
 	}
 
-	div.reflex-tree ul.reflex-tree-header > li > span,
-div.reflex-tree ul.reflex-tree-footer > li > span {
+	div.reflex-tree ul.reflex-tree-header > li > span,div.reflex-tree ul.reflex-tree-footer > li > span {
 		padding-left	: 0.25em;
 	}
 
-	div.reflex-tree ul.reflex-tree-header > li:nth-child(n+2) > span,
-div.reflex-tree ul.reflex-tree-footer > li:nth-child(n+2) > span {
+	div.reflex-tree ul.reflex-tree-header > li:nth-child(n+2) > span,div.reflex-tree ul.reflex-tree-footer > li:nth-child(n+2) > span {
 		border-left	: 1px solid #3f3f3f;
 	}
 
@@ -3387,18 +3249,15 @@ div.reflex-tree ul.reflex-tree-footer > li:nth-child(n+2) > span {
 	/************************ END - Form Layout - END ************************/
 
 	/************************ START - Reset List Styles - START ************************/
-	ul.reset,
-ol.reset {
+	ul.reset,ol.reset {
 		padding	: 0em;
 	}
 
-	ul.reset > li,
-ol.reset > li {
+	ul.reset > li,ol.reset > li {
 		list-style-type	: none;
 	}
 
-	ul.horizontal > li,
-ol.horizontal > li {
+	ul.horizontal > li,ol.horizontal > li {
 		display	: inline-block;
 	}
 	/************************ END - Reset List Styles - END ************************/
@@ -3413,8 +3272,7 @@ ol.horizontal > li {
 		background-color:	#ffffff;
 	}
 
-	div.cost-centre-list > table.reflex,
-div.cost-centre-list > div > table.reflex {
+	div.cost-centre-list > table.reflex,div.cost-centre-list > div > table.reflex {
 		margin			: 0em;
 		width			: 100%;
 	}
@@ -3457,9 +3315,7 @@ div.cost-centre-list > div > table.reflex {
 		width	: 100%;
 	}
 
-	td.cost-centre-name > span,
-td.cost-centre-name > img,
-td.cost-centre-name > input {
+	td.cost-centre-name > span,td.cost-centre-name > img,td.cost-centre-name > input {
 		vertical-align	: middle;
 	}
 
@@ -3500,8 +3356,7 @@ td.cost-centre-name > input {
 		margin-right	: 0.25em;
 	}
 
-	td.charge-amount-number,
-td.charge-archive {
+	td.charge-amount-number,td.charge-archive {
 		text-align	: right;
 	}
 
@@ -3545,8 +3400,7 @@ td.charge-archive {
 	}
 
 
-	tr.charge-type-checkbox > td > input,
-tr.charge-type-checkbox > td > span {
+	tr.charge-type-checkbox > td > input,tr.charge-type-checkbox > td > span {
 		vertical-align	: middle;
 	}
 
@@ -3582,8 +3436,7 @@ tr.charge-type-checkbox > td > span {
 		width	: 12em;
 	}
 
-	td.recurring-charge-min-charge,
-td.recurring-charge-cancel-fee {
+	td.recurring-charge-min-charge,td.recurring-charge-cancel-fee {
 		width		: 15em;
 		text-align	: right;
 	}
@@ -3592,24 +3445,20 @@ td.recurring-charge-cancel-fee {
 
 	/************************ START - Add Charge/Adjustment Popup - START ************************/
 
-	div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement,
-div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement {
+	div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement,div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement {
 		padding-bottom	: 0.25em;
 	}
 
-	div#AddChargeDiv form#VixenForm_AddCharge .DefaultLabel,
-div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultLabel {
+	div#AddChargeDiv form#VixenForm_AddCharge .DefaultLabel,div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultLabel {
 		font-weight		: bold;
 		padding-bottom	: 0.25em;
 	}
 
-	div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement .DefaultInputText.Currency,
-div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement .DefaultInputText.Currency {
+	div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement .DefaultInputText.Currency,div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement .DefaultInputText.Currency {
 		width	: 17.4em;
 	}
 
-	div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement .DefaultInputTextArea.Default,
-div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement .DefaultInputTextArea.Default {
+	div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement .DefaultInputTextArea.Default,div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement .DefaultInputTextArea.Default {
 		width	: 17.85em;
 	}
 
@@ -3629,8 +3478,7 @@ div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement .DefaultInputTextA
 		text-align	: center;
 	}
 
-	div.datareport-buttons > button > img,
-div.datareport-buttons > button > span {
+	div.datareport-buttons > button > img,div.datareport-buttons > button > span {
 		vertical-align	: middle;
 	}
 
@@ -3659,8 +3507,7 @@ div.datareport-buttons > button > span {
 		padding-left	: 1em;
 	}
 
-	ul.datareport-legend img,
-ul.datareport-legend span {
+	ul.datareport-legend img,ul.datareport-legend span {
 		vertical-align	: middle;
 	}
 
@@ -3672,8 +3519,7 @@ ul.datareport-legend span {
 		margin	: 0em 1em 1em 1em;
 	}
 
-	div.invoice-view > table.reflex,
-div.invoice-view > div > table.reflex {
+	div.invoice-view > table.reflex,div.invoice-view > div > table.reflex {
 		margin	: 1em 0em 0em 0em;
 		width	: 100%;
 	}
@@ -3682,24 +3528,15 @@ div.invoice-view > div > table.reflex {
 		width	: 30%;
 	}
 
-	div.invoice-view-buttons,
-div.invoice-dispute-buttons {
+	div.invoice-view-buttons,div.invoice-dispute-buttons {
 		text-align	: center;
 	}
 
-	div.invoice-view-buttons > button > img,
-div.invoice-view-buttons > button > span,
-div.invoice-dispute-buttons > button > img,
-div.invoice-dispute-buttons > button > span,
-td.invoice-view-dispute > button > img,
-td.invoice-view-dispute > button > span,
-td.invoice-view-dispute > span {
+	div.invoice-view-buttons > button > img,div.invoice-view-buttons > button > span,div.invoice-dispute-buttons > button > img,div.invoice-dispute-buttons > button > span,td.invoice-view-dispute > button > img,td.invoice-view-dispute > button > span,td.invoice-view-dispute > span {
 		vertical-align	: middle;
 	}
 
-	div.invoice-view-buttons > button > img,
-div.invoice-dispute-buttons > button > img,
-tbody.invoice-view-details button > img {
+	div.invoice-view-buttons > button > img,div.invoice-dispute-buttons > button > img,tbody.invoice-view-details button > img {
 		margin-right	: 0.25em;
 	}
 
@@ -3761,8 +3598,7 @@ tbody.invoice-view-details button > img {
 		text-align	: right;
 	}
 
-	div.invoice-dispute table.reflex > tbody > tr > td.dispute-currency-disputed,
-td.invoice-view-dispute > span {
+	div.invoice-dispute table.reflex > tbody > tr > td.dispute-currency-disputed,td.invoice-view-dispute > span {
 		color	: #cc0000;
 	}
 
@@ -3814,8 +3650,7 @@ td.invoice-view-dispute > span {
 		font-weight	: bold;
 	}
 
-	table.contact-view-account,
-table.contact-view-details {
+	table.contact-view-account,table.contact-view-details {
 		width	: 100%;
 	}
 
@@ -3834,8 +3669,7 @@ table.contact-view-details {
 		padding	: 1em;
 	}
 
-	table.contact-view-details > tbody > tr > td,
-table.contact-view-details > tbody > tr > th {
+	table.contact-view-details > tbody > tr > td,table.contact-view-details > tbody > tr > th {
 		padding	: 0.2em;
 	}
 
@@ -3860,8 +3694,7 @@ table.contact-view-details > tbody > tr > th {
 
 	/************************ START - Icon Button - START ************************/
 
-	button.icon-button > img,
-button.icon-button > span {
+	button.icon-button > img,button.icon-button > span {
 		vertical-align	: middle;
 	}
 
@@ -3881,8 +3714,7 @@ button.icon-button > span {
 		text-align	: left;
 	}
 
-	div.contact-edit-table table > tbody > tr > td,
-div.contact-edit-table table > tbody > tr > th.label {
+	div.contact-edit-table table > tbody > tr > td,div.contact-edit-table table > tbody > tr > th.label {
 		vertical-align	: top;
 	}
 
@@ -3894,20 +3726,15 @@ div.contact-edit-table table > tbody > tr > th.label {
 		text-align	: center;
 	}
 
-	.contact-archived,
-.contact-available,
-span.contact-edit-attention {
+	.contact-archived,.contact-available,span.contact-edit-attention {
 		font-weight	: bold;
 	}
 
-	span.contact-edit-attention,
-span.contact-archived,
-table.contact-view-details > tbody > tr > td.contact-archived {
+	span.contact-edit-attention,span.contact-archived,table.contact-view-details > tbody > tr > td.contact-archived {
 		color	: #cc0000;
 	}
 
-	span.contact-available,
-table.contact-view-details > tbody > tr > td.contact-available {
+	span.contact-available,table.contact-view-details > tbody > tr > td.contact-available {
 		color	: #008000;
 	}
 
@@ -3970,15 +3797,13 @@ table.contact-view-details > tbody > tr > td.contact-available {
 		bottom		: 0em;
 	}
 
-	div.section > div.section-header > div.section-header-title > h2,
-div.section > div.section-header > div.section-header-title > span {
+	div.section > div.section-header > div.section-header-title > h2,div.section > div.section-header > div.section-header-title > span {
 		display			: inline;
 		vertical-align	: middle;
 		font-size		: 1.1em;
 	}
 
-	div.reflex-popup-content div.section > div.section-header > div.section-header-title > h2,
-div.reflex-popup-content div.section > div.section-header > div.section-header-title > span {
+	div.reflex-popup-content div.section > div.section-header > div.section-header-title > h2,div.reflex-popup-content div.section > div.section-header > div.section-header-title > span {
 		font-size		: 0.9em;
 	}
 
@@ -4055,8 +3880,7 @@ div.reflex-popup-content div.section > div.section-header > div.section-header-t
 		top	: 0em;
 	}
 
-	div.section-header-options > ul.reset,
-div.section-expandable-header-options > ul.reset {
+	div.section-header-options > ul.reset,div.section-expandable-header-options > ul.reset {
 		margin	: 0em;
 	}
 
@@ -4093,13 +3917,11 @@ div.section-expandable-header-options > ul.reset {
 
 	/************************ START - Add Direct Debit PopUp - START ************************/
 
-	div.popup-add-direct-debit,
-.popup-account-direct-debit-receipt-email {
+	div.popup-add-direct-debit,.popup-account-direct-debit-receipt-email {
 		padding	: 0.5em;
 	}
 
-	div.popup-add-direct-debit > div.buttons,
-.popup-account-direct-debit-receipt-email > div.buttons {
+	div.popup-add-direct-debit > div.buttons,.popup-account-direct-debit-receipt-email > div.buttons {
 		text-align	: center;
 	}
 
@@ -4139,15 +3961,13 @@ div.section-expandable-header-options > ul.reset {
 		font-variant	: small-caps;
 	}
 
-	.popup-add-direct-debit-submitpaymentcheckbox .control-field,
-.popup-add-direct-debit-nopaymentcheckbox .control-field {
+	.popup-add-direct-debit-submitpaymentcheckbox .control-field,.popup-add-direct-debit-nopaymentcheckbox .control-field {
 		display			: inline-block;
 		vertical-align	: middle;
 		margin-left		: 0.5em;
 	}
 
-	.popup-add-direct-debit-submitpaymentcheckbox > span,
-.popup-add-direct-debit-nopaymentcheckbox > span {
+	.popup-add-direct-debit-submitpaymentcheckbox > span,.popup-add-direct-debit-nopaymentcheckbox > span {
 		vertical-align	: middle;
 		padding-left	: 0.5em;
 	}
@@ -4209,8 +4029,7 @@ div.section-expandable-header-options > ul.reset {
 		margin	: 0em;
 	}
 
-	.popup-account-direct-debit-receipt-email .section,
-.popup-account-direct-debit-receipt-email-description {
+	.popup-account-direct-debit-receipt-email .section,.popup-account-direct-debit-receipt-email-description {
 		margin-bottom	: 0.5em;
 	}
 
@@ -4303,8 +4122,7 @@ div.section-expandable-header-options > ul.reset {
 		padding-top	: 1.5em;
 	}
 
-	div.payment-method-details-info span.label,
-div.payment-method-details-info span.value {
+	div.payment-method-details-info span.label,div.payment-method-details-info span.value {
 		display		: inline-block;
 	}
 
@@ -4342,9 +4160,7 @@ div.payment-method-details-info span.value {
 		margin	: 0em 0em 0em 0.25em;
 	}
 
-	li.billing-type > img,
-li.billing-type > input,
-li.billing-type > span {
+	li.billing-type > img,li.billing-type > input,li.billing-type > span {
 		vertical-align	: middle;
 	}
 
@@ -4451,8 +4267,7 @@ li.billing-type > span {
 		margin-top	: 0.5em;
 	}
 
-	span.payment-methods-list-item-label,
-span.payment-methods-list-item-value {
+	span.payment-methods-list-item-label,span.payment-methods-list-item-value {
 		display		: inline-block;
 	}
 
@@ -4562,18 +4377,15 @@ span.payment-methods-list-item-value {
 		height	: 15em;
 	}
 
-	div.employee-details-permissions-operations div.section-content div.reflex-tree,
-div.employee-details-permissions-profiles div.section-content div.reflex-tree {
+	div.employee-details-permissions-operations div.section-content div.reflex-tree,div.employee-details-permissions-profiles div.section-content div.reflex-tree {
 		background-color	: #FFFFFF;
 	}
 
-	div.employee-details-permissions-operations div.section-content,
-div.employee-details-permissions-profiles div.section-content {
+	div.employee-details-permissions-operations div.section-content,div.employee-details-permissions-profiles div.section-content {
 		position	: relative;
 	}
 
-	div.employee-details-permissions-empty,
-div.employee-details-permissions-operations-empty {
+	div.employee-details-permissions-empty,div.employee-details-permissions-operations-empty {
 		position			: absolute;
 		left				: 0em;
 		top					: 1em;
@@ -4594,8 +4406,7 @@ div.employee-details-permissions-operations-empty {
 		width		: 100%;
 	}
 
-	div.operation-tree-loading span,
-div.operation-tree-loading img {
+	div.operation-tree-loading span,div.operation-tree-loading img {
 		vertical-align	: middle;
 	}
 
@@ -4605,8 +4416,7 @@ div.operation-tree-loading img {
 		padding-right	: 1em;
 	}
 
-	span.operation-tree-profile-description,
-.no-data {
+	span.operation-tree-profile-description,.no-data {
 		padding-left	: 1em;
 		font-style		: italic;
 		opacity			: 0.75;
@@ -4620,8 +4430,7 @@ div.operation-tree-loading img {
 		padding	: 1em;
 	}
 
-	div.employee-password-change table.input td,
-div.employee-password-change table.input th {
+	div.employee-password-change table.input td,div.employee-password-change table.input th {
 		padding-bottom	: 0.5em;
 		padding-top		: 0.5em;
 	}
@@ -4634,14 +4443,11 @@ div.employee-password-change table.input th {
 		padding	: 1em;
 	}
 
-	div.operation-profile-edit-profiles,
-div.operation-profile-edit-details,
-div.operation-profile-edit-profiles-parents {
+	div.operation-profile-edit-profiles,div.operation-profile-edit-details,div.operation-profile-edit-profiles-parents {
 		padding-bottom	: 1em;
 	}
 
-	div.operation-profile-edit-profiles,
-div.operation-profile-edit-profiles-parents {
+	div.operation-profile-edit-profiles,div.operation-profile-edit-profiles-parents {
 		width	: 50%;
 	}
 
@@ -4657,21 +4463,15 @@ div.operation-profile-edit-profiles-parents {
 		height	: 11em;
 	}
 
-	div.operation-profile-edit-operations div.section-content div.reflex-tree,
-div.operation-profile-edit-profiles div.section-content div.reflex-tree,
-div.operation-profile-edit-profiles-parents div.section-content div.reflex-tree {
+	div.operation-profile-edit-operations div.section-content div.reflex-tree,div.operation-profile-edit-profiles div.section-content div.reflex-tree,div.operation-profile-edit-profiles-parents div.section-content div.reflex-tree {
 		background-color	: #FFFFFF;
 	}
 
-	div.operation-profile-edit-operations div.section-content,
-div.operation-profile-edit-profiles div.section-content,
-div.operation-profile-edit-profiles-parents div.section-content {
+	div.operation-profile-edit-operations div.section-content,div.operation-profile-edit-profiles div.section-content,div.operation-profile-edit-profiles-parents div.section-content {
 		position	: relative;
 	}
 
-	div.operation-profile-edit-empty,
-div.operation-profile-edit-parents-empty,
-div.operation-profile-edit-operations-empty {
+	div.operation-profile-edit-empty,div.operation-profile-edit-parents-empty,div.operation-profile-edit-operations-empty {
 		position			: absolute;
 		left				: 0em;
 		top					: 1em;
@@ -4706,30 +4506,25 @@ div.operation-profile-edit-operations-empty {
 		padding	: 1em;
 	}
 
-	div.data-report-permissions-employees,
-div.operation-profile-edit-profiles {
+	div.data-report-permissions-employees,div.operation-profile-edit-profiles {
 		padding-bottom	: 1em;
 	}
 
-	li.data-report-permissions-employee-to,
-li.data-report-permissions-employee-from {
+	li.data-report-permissions-employee-to,li.data-report-permissions-employee-from {
 		width		: 50%;
 		text-align	: center;
 	}
 
-	li.data-report-permissions-employee-to select,
-li.data-report-permissions-employee-from select {
+	li.data-report-permissions-employee-to select,li.data-report-permissions-employee-from select {
 		width		: 22em;
 		margin-top	: 0em;
 	}
 
-	li.data-report-permissions-employee-from div.section-header,
-li.data-report-permissions-employee-to div.section-header {
+	li.data-report-permissions-employee-from div.section-header,li.data-report-permissions-employee-to div.section-header {
 		text-align	: left;
 	}
 
-	li.data-report-permissions-employee-from div.section-header > div.section-header-title,
-li.data-report-permissions-employee-to div.section-header > div.section-header-title {
+	li.data-report-permissions-employee-from div.section-header > div.section-header-title,li.data-report-permissions-employee-to div.section-header > div.section-header-title {
 		margin-left	: 1.7em;
 	}
 
@@ -4741,9 +4536,7 @@ li.data-report-permissions-employee-to div.section-header > div.section-header-t
 		width		: 18em;
 	}
 
-	img.data-report-permissions-employee-add,
-img.data-report-permissions-employee-remove,
-div.data-report-permissions-employee-text {
+	img.data-report-permissions-employee-add,img.data-report-permissions-employee-remove,div.data-report-permissions-employee-text {
 		vertical-align	: middle;
 	}
 
@@ -4775,13 +4568,11 @@ div.data-report-permissions-employee-text {
 		clear	: both;
 	}
 
-	option.data-report-permissions-employee img.data-report-permissions-employee-add,
-option.data-report-permissions-employee img.data-report-permissions-employee-remove {
+	option.data-report-permissions-employee img.data-report-permissions-employee-add,option.data-report-permissions-employee img.data-report-permissions-employee-remove {
 		opacity	: 0.3;
 	}
 
-	option.data-report-permissions-employee:hover img.data-report-permissions-employee-add,
-option.data-report-permissions-employee:hover img.data-report-permissions-employee-remove {
+	option.data-report-permissions-employee:hover img.data-report-permissions-employee-add,option.data-report-permissions-employee:hover img.data-report-permissions-employee-remove {
 		opacity	: 1;
 	}
 
@@ -4815,8 +4606,7 @@ option.data-report-permissions-employee:hover img.data-report-permissions-employ
 		color			: #888888;
 	}
 
-	li.data-report-permissions-employee-from div.section-content-fitted,
-li.data-report-permissions-employee-to div.section-content-fitted {
+	li.data-report-permissions-employee-from div.section-content-fitted,li.data-report-permissions-employee-to div.section-content-fitted {
 		overflow: hidden;
 	}
 
@@ -4837,8 +4627,7 @@ li.data-report-permissions-employee-to div.section-content-fitted {
 		margin-top	: 0.5em;
 	}
 
-	div.employee-list-show-archived > input,
-div.employee-list-show-archived > span {
+	div.employee-list-show-archived > input,div.employee-list-show-archived > span {
 		vertical-align	: middle;
 	}
 
@@ -4862,8 +4651,7 @@ div.employee-list-show-archived > span {
 
 	/************************ START - Edit Rebill Popup - START ************************/
 
-	div.popup-account-edit-rebill,
-div.rebill-validation-errors {
+	div.popup-account-edit-rebill,div.rebill-validation-errors {
 		margin	: 0.5em;
 	}
 
@@ -4881,8 +4669,7 @@ div.rebill-validation-errors {
 		width	: 100% !important;
 	}
 
-	.popup-account-edit-rebill .tab-page > table.reflex.input tr.subtitle > th,
-.popup-account-edit-rebill .tab-page > table.reflex.input tr.subtitle > td {
+	.popup-account-edit-rebill .tab-page > table.reflex.input tr.subtitle > th,.popup-account-edit-rebill .tab-page > table.reflex.input tr.subtitle > td {
 		background-color	: #CFCFCF;
 	}
 
@@ -4890,8 +4677,7 @@ div.rebill-validation-errors {
 
 	/************************ START - Control Field Combo Date & Time - START ************************/
 
-	ul.control-field-combo-date > li.control-field-combo-date-pad,
-ul.control-field-combo-time > li.control-field-combo-time-pad {
+	ul.control-field-combo-date > li.control-field-combo-date-pad,ul.control-field-combo-time > li.control-field-combo-time-pad {
 		padding-right	: 0.25em;
 	}
 
@@ -4899,14 +4685,11 @@ ul.control-field-combo-time > li.control-field-combo-time-pad {
 		padding-right	: 0.75em;
 	}
 
-	ul.control-field-combo-date,
-ul.control-field-combo-time,
-ul.control-field-combo-date-time {
+	ul.control-field-combo-date,ul.control-field-combo-time,ul.control-field-combo-date-time {
 		margin	: 0em;
 	}
 
-	div.control-field-combo-date-select,
-div.control-field-combo-time-select {
+	div.control-field-combo-date-select,div.control-field-combo-time-select {
 		display			: inline-block;
 		vertical-align	: top;
 	}
@@ -4916,8 +4699,7 @@ div.control-field-combo-time-select {
 		padding-right	: 0.25em;
 	}
 
-	li.control-field-combo-time-select-separator > span,
-.control-field-combo-time li > .control-field-combo-time-select > span {
+	li.control-field-combo-time-select-separator > span,.control-field-combo-time li > .control-field-combo-time-select > span {
 		vertical-align	: middle;
 	}
 
@@ -4938,13 +4720,11 @@ div.control-field-combo-time-select {
 
 	/************************ START - Recurring Charge Type Popup - START ************************/
 
-	td.recurring-charge-type-definition-naturepertime > ul.reset,
-td.recurring-charge-type-cancellation-fee > ul.reset {
+	td.recurring-charge-type-definition-naturepertime > ul.reset,td.recurring-charge-type-cancellation-fee > ul.reset {
 		margin	: 0em;
 	}
 
-	td.recurring-charge-type-definition-naturepertime > ul.reset > li,
-td.recurring-charge-type-cancellation-fee > ul.reset > li {
+	td.recurring-charge-type-definition-naturepertime > ul.reset > li,td.recurring-charge-type-cancellation-fee > ul.reset > li {
 		vertical-align	: middle;
 		padding-right	: 0.5em;
 	}
@@ -4961,9 +4741,7 @@ td.recurring-charge-type-cancellation-fee > ul.reset > li {
 		padding-left	: 0.25em;
 	}
 
-	td.recurring-charge-type-definition-charge,
-td.recurring-charge-type-definition-time,
-td.recurring-charge-type-definition-total {
+	td.recurring-charge-type-definition-charge,td.recurring-charge-type-definition-time,td.recurring-charge-type-definition-total {
 		width	: 6em;
 	}
 
@@ -4971,9 +4749,7 @@ td.recurring-charge-type-definition-total {
 		width	: 4em;
 	}
 
-	td.recurring-charge-type-definition-charge,
-td.recurring-charge-type-definition-time,
-td.recurring-charge-type-definition-total {
+	td.recurring-charge-type-definition-charge,td.recurring-charge-type-definition-time,td.recurring-charge-type-definition-total {
 		padding-right	: 0.5em;
 	}
 
@@ -4990,8 +4766,7 @@ td.recurring-charge-type-definition-total {
 		padding-top	: 0.25em;
 	}
 
-	tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definition-symbol,
-tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definition-total {
+	tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definition-symbol,tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definition-total {
 		border-top	: solid 2px #666;
 	}
 
@@ -5084,8 +4859,7 @@ tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definit
 		vertical-align	: middle;
 	}
 
-	.component-account-charge-list-amount,
-.component-account-charge-list-delete {
+	.component-account-charge-list-amount,.component-account-charge-list-delete {
 		text-align	: right;
 	}
 
@@ -5232,8 +5006,7 @@ tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definit
 		float	: right;
 	}
 
-	div.followup-list-all table.reflex thead th.followup-list-all-filter > img,
-div.followup-list-all table.reflex thead th.followup-list-all-filter > span {
+	div.followup-list-all table.reflex thead th.followup-list-all-filter > img,div.followup-list-all table.reflex thead th.followup-list-all-filter > span {
 		vertical-align	: middle;
 	}
 
@@ -5275,14 +5048,12 @@ div.followup-list-all table.reflex thead th.followup-list-all-filter > span {
 		width			: 16px;
 	}
 
-	ul.followup-list-all-actions > li > a,
-ul.followup-list-all-actions > li > img {
+	ul.followup-list-all-actions > li > a,ul.followup-list-all-actions > li > img {
 		cursor			: pointer;
 		vertical-align	: middle;
 	}
 
-	div.followup-list-all-duedate-edit > img,
-div.followup-list-all-duedate-edit > span {
+	div.followup-list-all-duedate-edit > img,div.followup-list-all-duedate-edit > span {
 		vertical-align	: middle;
 	}
 
@@ -5408,13 +5179,11 @@ div.followup-list-all-duedate-edit > span {
 		text-align	: center;
 	}
 
-	div.popup-followup-reassign-reason-list select,
-div.popup-followup-reassign-employee-list select {
+	div.popup-followup-reassign-reason-list select,div.popup-followup-reassign-employee-list select {
 		width	: 100%;
 	}
 
-	div.popup-followup-reassign-employee-list,
-div.popup-followup-reassign-reason-list {
+	div.popup-followup-reassign-employee-list,div.popup-followup-reassign-reason-list {
 		margin-bottom	: 0.5em;
 	}
 
@@ -5436,9 +5205,7 @@ div.popup-followup-reassign-reason-list {
 		margin-bottom	: 0.5em;
 	}
 
-	li.popup-followup-due-date-reason-select,
-li.popup-followup-due-date-reason-select div.control-field,
-li.popup-followup-due-date-reason-select div.control-field > select {
+	li.popup-followup-due-date-reason-select,li.popup-followup-due-date-reason-select div.control-field,li.popup-followup-due-date-reason-select div.control-field > select {
 		width	: 100%;
 	}
 
@@ -5454,9 +5221,7 @@ li.popup-followup-due-date-reason-select div.control-field > select {
 		margin	: 1em;
 	}
 
-	li.popup-followup-recurring-dates-label span,
-li.popup-followup-recurring-dates-end-by span,
-li.popup-followup-recurring-dates-end-after span {
+	li.popup-followup-recurring-dates-label span,li.popup-followup-recurring-dates-end-by span,li.popup-followup-recurring-dates-end-after span {
 		cursor	: pointer;
 	}
 
@@ -5487,8 +5252,7 @@ li.popup-followup-recurring-dates-end-after span {
 		margin-right	: 0.5em;
 	}
 
-	div.popup-followup-recurring-dates-reason div.control-field,
-div.popup-followup-recurring-dates-reason div.control-field > select {
+	div.popup-followup-recurring-dates-reason div.control-field,div.popup-followup-recurring-dates-reason div.control-field > select {
 		width	: 100%;
 	}
 
@@ -5585,8 +5349,7 @@ div.popup-followup-recurring-dates-reason div.control-field > select {
 		background-color	: #fff;
 	}
 
-	td.popup-followup-active-summary div,
-td.popup-followup-active-summary span {
+	td.popup-followup-active-summary div,td.popup-followup-active-summary span {
 		vertical-align	: top;
 	}
 
@@ -5653,13 +5416,11 @@ td.popup-followup-active-summary span {
 		padding-right	: 0.25em;
 	}
 
-	div.popup-followup-detail-subdetail img,
-div.popup-followup-detail-subdetail a {
+	div.popup-followup-detail-subdetail img,div.popup-followup-detail-subdetail a {
 		vertical-align	: middle;
 	}
 
-	div.popup-followup-detail-subdetail,
-div.popup-followup-detail-subdetail.account > div {
+	div.popup-followup-detail-subdetail,div.popup-followup-detail-subdetail.account > div {
 		margin-bottom	: 0.25em;
 	}
 
@@ -5679,8 +5440,7 @@ div.popup-followup-detail-subdetail.account > div {
 		width			: 16px;
 	}
 
-	ul.popup-followup-active-actions > li > a,
-ul.popup-followup-active-actions > li > img {
+	ul.popup-followup-active-actions > li > a,ul.popup-followup-active-actions > li > img {
 		cursor			: pointer;
 		vertical-align	: middle;
 	}
@@ -5689,8 +5449,7 @@ ul.popup-followup-active-actions > li > img {
 		text-align	: center;
 	}
 
-	td.popup-followup-active-empty,
-td.popup-followup-active-empty-clickformore {
+	td.popup-followup-active-empty,td.popup-followup-active-empty-clickformore {
 		padding		: 0.25em;
 		font-style	: italic;
 		opacity		: 0.75;
@@ -5746,8 +5505,7 @@ td.popup-followup-active-empty-clickformore {
 		margin-left	: 1em;
 	}
 
-	div.popup-followup-details-type > img,
-div.popup-followup-details-type > span {
+	div.popup-followup-details-type > img,div.popup-followup-details-type > span {
 		vertical-align	: middle;
 	}
 
@@ -5755,9 +5513,7 @@ div.popup-followup-details-type > span {
 		padding-right	: 0.5em;
 	}
 
-	div.popup-followup-add-radio-inline,
-div.popup-followup-details-occurences,
-div.popup-followup-details-endby {
+	div.popup-followup-add-radio-inline,div.popup-followup-details-occurences,div.popup-followup-details-endby {
 		display	: inline-block;
 	}
 
@@ -5788,8 +5544,7 @@ div.popup-followup-details-endby {
 		border-spacing	: 0em 0.5em;
 	}
 
-	table.popup-followup-details-onceoff > tbody > tr > td:first-child,
-table.popup-followup-details-recurring > tbody > tr > td:first-child {
+	table.popup-followup-details-onceoff > tbody > tr > td:first-child,table.popup-followup-details-recurring > tbody > tr > td:first-child {
 		font-weight	: bold;
 		text-align	: left;
 		width		: 6em;
@@ -5804,15 +5559,12 @@ table.popup-followup-details-recurring > tbody > tr > td:first-child {
 		padding	:0.5em 0.5em 0;
 	}
 
-	td.popup-followup-add-details-recurring-howoften > div.control-field,
-div.popup-followup-details-occurences > div.control-field,
-div.popup-followup-details-endby > div.control-field {
+	td.popup-followup-add-details-recurring-howoften > div.control-field,div.popup-followup-details-occurences > div.control-field,div.popup-followup-details-endby > div.control-field {
 		display			: inline-block;
 		vertical-align	: bottom;
 	}
 
-	td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(2) > input,
-div.popup-followup-details-occurences > div.control-field:nth-child(2) > input {
+	td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(2) > input,div.popup-followup-details-occurences > div.control-field:nth-child(2) > input {
 		width			: 3em;
 		padding-left	: 0.2em;
 		padding-right	: 0.25em;
@@ -5823,8 +5575,7 @@ div.popup-followup-details-occurences > div.control-field:nth-child(2) > input {
 		width			: 6em;
 	}
 
-	table.popup-followup-details-recurring,
-table.popup-followup-details-onceoff {
+	table.popup-followup-details-recurring,table.popup-followup-details-onceoff {
 		-moz-border-radius		: 4px;
 		border-radius	: 4px;
 		background-color		: #D1D1D1;
@@ -5832,8 +5583,7 @@ table.popup-followup-details-onceoff {
 		margin					: 0.5em 0 0.5em 0;
 	}
 
-	table.popup-followup-details-recurring > tbody > tr > td,
-table.popup-followup-details-onceoff > tbody > tr > td {
+	table.popup-followup-details-recurring > tbody > tr > td,table.popup-followup-details-onceoff > tbody > tr > td {
 		padding-left		: 0.25em;
 		background-color	: #D1D1D1;
 	}
@@ -5856,8 +5606,7 @@ table.popup-followup-details-onceoff > tbody > tr > td {
 		padding-top	: 0.25em;
 	}
 
-	div.followup-context-list > div.followup-context-list-add,
-div.followup-context-list > div > img {
+	div.followup-context-list > div.followup-context-list-add,div.followup-context-list > div > img {
 		cursor	: pointer;
 	}
 
@@ -5867,8 +5616,7 @@ div.followup-context-list > div > img {
 		float	: left;
 	}
 
-	table.reflex td.ticket-history-record-details,
-table.reflex td.ticketing-correspondence-details {
+	table.reflex td.ticket-history-record-details,table.reflex td.ticketing-correspondence-details {
 		padding	: 0.25em 0em 0.25em 0.5em;
 	}
 
@@ -5884,9 +5632,7 @@ table.reflex td.ticketing-correspondence-details {
 
 	/* Actions/Notes modifications */
 
-	div.action-list div.item div.details div.followup-context-list-placeholder,
-div.action-list div.item div.header div.followup-context-list-placeholder,
-div.action-list div.item div.followup-context-list-placeholder {
+	div.action-list div.item div.details div.followup-context-list-placeholder,div.action-list div.item div.header div.followup-context-list-placeholder,div.action-list div.item div.followup-context-list-placeholder {
 		float		: right;
 		display		: table-cell;
 		margin-top	: 0.1em;
@@ -5925,8 +5671,7 @@ div.action-list div.item div.followup-context-list-placeholder {
 		font-size	: 0.85em;
 	}
 
-	div.followup-configure-list table.reflex thead th.followup-configure-list-filter > img,
-div.followup-configure-list table.reflex thead th.followup-configure-list-filter > span {
+	div.followup-configure-list table.reflex thead th.followup-configure-list-filter > img,div.followup-configure-list table.reflex thead th.followup-configure-list-filter > span {
 		vertical-align	: middle;
 	}
 
@@ -5996,16 +5741,11 @@ div.followup-configure-list table.reflex thead th.followup-configure-list-filter
 
 	/************************ START - Page Follow-Up Configure - START ************************/
 
-	div.page-followup-configure-category-container,
-div.page-followup-configure-modify-reason-container {
+	div.page-followup-configure-category-container,div.page-followup-configure-modify-reason-container {
 		margin-right	: 2%;
 	}
 
-	div.page-followup-configure-category-container,
-div.page-followup-configure-closure-container,
-div.page-followup-configure-modify-reason-container,
-div.page-followup-configure-recurring-modify-reason-container,
-div.page-followup-configure-reassign-reason-container {
+	div.page-followup-configure-category-container,div.page-followup-configure-closure-container,div.page-followup-configure-modify-reason-container,div.page-followup-configure-recurring-modify-reason-container,div.page-followup-configure-reassign-reason-container {
 		display			: inline-block;
 		width			: 49%;
 		vertical-align	: top;
@@ -6037,15 +5777,13 @@ div.page-followup-configure-reassign-reason-container {
 		margin	: 0.5em 1em;
 	}
 
-	table.popup-followup-view-followup-details-onceoff > tbody > tr > td:first-child,
-table.popup-followup-view-followup-details-recurring > tbody > tr > td:first-child {
+	table.popup-followup-view-followup-details-onceoff > tbody > tr > td:first-child,table.popup-followup-view-followup-details-recurring > tbody > tr > td:first-child {
 		font-weight	: bold;
 		text-align	: right;
 		width		: 6em;
 	}
 
-	table.popup-followup-view-followup-details-recurring,
-table.popup-followup-view-followup-details-onceoff {
+	table.popup-followup-view-followup-details-recurring,table.popup-followup-view-followup-details-onceoff {
 		background-color		: #F8F8EC;
 		width					: 100%;
 		margin					: 0em 0em 1em 0em;
@@ -6054,8 +5792,7 @@ table.popup-followup-view-followup-details-onceoff {
 		border					: 1px solid #34446A;
 	}
 
-	table.popup-followup-view-followup-details-recurring > tbody > tr > td,
-table.popup-followup-view-followup-details-onceoff > tbody > tr > td {
+	table.popup-followup-view-followup-details-recurring > tbody > tr > td,table.popup-followup-view-followup-details-onceoff > tbody > tr > td {
 		padding-left		: 1.25em;
 		padding-bottom		: 0.25em;
 		background-color	: #F8F8EC;
@@ -6070,8 +5807,7 @@ table.popup-followup-view-followup-details-onceoff > tbody > tr > td {
 		width	: 29%;
 	}
 
-	table.popup-followup-view-followup-details > tbody > tr > th,
-table.popup-followup-view-followup-details > tbody > tr > td {
+	table.popup-followup-view-followup-details > tbody > tr > th,table.popup-followup-view-followup-details > tbody > tr > td {
 		padding	: 0.25em;
 	}
 
@@ -6100,8 +5836,7 @@ table.popup-followup-view-followup-details > tbody > tr > td {
 		margin-left		: 0.25em;
 	}
 
-	li.popup-followup-view-history-item li:first-child,
-li.popup-followup-view-history-item li:last-child {
+	li.popup-followup-view-history-item li:first-child,li.popup-followup-view-history-item li:last-child {
 		width	: 25%;
 	}
 
@@ -6109,8 +5844,7 @@ li.popup-followup-view-history-item li:last-child {
 		width	: 75%;
 	}
 
-	.popup-followup-view-history-item-modified,
-.popup-followup-view-history-item-reasons {
+	.popup-followup-view-history-item-modified,.popup-followup-view-history-item-reasons {
 		color		: #333;
 		opacity		: 0.8;
 	}
@@ -6128,9 +5862,7 @@ li.popup-followup-view-history-item li:last-child {
 		font-weight	: bold;
 	}
 
-	span.popup-followup-view-history-item-from,
-span.popup-followup-view-occurrences-closure-name,
-div.popup-followup-view-occurrences-moretocome {
+	span.popup-followup-view-history-item-from,span.popup-followup-view-occurrences-closure-name,div.popup-followup-view-occurrences-moretocome {
 		color	: #666;
 	}
 
@@ -6197,8 +5929,7 @@ div.popup-followup-view-occurrences-moretocome {
 		margin-left	: 1em;
 	}
 
-	div.popup-followup-view-full-details > a,
-div.popup-followup-view-history-toggle > a {
+	div.popup-followup-view-full-details > a,div.popup-followup-view-history-toggle > a {
 		color	: #0000FF;
 	}
 
@@ -6234,8 +5965,7 @@ div.popup-followup-view-history-toggle > a {
 		background-color	: #fff;
 	}
 
-	table.popup-followup-view-followup-details-recurring > tbody > tr.popup-followup-view-due-next > td,
-table.popup-followup-view-followup-details-onceoff > tbody > tr.popup-followup-view-due-next > td {
+	table.popup-followup-view-followup-details-recurring > tbody > tr.popup-followup-view-due-next > td,table.popup-followup-view-followup-details-onceoff > tbody > tr.popup-followup-view-due-next > td {
 		vertical-align	: middle;
 	}
 
@@ -6335,8 +6065,7 @@ table.popup-followup-view-followup-details-onceoff > tbody > tr.popup-followup-v
 		overflow	: auto;
 	}
 
-	div.followup-recurring-close-all-overdue,
-div.followup-recurring-close-all-overdue-info {
+	div.followup-recurring-close-all-overdue,div.followup-recurring-close-all-overdue-info {
 		margin-bottom	: 0.5em;
 	}
 
@@ -6381,21 +6110,15 @@ div.followup-recurring-close-all-overdue-info {
 		margin	: 0.5em;
 	}
 
-	div.popup-employee-reassign-tasks div.control-field,
-div.popup-employee-reassign-tasks-tickets-selects,
-div.popup-employee-reassign-tasks-followups-selects,
-div.popup-employee-reassign-tasks-tickets-none,
-div.popup-employee-reassign-tasks-followups-none {
+	div.popup-employee-reassign-tasks div.control-field,div.popup-employee-reassign-tasks-tickets-selects,div.popup-employee-reassign-tasks-followups-selects,div.popup-employee-reassign-tasks-tickets-none,div.popup-employee-reassign-tasks-followups-none {
 		display	: inline-block;
 	}
 
-	div.popup-employee-reassign-tasks-tickets-none,
-div.popup-employee-reassign-tasks-followups-none {
+	div.popup-employee-reassign-tasks-tickets-none,div.popup-employee-reassign-tasks-followups-none {
 		padding	: 0.5em 0em 0em 0em;
 	}
 
-	div.popup-employee-reassign-tasks-task-summary,
-div.popup-employee-reassign-tasks-message {
+	div.popup-employee-reassign-tasks-task-summary,div.popup-employee-reassign-tasks-message {
 		margin-bottom	: 0.5em;
 		padding-bottom	: 0.25em;
 	}
@@ -6427,8 +6150,7 @@ div.popup-employee-reassign-tasks-message {
 		border				:1px solid #34446A;
 	}
 
-	div.popup-employee-reassign-tasks-followups-selects > div,
-div.popup-employee-reassign-tasks-tickets-selects > div {
+	div.popup-employee-reassign-tasks-followups-selects > div,div.popup-employee-reassign-tasks-tickets-selects > div {
 		padding-top	: 0.25em;
 	}
 
@@ -6497,14 +6219,11 @@ div.popup-employee-reassign-tasks-tickets-selects > div {
 
 	/***************** START - Create Correspondence Popup(s) - START *****************/
 
-	.popup-correspondence-create-choose-template,
-.popup-correspondence-create-error-content,
-.popup-correspondence-create {
+	.popup-correspondence-create-choose-template,.popup-correspondence-create-error-content,.popup-correspondence-create {
 		padding	: 0.5em;
 	}
 
-	.popup-correspondence-create-choose-template .buttons,
-.popup-correspondence-create .buttons {
+	.popup-correspondence-create-choose-template .buttons,.popup-correspondence-create .buttons {
 		text-align	: center;
 	}
 
@@ -6563,8 +6282,7 @@ div.popup-employee-reassign-tasks-tickets-selects > div {
 		padding				: 0.5em;
 	}
 
-	.popup-correspondence-create div.section div.section-content table.reflex,
-.popup-correspondence-create .csv-file-input {
+	.popup-correspondence-create div.section div.section-content table.reflex,.popup-correspondence-create .csv-file-input {
 		margin	: 0em;
 		width	: 100%;
 	}
@@ -6573,19 +6291,11 @@ div.popup-employee-reassign-tasks-tickets-selects > div {
 
 	/***************** START - Correspondence Ledger Popup(s) - START *****************/
 
-	div.popup-correspondence-ledger,
-div.correspondence-run-ledger,
-.popup-correspondence-data,
-.popup-account-correspondence-ledger,
-.popup-correspondence-run,
-.popup-correspondence-ledger-columns {
+	div.popup-correspondence-ledger,div.correspondence-run-ledger,.popup-correspondence-data,.popup-account-correspondence-ledger,.popup-correspondence-run,.popup-correspondence-ledger-columns {
 		margin	: 0.5em;
 	}
 
-	.reflex-popup div.popup-correspondence-ledger table.reflex,
-.reflex-popup div.correspondence-run-ledger table.reflex,
-.reflex-popup .correspondence-ledger-for-run table.reflex,
-.component-correspondence-run-details > div.section-content table.reflex {
+	.reflex-popup div.popup-correspondence-ledger table.reflex,.reflex-popup div.correspondence-run-ledger table.reflex,.reflex-popup .correspondence-ledger-for-run table.reflex,.component-correspondence-run-details > div.section-content table.reflex {
 		margin	: 0em;
 	}
 
@@ -6603,16 +6313,13 @@ div.correspondence-run-ledger,
 		cursor			: pointer;
 	}
 
-	div.popup-correspondence-ledger div.section-content > table.reflex,
-div.correspondence-run-ledger div.section-content > table.reflex,
-.correspondence-ledger-for-run div.section-content > table.reflex {
+	div.popup-correspondence-ledger div.section-content > table.reflex,div.correspondence-run-ledger div.section-content > table.reflex,.correspondence-ledger-for-run div.section-content > table.reflex {
 		margin-left		: 0em;
 		margin-right	: 0em;
 		width			: 100%;
 	}
 
-	.popup-correspondence-ledger .section .section-header-options ul.reset,
-.correspondence-ledger-for-run .section .section-header-options ul.reset {
+	.popup-correspondence-ledger .section .section-header-options ul.reset,.correspondence-ledger-for-run .section .section-header-options ul.reset {
 		position	: relative;
 		bottom		: 0.25em;
 	}
@@ -6626,8 +6333,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		font-size	: 0.8em;
 	}
 
-	.popup-correspondence-ledger .item-count > img,
-.popup-correspondence-ledger .item-count > span {
+	.popup-correspondence-ledger .item-count > img,.popup-correspondence-ledger .item-count > span {
 		vertical-align	: middle;
 		padding-right	: 0.25em;
 	}
@@ -6649,28 +6355,23 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		padding	: 0.25em 0em 0.25em 0.25em;
 	}
 
-	.popup-correspondence-ledger .batch-table th:nth-child(1),
-.popup-correspondence-ledger .batch-table td:nth-child(1) {
+	.popup-correspondence-ledger .batch-table th:nth-child(1),.popup-correspondence-ledger .batch-table td:nth-child(1) {
 		width	: 5%;
 	}
 
-	.popup-correspondence-ledger .batch-table th:nth-child(2),
-.popup-correspondence-ledger .batch-table td:nth-child(2) {
+	.popup-correspondence-ledger .batch-table th:nth-child(2),.popup-correspondence-ledger .batch-table td:nth-child(2) {
 		width	: 15%;
 	}
 
-	.popup-correspondence-ledger .batch-table th:nth-child(3),
-.popup-correspondence-ledger .batch-table td:nth-child(3) {
+	.popup-correspondence-ledger .batch-table th:nth-child(3),.popup-correspondence-ledger .batch-table td:nth-child(3) {
 		width	: 27%
 	}
 
-	.popup-correspondence-ledger .batch-table th:nth-child(4),
-.popup-correspondence-ledger .batch-table td:nth-child(4) {
+	.popup-correspondence-ledger .batch-table th:nth-child(4),.popup-correspondence-ledger .batch-table td:nth-child(4) {
 		width	: 20%;
 	}
 
-	.popup-correspondence-ledger .batch-table th:nth-child(5),
-.popup-correspondence-ledger .batch-table td:nth-child(5) {
+	.popup-correspondence-ledger .batch-table th:nth-child(5),.popup-correspondence-ledger .batch-table td:nth-child(5) {
 		width	: 23%;
 	}
 
@@ -6709,24 +6410,18 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		float	: right;
 	}
 
-	.popup-correspondence-run-batch-ledger-items > img,
-.popup-correspondence-run-batch-ledger-items > span {
+	.popup-correspondence-run-batch-ledger-items > img,.popup-correspondence-run-batch-ledger-items > span {
 		margin-right	: 0.25em;
 		vertical-align	: middle;
 	}
 
-	.popup-correspondence-ledger td.no-rows,
-.popup-correspondence-ledger .loading,
-.correspondence-run-ledger .loading,
-.correspondence-ledger-for-run .loading {
+	.popup-correspondence-ledger td.no-rows,.popup-correspondence-ledger .loading,.correspondence-run-ledger .loading,.correspondence-ledger-for-run .loading {
 		padding		: 0.25em;
 		font-style	: italic;
 		opacity		: 0.75;
 	}
 
-	.popup-correspondence-ledger .loading,
-.correspondence-run-ledger .loading,
-.correspondence-ledger-for-run .loading {
+	.popup-correspondence-ledger .loading,.correspondence-run-ledger .loading,.correspondence-ledger-for-run .loading {
 		float	: left;
 		padding	: 0.25em 0em 0em 0.5em;
 	}
@@ -6744,77 +6439,62 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 	}
 
 
-	.correspondence-run-ledger table.reflex thead th > span,
-.correspondence-ledger-for-run table.reflex thead th > span {
+	.correspondence-run-ledger table.reflex thead th > span,.correspondence-ledger-for-run table.reflex thead th > span {
 		vertical-align	: middle;
 	}
 
-	.correspondence-run-ledger table.reflex thead tr:nth-child(2) > th,
-.correspondence-ledger-for-run table.reflex thead tr:nth-child(2) > th {
+	.correspondence-run-ledger table.reflex thead tr:nth-child(2) > th,.correspondence-ledger-for-run table.reflex thead tr:nth-child(2) > th {
 		background-color	: #666;
 	}
 
-	.correspondence-run-ledger table.reflex thead th > img,
-.correspondence-ledger-for-run table.reflex thead th > img {
+	.correspondence-run-ledger table.reflex thead th > img,.correspondence-ledger-for-run table.reflex thead th > img {
 		vertical-align	: middle;
 		cursor			: pointer;
 	}
 
-	.correspondence-run-ledger table.reflex thead th.filter-heading > span,
-.correspondence-ledger-for-run table.reflex thead th.filter-heading > span {
+	.correspondence-run-ledger table.reflex thead th.filter-heading > span,.correspondence-ledger-for-run table.reflex thead th.filter-heading > span {
 		font-style	: italic;
 		font-size	: 0.85em;
 	}
 
-	.correspondence-run-ledger table.reflex thead th.header > span,
-.correspondence-ledger-for-run table.reflex thead th.header > span {
+	.correspondence-run-ledger table.reflex thead th.header > span,.correspondence-ledger-for-run table.reflex thead th.header > span {
 		padding-right	: 0.25em;
 	}
 
-	.correspondence-run-ledger table.reflex thead th.header > img.header-filter,
-.correspondence-ledger-for-run table.reflex thead th.header > img.header-filter {
+	.correspondence-run-ledger table.reflex thead th.header > img.header-filter,.correspondence-ledger-for-run table.reflex thead th.header > img.header-filter {
 		float	: right;
 	}
 
-	.correspondence-run-ledger table.reflex thead th.filter-heading > img,
-.correspondence-run-ledger table.reflex thead th.filter-heading > span,
-.correspondence-ledger-for-run table.reflex thead th.filter-heading > img,
-.correspondence-ledger-for-run table.reflex thead th.filter-heading > span {
+	.correspondence-run-ledger table.reflex thead th.filter-heading > img,.correspondence-run-ledger table.reflex thead th.filter-heading > span,.correspondence-ledger-for-run table.reflex thead th.filter-heading > img,.correspondence-ledger-for-run table.reflex thead th.filter-heading > span {
 		vertical-align	: middle;
 	}
 
-	.correspondence-run-ledger table.reflex thead th.filter-heading > span,
-.correspondence-ledger-for-run table.reflex thead th.filter-heading > span {
+	.correspondence-run-ledger table.reflex thead th.filter-heading > span,.correspondence-ledger-for-run table.reflex thead th.filter-heading > span {
 		margin-left		: 0.25em;
 		padding-right	: 0.5em;
 	}
 
-	.correspondence-run-ledger table.reflex thead th.filter-heading > div,
-.correspondence-ledger-for-run table.reflex thead th.filter-heading > div {
+	.correspondence-run-ledger table.reflex thead th.filter-heading > div,.correspondence-ledger-for-run table.reflex thead th.filter-heading > div {
 		display			: inline-block;
 		vertical-align	: middle;
 	}
 
-	.correspondence-run-ledger table.reflex thead th.filter-heading > div > img,
-.correspondence-ledger-for-run table.reflex thead th.filter-heading > div > img {
+	.correspondence-run-ledger table.reflex thead th.filter-heading > div > img,.correspondence-ledger-for-run table.reflex thead th.filter-heading > div > img {
 		padding-left	: 0.25em;
 		width			: 1.25em;
 		height			: 1.25em;
 		cursor			: pointer;
 	}
 
-	.correspondence-run-ledger th.header > img,
-.correspondence-ledger-for-run th.header > img {
+	.correspondence-run-ledger th.header > img,.correspondence-ledger-for-run th.header > img {
 		padding-right	: 0.5em;
 	}
 
-	.correspondence-run-ledger span.header-sort,
-.correspondence-ledger-for-run span.header-sort {
+	.correspondence-run-ledger span.header-sort,.correspondence-ledger-for-run span.header-sort {
 		cursor	: pointer;
 	}
 
-	.correspondence-run-ledger ul.actions,
-.correspondence-ledger-for-run ul.actions {
+	.correspondence-run-ledger ul.actions,.correspondence-ledger-for-run ul.actions {
 		margin	: 0em;
 	}
 
@@ -6832,9 +6512,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		width	: 13em;
 	}
 
-	.popup-account-correspondence-ledger .buttons,
-.popup-correspondence-run .buttons,
-.popup-correspondence-ledger-columns .buttons {
+	.popup-account-correspondence-ledger .buttons,.popup-correspondence-run .buttons,.popup-correspondence-ledger-columns .buttons {
 		text-align	: center;
 	}
 
@@ -6850,8 +6528,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		padding	: 0.25em 0em 0em 0.25em;
 	}
 
-	.popup-correspondence-ledger-columns .columns li input,
-.popup-correspondence-ledger-columns .columns li span {
+	.popup-correspondence-ledger-columns .columns li input,.popup-correspondence-ledger-columns .columns li span {
 		vertical-align	: middle;
 	}
 
@@ -6864,8 +6541,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		vertical-align	: middle;
 	}
 
-	.correspondence-items span,
-.correspondence-items img {
+	.correspondence-items span,.correspondence-items img {
 		vertical-align	: middle;
 	}
 
@@ -6885,8 +6561,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		width	: 20%;
 	}
 
-	.correspondence-ledger-for-run,
-.correspondence-run-ledger {
+	.correspondence-ledger-for-run,.correspondence-run-ledger {
 		position	: relative;
 	}
 
@@ -6894,9 +6569,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		display: inline-block;
 	}
 
-	.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(1),
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(2),
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(3), {
+	.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(1),.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(2),.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(3), {
 		width	: 7em;
 	}
 
@@ -6912,8 +6585,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		width	: 9em;
 	}
 
-	.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(5),
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(8) {
+	.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(5),.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(8) {
 		width	: 6em;
 	}
 
@@ -6921,8 +6593,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		width	: 8em;
 	}
 
-	.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(6),
-.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > thead tr th:nth-child(6) {
+	.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(6),.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > thead tr th:nth-child(6) {
 		width	: 21.5em;
 	}
 
@@ -6966,8 +6637,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		vertical-align	: top;
 	}
 
-	.component-correspondence-run-ledger-carrier-summary,
-.component-correspondence-run-ledger-deliverymethodsummary-details {
+	.component-correspondence-run-ledger-carrier-summary,.component-correspondence-run-ledger-deliverymethodsummary-details {
 		margin-left	: 1em;
 	}
 
@@ -7009,19 +6679,16 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		font-weight	: bold;
 	}
 
-	.component-correspondence-run-details-dispatchsummary-file-carrier-method,
-.component-correspondence-run-ledger-dispatchsummary-file-carrier-method {
+	.component-correspondence-run-details-dispatchsummary-file-carrier-method,.component-correspondence-run-ledger-dispatchsummary-file-carrier-method {
 		margin-left		: 0.5em;
 		vertical-align	: middle;
 	}
 
-	.component-correspondence-run-details-dispatchsummary-file-carrier-method > img,
-.component-correspondence-run-ledger-dispatchsummary-file-carrier-method > img {
+	.component-correspondence-run-details-dispatchsummary-file-carrier-method > img,.component-correspondence-run-ledger-dispatchsummary-file-carrier-method > img {
 		margin-left	: 0.25em;
 	}
 
-	.component-correspondence-run-details-dispatchsummary-file-file,
-.component-correspondence-run-details-dispatchsummary-file-status {
+	.component-correspondence-run-details-dispatchsummary-file-file,.component-correspondence-run-details-dispatchsummary-file-status {
 		margin-left	: 1em;
 	}
 
@@ -7040,10 +6707,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 
 	/***************** START - Invoice Rerating Popup(s) - START *****************/
 
-	.popup-invoice-rerate,
-.popup-invoice-rerate-summary,
-.popup-rate-plan-test,
-.popup-invoice-rerate-ticket {
+	.popup-invoice-rerate,.popup-invoice-rerate-summary,.popup-rate-plan-test,.popup-invoice-rerate-ticket {
 		margin	: 0.5em;
 	}
 
@@ -7146,13 +6810,11 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		padding-left	: 0.5em;
 	}
 
-	.popup-invoice-rerate-summary .invoice-summary .title,
-.popup-invoice-rerate-summary .invoice-summary .title span {
+	.popup-invoice-rerate-summary .invoice-summary .title,.popup-invoice-rerate-summary .invoice-summary .title span {
 		font-size	: 1.2em;
 	}
 
-	.popup-invoice-rerate-summary .buttons-left,
-.popup-invoice-rerate-summary .buttons-right {
+	.popup-invoice-rerate-summary .buttons-left,.popup-invoice-rerate-summary .buttons-right {
 		margin-top	: 0.5em;
 		display		: inline-block;
 		width		: 50%;
@@ -7166,8 +6828,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		text-align	: right;
 	}
 
-	.popup-rate-plan-test .buttons,
-.popup-invoice-rerate-ticket .buttons {
+	.popup-rate-plan-test .buttons,.popup-invoice-rerate-ticket .buttons {
 		margin-top	: 0.5em;
 		text-align	: center;
 	}
@@ -7251,8 +6912,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		height:				20px;
 	}
 
-	.DefaultLabel,
-.DefaultInvalidLabel {
+	.DefaultLabel,.DefaultInvalidLabel {
 		font-family:		Arial, sans-serif;
 		line-height:		18pt; /* Things break down if this isn't here */
 		font-size:			10pt;
@@ -7298,11 +6958,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		color:				#CC0000;
 	}
 
-	.DefaultInputRadioButtons,
-.DefaultInputCheckBox,
-.DefaultInputComboBox,
-.DefaultInputText,
-.DefaultInput {
+	.DefaultInputRadioButtons,.DefaultInputCheckBox,.DefaultInputComboBox,.DefaultInputText,.DefaultInput {
 		font-family:		Arial, sans-serif;
 		line-height:		18pt;
 		font-size:			10pt;
@@ -7327,8 +6983,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		border:				solid 1px #000000;
 	}
 
-	.DefaultInputText,
-.DefaultInputTextArea {
+	.DefaultInputText,.DefaultInputTextArea {
 		border:				solid 1px #000000;
 		padding-left:		3px;
 		padding-right:		0px;
@@ -7358,12 +7013,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		left:				0px;
 	}
 
-	.DefaultInvalidInputRadioButtons,
-.DefaultInvalidInputCheckBox,
-.DefaultInvalidInputComboBox,
-.DefaultInvalidInputText,
-.DefaultInvalidInputTextArea,
-.DefaultInvalidInput {
+	.DefaultInvalidInputRadioButtons,.DefaultInvalidInputCheckBox,.DefaultInvalidInputComboBox,.DefaultInvalidInputText,.DefaultInvalidInputTextArea,.DefaultInvalidInput {
 		font-family:		Arial, sans-serif;
 		line-height:		1.2;
 		font-size:			10pt;
@@ -7379,17 +7029,13 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		border:				solid 1px #000000;
 	}
 
-	.DefaultInvalidInputText,
-.DefaultInvalidInputTextArea {
+	.DefaultInvalidInputText,.DefaultInvalidInputTextArea {
 		border:				solid 1px #000000;
 		padding-left:		3px;
 		padding-right:		0px;
 	}
 
-	.DefaultInputSpan,
-.DefaultInvalidInputSpan,
-.DefaultOutputSpan,
-.DefaultInvalidOutputSpan {
+	.DefaultInputSpan,.DefaultInvalidInputSpan,.DefaultOutputSpan,.DefaultInvalidOutputSpan {
 		font-family:		Arial, sans-serif;
 		line-height:		18pt;
 		font-size:			10pt;
@@ -7408,9 +7054,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		color:				#CC0000;
 	}
 
-	.DefaultHiddenElement,
-.DefaultElement,
-.DefaultInvalidElement {
+	.DefaultHiddenElement,.DefaultElement,.DefaultInvalidElement {
 		position:			relative;
 		overflow:			visible;
 		height:				auto;
@@ -7593,13 +7237,11 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		border-bottom	: 1px solid rgba(0, 0, 0, 0.6);
 	}
 
-	.email-subject-container,
-.popup-email-text-edit > .tab-group {
+	.email-subject-container,.popup-email-text-edit > .tab-group {
 		margin-bottom	: 0.5em;
 	}
 
-	.popup-email-text-edit .email-subject-container > table.reflex,
-.popup-email-text-edit > .tab-group .tab-page table.reflex {
+	.popup-email-text-edit .email-subject-container > table.reflex,.popup-email-text-edit > .tab-group .tab-page table.reflex {
 		margin	: 0em;
 		width	: 100%;
 	}
@@ -7659,8 +7301,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		padding	: 0.25em 0em 0em 0.25em;
 	}
 
-	.popup-email-templates-columns .columns li input,
-.popup-email-templates-columns .columns li span {
+	.popup-email-templates-columns .columns li input,.popup-email-templates-columns .columns li span {
 		vertical-align	: middle;
 	}
 
@@ -7674,8 +7315,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 	}
 
 
-	.popup-email-templates .item-count > img,
-.popup-email-templates .item-count > span {
+	.popup-email-templates .item-count > img,.popup-email-templates .item-count > span {
 		vertical-align	: middle;
 		padding-right	: 0.25em;
 	}
@@ -7693,8 +7333,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		cursor		: pointer;
 	}
 
-	.popup-email-templates .template-table th,
-.popup-email-templates .template-table td {
+	.popup-email-templates .template-table th,.popup-email-templates .template-table td {
 		width	: 30%;
 		margin	: 0 !important;
 	}
@@ -7735,10 +7374,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		float	: right;
 	}
 
-	.popup-email-templates td.no-rows,
-.popup-email-templates .loading,
-.popup-email-templates .loading,
-.popup-email-templates .section-header-options ul {
+	.popup-email-templates td.no-rows,.popup-email-templates .loading,.popup-email-templates .loading,.popup-email-templates .section-header-options ul {
 		margin	: 0.1em 0em 0em 0em;
 	}
 
@@ -8013,8 +7649,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 		float	: right;
 	}
 
-	div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > img,
-div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
+	div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > img,div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		vertical-align	: middle;
 	}
 
@@ -8194,9 +7829,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		cursor			: pointer;
 	}
 
-	.credit-card-payment-popup-validationerrors,
-.credit-card-payment-popup,
-.credit-card-payment-popup-confirmation {
+	.credit-card-payment-popup-validationerrors,.credit-card-payment-popup,.credit-card-payment-popup-confirmation {
 		margin	: 0.5em;
 	}
 
@@ -8251,8 +7884,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Developer Collections - START **************************/
 
-	.developer-collections,
-.developer-collections-scenario-popup {
+	.developer-collections,.developer-collections-scenario-popup {
 		margin	: 0.5em;
 	}
 
@@ -8299,18 +7931,15 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		border	: solid 1px #666;
 	}
 
-	.developer-collections-months td,
-.developer-collections-days td {
+	.developer-collections-months td,.developer-collections-days td {
 		border	: solid 1px #888;
 	}
 
-	.developer-collections-currentday,
-.developer-collections-currentmonth {
+	.developer-collections-currentday,.developer-collections-currentmonth {
 		background-color	: #FFC21A;
 	}
 
-	.developer-collections-latestday,
-.developer-collections-latestmonth {
+	.developer-collections-latestday,.developer-collections-latestmonth {
 		background-color	: #FF4F1A;
 	}
 
@@ -8477,9 +8106,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		padding	: 0em 0em 0em 0.5em;
 	}
 
-	.component-collections-account-management-extracolumns .component-collections-account-management-balance-columns,
-.component-collections-account-management-extracolumns .component-collections-account-management-promise-columns,
-.component-collections-account-management-extracolumns .component-collections-account-management-overdue-columns {
+	.component-collections-account-management-extracolumns .component-collections-account-management-balance-columns,.component-collections-account-management-extracolumns .component-collections-account-management-promise-columns,.component-collections-account-management-extracolumns .component-collections-account-management-overdue-columns {
 		font-variant	: small-caps;
 		color			: #bbb;
 	}
@@ -8570,8 +8197,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		vertical-align	: top;
 	}
 
-	.component-collections-event-management-selectoptions,
-.component-collections-event-management-selectactions {
+	.component-collections-event-management-selectoptions,.component-collections-event-management-selectactions {
 		margin-right	: 2em;
 	}
 
@@ -8604,14 +8230,11 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		width	: 28em;
 	}
 
-	.component-collections-event-management thead > tr > th:nth-child(3),
-.component-collections-event-management thead > tr > th:nth-child(4),
-.component-collections-event-management thead > tr > th:nth-child(5) {
+	.component-collections-event-management thead > tr > th:nth-child(3),.component-collections-event-management thead > tr > th:nth-child(4),.component-collections-event-management thead > tr > th:nth-child(5) {
 		width	: 20em;
 	}
 
-	.component-collections-event-management thead > tr > th:nth-child(6),
-.component-collections-event-management thead > tr > th:nth-child(7) {
+	.component-collections-event-management thead > tr > th:nth-child(6),.component-collections-event-management thead > tr > th:nth-child(7) {
 		width	: 9em;
 	}
 
@@ -8702,34 +8325,28 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Popup Collection Event Barring/TDC - START **************************/
 
-	.popup-collection-event-barring,
-.popup-collection-event-tdc {
+	.popup-collection-event-barring,.popup-collection-event-tdc {
 		margin : 0.5em;
 	}
 
-	.popup-collection-event-barring-help,
-.popup-collection-event-tdc-help {
+	.popup-collection-event-barring-help,.popup-collection-event-tdc-help {
 		margin-bottom	: 0.25em;
 	}
 
-	.popup-collection-event-barring-day-info,
-.popup-collection-event-tdc-day-info {
+	.popup-collection-event-barring-day-info,.popup-collection-event-tdc-day-info {
 		margin-top	: 0.25em;
 	}
 
-	.popup-collection-event-barring-buttons,
-.popup-collection-event-tdc-buttons {
+	.popup-collection-event-barring-buttons,.popup-collection-event-tdc-buttons {
 		text-align	: center;
 		margin-top	: 0.25em;
 	}
 
-	.popup-collection-event-barring-field > label,
-.popup-collection-event-tdc-field > label {
+	.popup-collection-event-barring-field > label,.popup-collection-event-tdc-field > label {
 		font-weight	: bold;
 	}
 
-	.popup-collection-event-barring-field > .control-field,
-.popup-collection-event-tdc-field > .control-field {
+	.popup-collection-event-barring-field > .control-field,.popup-collection-event-tdc-field > .control-field {
 		display	: inline-block;
 	}
 
@@ -8792,20 +8409,17 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		min-heigh	: 10em;
 	}
 
-	.component-collections-scenario-event-timeline-emptynode,
-.component-collections-scenario-event-timeline-node {
+	.component-collections-scenario-event-timeline-emptynode,.component-collections-scenario-event-timeline-node {
 		width	: 8em;
 		height	: 4em;
 	}
 
-	.component-collections-scenario-event-timeline-emptynode-view,
-.component-collections-scenario-event-timeline-node-view {
+	.component-collections-scenario-event-timeline-emptynode-view,.component-collections-scenario-event-timeline-node-view {
 		width	: 8em;
 		height	: 2em;
 	}
 
-	.component-collections-scenario-event-timeline-node,
-.component-collections-scenario-event-timeline-node-view {
+	.component-collections-scenario-event-timeline-node,.component-collections-scenario-event-timeline-node-view {
 		border					: solid 1px #000;
 		-border-radius			: 4px 4px 4px 4px;
 		-moz-border-radius		: 4px 4px 4px 4px;
@@ -8816,13 +8430,11 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		cursor	: pointer;
 	}
 
-	.component-collections-scenario-event-timeline-node-scenario-start,
-.component-collections-scenario-event-timeline-node-scenario-start-view {
+	.component-collections-scenario-event-timeline-node-scenario-start,.component-collections-scenario-event-timeline-node-scenario-start-view {
 		text-align	: center;
 	}
 
-	.component-collections-scenario-event-timeline-node-scenario-start,
-.component-collections-scenario-event-timeline-node-event {
+	.component-collections-scenario-event-timeline-node-scenario-start,.component-collections-scenario-event-timeline-node-event {
 		border-bottom	: solid 1px #000;
 		padding			: 0.25em;
 		white-space		: nowrap;
@@ -8840,8 +8452,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		opacity	: 0.75;
 	}
 
-	.component-collections-scenario-event-timeline-node-scenario-start-view,
-.component-collections-scenario-event-timeline-node-event-view {
+	.component-collections-scenario-event-timeline-node-scenario-start-view,.component-collections-scenario-event-timeline-node-event-view {
 		padding			: 0.25em;
 		white-space		: nowrap;
 		overflow		: hidden;
@@ -8904,14 +8515,11 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Component Collections Event (& Event Type) - START **************************/
 
-	.component-collections-event-type,
-.component-collections-event {
+	.component-collections-event-type,.component-collections-event {
 		margin : 0.5em;
 	}
 
-	.component-collections-event-type > table.reflex.input,
-.component-collections-event-type-implementation-details > td > table,
-.component-collections-event > table.reflex.input {
+	.component-collections-event-type > table.reflex.input,.component-collections-event-type-implementation-details > td > table,.component-collections-event > table.reflex.input {
 		margin	: 0em;
 		width	: 100%;
 	}
@@ -8920,8 +8528,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		text-align	: left;
 	}
 
-	.component-collections-event-type-buttons,
-.component-collections-event-buttons {
+	.component-collections-event-type-buttons,.component-collections-event-buttons {
 		margin-top	: 0.5em;
 		text-align	: center;
 	}
@@ -8930,19 +8537,16 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Component Collections Severity - START **************************/
 
-	.component-collections-severity,
-.popup-collections-severity {
+	.component-collections-severity,.popup-collections-severity {
 		margin : 0.5em;
 	}
 
-	.component-collections-severity-buttons,
-.popup-collections-severity-buttons {
+	.component-collections-severity-buttons,.popup-collections-severity-buttons {
 		text-align	: center;
 		margin-top	: 0.5em;
 	}
 
-	.component-collections-severity > table.reflex.input,
-.popup-collections-severity > table.reflex.input {
+	.component-collections-severity > table.reflex.input,.popup-collections-severity > table.reflex.input {
 		margin	: 0em;
 		width	: 100%;
 	}
@@ -8957,8 +8561,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		height			: 100%;
 	}
 
-	.component-collections-severity-transfer > ul.reset > li:first-child,
-.component-collections-severity-transfer > ul.reset > li:last-child {
+	.component-collections-severity-transfer > ul.reset > li:first-child,.component-collections-severity-transfer > ul.reset > li:last-child {
 		width	: 45%;
 	}
 
@@ -9028,24 +8631,20 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		width	: 14em;
 	}
 
-	.component-collections-event-typelist,
-.component-collections-event-severitylist {
+	.component-collections-event-typelist,.component-collections-event-severitylist {
 		margin	: 0em;
 		width	: 98%;
 	}
 
-	.component-collections-event-typelist > li,
-.component-collections-event-severitylist > li {
+	.component-collections-event-typelist > li,.component-collections-event-severitylist > li {
 		vertical-align	: top;
 	}
 
-	.component-collections-event-typelist > li:first-child,
-.component-collections-event-severitylist > li:first-child {
+	.component-collections-event-typelist > li:first-child,.component-collections-event-severitylist > li:first-child {
 		width	: 74%;
 	}
 
-	.component-collections-event-typelist > li > .icon-button,
-.component-collections-event-severitylist > li > .icon-button {
+	.component-collections-event-typelist > li > .icon-button,.component-collections-event-severitylist > li > .icon-button {
 		margin	: 0em 0em 0em 0.25em !important;
 	}
 
@@ -9053,64 +8652,40 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Component Collections Lists - START **************************/
 
-	.component-collections-event-type-list,
-.component-collections-event-list,
-.component-collections-scenario-list,
-.component-collections-severity-list {
+	.component-collections-event-type-list,.component-collections-event-list,.component-collections-scenario-list,.component-collections-severity-list {
 		position	: relative
 	}
 
-	.component-collections-event-type-list > .section table.reflex,
-.component-collections-event-list > .section table.reflex,
-.component-collections-scenario-list > .section table.reflex,
-.component-collections-severity-list > .section table.reflex {
+	.component-collections-event-type-list > .section table.reflex,.component-collections-event-list > .section table.reflex,.component-collections-scenario-list > .section table.reflex,.component-collections-severity-list > .section table.reflex {
 		margin	: 0em;
 		width	: 100%;
 	}
 
-	.component-collections-event-type-list > .section .section-header .icon-button,
-.component-collections-event-list > .section .section-header .icon-button,
-.component-collections-scenario-list > .section .section-header .icon-button,
-.component-collections-severity-list > .section .section-header .icon-button {
+	.component-collections-event-type-list > .section .section-header .icon-button,.component-collections-event-list > .section .section-header .icon-button,.component-collections-scenario-list > .section .section-header .icon-button,.component-collections-severity-list > .section .section-header .icon-button {
 		margin	: 0em !important;
 	}
 
-	.component-collections-event-type-list > .section .section-footer > ul.reset,
-.component-collections-event-list > .section .section-footer > ul.reset,
-.component-collections-scenario-list > .section .section-footer > ul.reset,
-.component-collections-severity-list > .section .section-footer > ul.reset {
+	.component-collections-event-type-list > .section .section-footer > ul.reset,.component-collections-event-list > .section .section-footer > ul.reset,.component-collections-scenario-list > .section .section-footer > ul.reset,.component-collections-severity-list > .section .section-footer > ul.reset {
 		margin	: 0em;
 	}
 
-	.component-collections-event-type-list-filter-heading > span,
-.component-collections-event-list-filter-heading > span,
-.component-collections-scenario-list-filter-heading > span,
-.component-collections-severity-list-filter-heading > span {
+	.component-collections-event-type-list-filter-heading > span,.component-collections-event-list-filter-heading > span,.component-collections-scenario-list-filter-heading > span,.component-collections-severity-list-filter-heading > span {
 		margin-right	: 0.5em;
 		vertical-align	: middle;
 		font-style		: italic;
 		font-size		: 0.85em;
 	}
 
-	.component-collections-event-type-list-filter-heading > div,
-.component-collections-event-list-filter-heading > div,
-.component-collections-scenario-list-filter-heading > div,
-.component-collections-severity-list-filter-heading > div {
+	.component-collections-event-type-list-filter-heading > div,.component-collections-event-list-filter-heading > div,.component-collections-scenario-list-filter-heading > div,.component-collections-severity-list-filter-heading > div {
 		display			: inline-block;
 		vertical-align	: middle;
 	}
 
-	.component-collections-event-type-list-header-sort img,
-.component-collections-event-list-header-sort img,
-.component-collections-scenario-list-header-sort img,
-.component-collections-severity-list-header-sort img {
+	.component-collections-event-type-list-header-sort img,.component-collections-event-list-header-sort img,.component-collections-scenario-list-header-sort img,.component-collections-severity-list-header-sort img {
 		margin-right	: 0.25em;
 	}
 
-	.component-collections-event-type-list table.reflex > tbody > tr > td,
-.component-collections-event-list table.reflex > tbody > tr > td,
-.component-collections-scenario-list table.reflex > tbody > tr > td,
-.component-collections-severity-list table.reflex > tbody > tr > td {
+	.component-collections-event-type-list table.reflex > tbody > tr > td,.component-collections-event-list table.reflex > tbody > tr > td,.component-collections-scenario-list table.reflex > tbody > tr > td,.component-collections-severity-list table.reflex > tbody > tr > td {
 		vertical-align	: middle;
 	}
 
@@ -9130,15 +8705,13 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Account: Edit Promise Popup - START **************************/
 
-	.popup-account-promise-edit,
-.popup-account-promise-edit * {
+	.popup-account-promise-edit,.popup-account-promise-edit * {
 		box-sizing			: border-box;
 		-moz-box-sizing		: border-box;
 		box-sizing	: border-box;
 	}
 
-	.popup-account-promise-edit table th,
-.popup-account-promise-edit table td {
+	.popup-account-promise-edit table th,.popup-account-promise-edit table td {
 		vertical-align	: top;
 	}
 
@@ -9146,14 +8719,11 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		font-style	: italic;
 	}
 
-	.popup-account-promise-edit .popup-account-promise-edit-invoices-promisedvalue,
-.popup-account-promise-edit .popup-account-promise-edit-instalments-instalment-amount{
+	.popup-account-promise-edit .popup-account-promise-edit-invoices-promisedvalue,.popup-account-promise-edit .popup-account-promise-edit-instalments-instalment-amount{
 		white-space	: nowrap;
 	}
 
-	.popup-account-promise-edit .popup-account-promise-edit-invoices-promisedvalue > .control-field,
-.popup-account-promise-edit .popup-account-promise-edit-instalments-instalment-amount > .control-field,
-.popup-account-promise-edit .popup-account-promise-edit-instalments-details-totalpromised > .control-field {
+	.popup-account-promise-edit .popup-account-promise-edit-invoices-promisedvalue > .control-field,.popup-account-promise-edit .popup-account-promise-edit-instalments-instalment-amount > .control-field,.popup-account-promise-edit .popup-account-promise-edit-instalments-details-totalpromised > .control-field {
 		display		: inline-block;
 		margin-left	: 0.25em;
 	}
@@ -9175,8 +8745,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		display	: inline-block;
 	}
 
-	.popup-account-promise-edit table tbody tr th.label,
-.popup-account-promise-edit table tbody tr td.input {
+	.popup-account-promise-edit table tbody tr th.label,.popup-account-promise-edit table tbody tr td.input {
 		vertical-align	: top;
 	}
 
@@ -9209,15 +8778,13 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Account: New Promise Popup - START **************************/
 
-	.popup-account-promise-edit-schedule,
-.popup-account-promise-edit-schedule * {
+	.popup-account-promise-edit-schedule,.popup-account-promise-edit-schedule * {
 		box-sizing			: border-box;
 		-moz-box-sizing		: border-box;
 		box-sizing	: border-box;
 	}
 
-	.popup-account-promise-edit-schedule table th,
-.popup-account-promise-edit-schedule table td {
+	.popup-account-promise-edit-schedule table th,.popup-account-promise-edit-schedule table td {
 		vertical-align	: top;
 	}
 
@@ -9226,8 +8793,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		max-width	: 40%;
 	}
 
-	.popup-account-promise-edit-schedule label *,
-.popup-account-promise-edit-schedule .control-field {
+	.popup-account-promise-edit-schedule label *,.popup-account-promise-edit-schedule .control-field {
 		display			: inline-block;
 		vertical-align	: middle;
 	}
@@ -9237,13 +8803,11 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		margin-right	: 0.25em;
 	}
 
-	.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-startingdate input.date-formatted,
-.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-endingdate input.date-formatted {
+	.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-startingdate input.date-formatted,.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-endingdate input.date-formatted {
 		width	: 10em	!important;
 	}
 
-	.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-frequency-multiplier,
-.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-occurrences {
+	.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-frequency-multiplier,.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-occurrences {
 		width	: 2em;
 	}
 
@@ -9255,74 +8819,58 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Component Barring Authorisation/Action Ledger(s) - START **************************/
 
-	.component-barring-authorisation-ledger > .section table.reflex,
-.component-barring-action-ledger > .section table.reflex {
+	.component-barring-authorisation-ledger > .section table.reflex,.component-barring-action-ledger > .section table.reflex {
 		margin	: 0em;
 		width	: 100%;
 	}
 
-	.component-barring-authorisation-ledger > .section .section-header .icon-button,
-.component-barring-action-ledger > .section .section-header .icon-button {
+	.component-barring-authorisation-ledger > .section .section-header .icon-button,.component-barring-action-ledger > .section .section-header .icon-button {
 		margin	: 0em !important;
 	}
 
-	.component-barring-authorisation-ledger > .section .section-footer > ul.reset,
-.component-barring-action-ledger > .section .section-footer > ul.reset {
+	.component-barring-authorisation-ledger > .section .section-footer > ul.reset,.component-barring-action-ledger > .section .section-footer > ul.reset {
 		margin	: 0em;
 	}
 
-	.component-barring-authorisation-ledger-filter-heading > span,
-.component-barring-action-ledger-filter-heading > span {
+	.component-barring-authorisation-ledger-filter-heading > span,.component-barring-action-ledger-filter-heading > span {
 		margin-right	: 0.5em;
 		vertical-align	: middle;
 		font-style		: italic;
 		font-size		: 0.85em;
 	}
 
-	.component-barring-authorisation-ledger-filter-heading > div,
-.component-barring-action-ledger-filter-heading > div {
+	.component-barring-authorisation-ledger-filter-heading > div,.component-barring-action-ledger-filter-heading > div {
 		display			: inline-block;
 		vertical-align	: middle;
 	}
 
-	.component-barring-authorisation-ledger-header-sort img,
-.component-barring-action-ledger-header-sort img {
+	.component-barring-authorisation-ledger-header-sort img,.component-barring-action-ledger-header-sort img {
 		margin-right	: 0.25em;
 	}
 
-	.component-barring-authorisation-ledger-subdetail,
-.component-barring-action-ledger-subdetail {
+	.component-barring-authorisation-ledger-subdetail,.component-barring-action-ledger-subdetail {
 		font-size	: 0.9em;
 	}
 
-	.component-barring-authorisation-ledger-subdetail img,
-.component-barring-action-ledger-subdetail img {
+	.component-barring-authorisation-ledger-subdetail img,.component-barring-action-ledger-subdetail img {
 		padding-right	: 0.25em;
 	}
 
-	.component-barring-authorisation-ledger-subdetail img,
-.component-barring-authorisation-ledger-subdetail a,
-.component-barring-action-ledger-subdetail img,
-.component-barring-action-ledger-subdetail a {
+	.component-barring-authorisation-ledger-subdetail img,.component-barring-authorisation-ledger-subdetail a,.component-barring-action-ledger-subdetail img,.component-barring-action-ledger-subdetail a {
 		vertical-align	: middle;
 	}
 
-	.component-barring-authorisation-ledger-subdetail,
-.component-barring-authorisation-ledger-subdetail.account > div,
-.component-barring-action-ledger-subdetail,
-.component-barring-action-ledger-subdetail.account > div {
+	.component-barring-authorisation-ledger-subdetail,.component-barring-authorisation-ledger-subdetail.account > div,.component-barring-action-ledger-subdetail,.component-barring-action-ledger-subdetail.account > div {
 		margin-bottom	: 0.25em;
 	}
 
-	.component-barring-authorisation-ledger-subdetail.account > div.account-id,
-.component-barring-action-ledger-subdetail.account > div.account-id {
+	.component-barring-authorisation-ledger-subdetail.account > div.account-id,.component-barring-action-ledger-subdetail.account > div.account-id {
 		white-space		: nowrap;
 		display			: inline-block;
 		padding-right	: 0.25em;
 	}
 
-	.component-barring-action-ledger-selectoptions,
-.component-barring-action-ledger-selectactions {
+	.component-barring-action-ledger-selectoptions,.component-barring-action-ledger-selectactions {
 		margin-right	: 2em;
 	}
 
@@ -9343,8 +8891,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		margin	: 0em !important;
 	}
 
-	.component-barring-authorisation-ledger table.reflex > tbody > tr > td,
-.component-barring-action-ledger table.reflex > tbody > tr > td {
+	.component-barring-authorisation-ledger table.reflex > tbody > tr > td,.component-barring-action-ledger table.reflex > tbody > tr > td {
 		vertical-align	: middle;
 	}
 
@@ -9373,8 +8920,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		margin-right	: 1em;
 	}
 
-	.popup-barring-authorisation-ledger-authorise-account > div:first-child,
-.popup-barring-authorisation-ledger-authorise-account > div:nth-child(2) {
+	.popup-barring-authorisation-ledger-authorise-account > div:first-child,.popup-barring-authorisation-ledger-authorise-account > div:nth-child(2) {
 		margin-bottom	: 0.5em;
 	}
 
@@ -9436,8 +8982,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		vertical-align	: middle;
 	}
 
-	.component-collections-oca-referral-selectoptions,
-.component-collections-oca-referral-selectactions {
+	.component-collections-oca-referral-selectoptions,.component-collections-oca-referral-selectactions {
 		margin-right	: 2em;
 	}
 
@@ -9626,22 +9171,16 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** END - Component Account Collections Popups - END **************************/
 
-	.popup-collections-suspension-view,
-.popup-collections-promise-instalment-view,
-.popup-collections-event-instance-view {
+	.popup-collections-suspension-view,.popup-collections-promise-instalment-view,.popup-collections-event-instance-view {
 		margin	: 0.5em;
 	}
 
-	.popup-collections-suspension-view > table.reflex.input,
-.popup-collections-promise-instalment-view > table.reflex.input,
-.popup-collections-event-instance-view > table.reflex.input {
+	.popup-collections-suspension-view > table.reflex.input,.popup-collections-promise-instalment-view > table.reflex.input,.popup-collections-event-instance-view > table.reflex.input {
 		margin	: 0em;
 		width	: 100%;
 	}
 
-	.popup-collections-suspension-view-buttons,
-.popup-collections-promise-instalment-view-buttons,
-.popup-collections-event-instance-view-buttons {
+	.popup-collections-suspension-view-buttons,.popup-collections-promise-instalment-view-buttons,.popup-collections-event-instance-view-buttons {
 		text-align	: center;
 		margin-top	: 0.5em;
 	}
@@ -9654,27 +9193,21 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** END - Account TIO Complaint Popups - END **************************/
 
-	.popup-account-tio-complaint,
-.popup-account-tio-complaint-view,
-.popup-account-tio-complaint-close {
+	.popup-account-tio-complaint,.popup-account-tio-complaint-view,.popup-account-tio-complaint-close {
 		margin	: 0.5em;
 	}
 
-	.popup-account-tio-complaint > table.reflex.input,
-.popup-account-tio-complaint-view > table.reflex.input {
+	.popup-account-tio-complaint > table.reflex.input,.popup-account-tio-complaint-view > table.reflex.input {
 		margin	: 0em;
 		width	: 100%;
 	}
 
-	.popup-account-tio-complaint-buttons,
-.popup-account-tio-complaint-view-buttons,
-.popup-account-tio-complaint-close {
+	.popup-account-tio-complaint-buttons,.popup-account-tio-complaint-view-buttons,.popup-account-tio-complaint-close {
 		text-align	: center;
 		margin-top	: 0.5em;
 	}
 
-	.popup-account-tio-complaint-reference-number-label,
-.popup-account-tio-complaint-view-reference-number-label {
+	.popup-account-tio-complaint-reference-number-label,.popup-account-tio-complaint-view-reference-number-label {
 		width	: 12em !important;
 	}
 
@@ -10033,8 +9566,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		vertical-align	: middle;
 	}
 
-	.page-adjustment-management-selectoptions,
-.page-adjustment-management-selectactions {
+	.page-adjustment-management-selectoptions,.page-adjustment-management-selectactions {
 		margin-right	: 2em;
 	}
 
@@ -10144,9 +9676,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		display	: table-row;
 	}
 
-	.component-account-payment-create-creditcard-amount,
-.component-account-payment-create-creditcard-surcharge,
-.component-account-payment-create-creditcard-total {
+	.component-account-payment-create-creditcard-amount,.component-account-payment-create-creditcard-surcharge,.component-account-payment-create-creditcard-total {
 		text-align	: right;
 	}
 
@@ -10466,9 +9996,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		margin-right	: 0.25em;
 	}
 
-	.component-account-invoice-list table.reflex > tbody > tr > td,
-.component-account-invoice-list-icon-cell > img,
-.component-account-invoice-list-icon-cell-double > img {
+	.component-account-invoice-list table.reflex > tbody > tr > td,.component-account-invoice-list-icon-cell > img,.component-account-invoice-list-icon-cell-double > img {
 		vertical-align	: middle;
 	}
 
@@ -10606,14 +10134,12 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		border		: solid 1px #333;
 	}
 
-	.component-correspondence-template-additional-columns > table,
-.component-correspondence-template-additional-columns-columnlist > table {
+	.component-correspondence-template-additional-columns > table,.component-correspondence-template-additional-columns-columnlist > table {
 		width			: 100%;
 		border-spacing	: 0;
 	}
 
-	.component-correspondence-template-additional-columns > table tr > td:nth-child(1),
-.component-correspondence-template-additional-columns-columnlist > table tr > td:nth-child(1) {
+	.component-correspondence-template-additional-columns > table tr > td:nth-child(1),.component-correspondence-template-additional-columns-columnlist > table tr > td:nth-child(1) {
 		width	: 10em;
 	}
 
@@ -10853,8 +10379,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		border		: solid 1px #333;
 	}
 
-	.component-carrier-module-config > table,
-.component-carrier-module-config-columnlist > table {
+	.component-carrier-module-config > table,.component-carrier-module-config-columnlist > table {
 		width			: 100%;
 		border-spacing	: 0;
 	}
@@ -10863,15 +10388,11 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		font-weight	: bold;
 	}
 
-	.component-carrier-module-config table > thead > tr > td:last-child,
-.component-carrier-module-config table > tbody > tr > td:last-child {
+	.component-carrier-module-config table > thead > tr > td:last-child,.component-carrier-module-config table > tbody > tr > td:last-child {
 		width	: 40%;
 	}
 
-	.component-carrier-module-config table > thead > tr > td:first-child,
-.component-carrier-module-config table > tbody > tr > td:first-child,
-.component-carrier-module-config table > thead > tr > td:nth-child(2),
-.component-carrier-module-config table > tbody > tr > td:nth-child(2) {
+	.component-carrier-module-config table > thead > tr > td:first-child,.component-carrier-module-config table > tbody > tr > td:first-child,.component-carrier-module-config table > thead > tr > td:nth-child(2),.component-carrier-module-config table > tbody > tr > td:nth-child(2) {
 		width	: 30%;
 	}
 
@@ -10900,8 +10421,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** END - Popup Carrier Module Config JSON Editor - END **************************/
 
-	.reflex-component,
-.reflex-component * {
+	.reflex-component,.reflex-component * {
 		/**/-moz-box-sizing		: border-box;
 		box-sizing	: border-box;
 		box-sizing			: border-box;/**/
@@ -11003,8 +10523,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		font-weight	: bold;
 	}
 
-	.component-account-links-popup-link .control-field,
-.component-account-links-popup-link input {
+	.component-account-links-popup-link .control-field,.component-account-links-popup-link input {
 		width	: 100%;
 		margin	: 0;
 	}
@@ -11125,8 +10644,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		box-flex			: 1;*/
 	}
 
-	.component-section-header,
-.component-section-footer {
+	.component-section-header,.component-section-footer {
 		width	: 100%;
 
 		display	: -webkit-box;
@@ -11185,8 +10703,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		margin-right	: 0.25em;
 	}
 
-	.component-section-header-actions,
-.component-section-footer-actions {
+	.component-section-header-actions,.component-section-footer-actions {
 		-webkit-box-flex	: 1;
 		-moz-box-flex		: 1;
 		box-flex			: 1;
@@ -11420,8 +10937,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		text-align	: left;
 	}
 
-	.component-test-run-output-log,
-.component-test-run-output-result {
+	.component-test-run-output-log,.component-test-run-output-result {
 		width	: 100%;
 		height	: 30em;
 	}
@@ -11550,8 +11066,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		width	: 100%;
 	}
 
-	.popup-email-queue-email-preview-send-to-list-item > img,
-.popup-email-queue-email-preview-send-to-list-item > span {
+	.popup-email-queue-email-preview-send-to-list-item > img,.popup-email-queue-email-preview-send-to-list-item > span {
 		vertical-align	: middle;
 	}
 
@@ -11624,27 +11139,23 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		margin-top	: 0.5em;
 	}
 
-	.component-service-contract-details-penalties-payout,
-.component-service-contract-details-penalties-earlyexit {
+	.component-service-contract-details-penalties-payout,.component-service-contract-details-penalties-earlyexit {
 		padding			: 0								!important;
 		border-top		: 1px solid rgba(0, 0, 0, 0.2)	!important;
 		/*border-bottom	: 1px solid rgba(0, 0, 0, 0.2)	!important;*/
 	}
 
-	.component-service-contract-details-penalties-payout > .reflex-propertylist,
-.component-service-contract-details-penalties-earlyexit > .reflex-propertylist {
+	.component-service-contract-details-penalties-payout > .reflex-propertylist,.component-service-contract-details-penalties-earlyexit > .reflex-propertylist {
 		margin	: 0	!important;
 	}
-	.component-service-contract-details-penalties-payout > .reflex-propertylist::before,
-.component-service-contract-details-penalties-earlyexit > .reflex-propertylist::before {
+	.component-service-contract-details-penalties-payout > .reflex-propertylist::before,.component-service-contract-details-penalties-earlyexit > .reflex-propertylist::before {
 		width				: 35%																	!important;
 		border-right		: 1px solid rgba(0, 0, 0, 0.2)											!important;
 		background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1))	!important;
 		background-image	: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1))	!important;
 	}
 
-	.component-service-contract-details-customer-account,
-.component-service-contract-details-contract-rateplan-name {
+	.component-service-contract-details-customer-account,.component-service-contract-details-contract-rateplan-name {
 		white-space		: nowrap;
 		overflow		: hidden;
 		text-overflow	: ellipsis;
@@ -11654,11 +11165,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		text-shadow	: 0 1px 0 #fff;
 	}
 
-	.component-service-contract-details-penalties-status-audit,
-.component-service-contract-details-contract-status-expiry,
-.component-service-contract-details-contract-rateplan-charge,
-.component-service-contract-details-contract-rateplan-charge-override,
-.component-service-contract-details-customer-customergroup {
+	.component-service-contract-details-penalties-status-audit,.component-service-contract-details-contract-status-expiry,.component-service-contract-details-contract-rateplan-charge,.component-service-contract-details-contract-rateplan-charge-override,.component-service-contract-details-customer-customergroup {
 		margin-left	: 0.15em	!important;
 	}
 
@@ -11676,12 +11183,10 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		color	: #eb364e;
 	}
 
-	.component-service-contract-details-penalties-payout > .reflex-propertylist > dt,
-.component-service-contract-details-penalties-earlyexit > .reflex-propertylist > dt {
+	.component-service-contract-details-penalties-payout > .reflex-propertylist > dt,.component-service-contract-details-penalties-earlyexit > .reflex-propertylist > dt {
 		width	: 35%	!important;
 	}
-	.component-service-contract-details-penalties-payout > .reflex-propertylist > dd,
-.component-service-contract-details-penalties-earlyexit > .reflex-propertylist > dd {
+	.component-service-contract-details-penalties-payout > .reflex-propertylist > dd,.component-service-contract-details-penalties-earlyexit > .reflex-propertylist > dd {
 		width	: 65%	!important;
 	}
 
@@ -11689,12 +11194,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		margin-left	: 0.25em;
 	}
 
-	.component-service-contract-details-contract-term-remaining,
-.component-service-contract-details-contract-value-remaining,
-.component-service-contract-details-penalties-status-audit,
-.component-service-contract-details-contract-status-expiry,
-.component-service-contract-details-contract-rateplan-charge,
-.component-service-contract-details-contract-rateplan-charge-override {
+	.component-service-contract-details-contract-term-remaining,.component-service-contract-details-contract-value-remaining,.component-service-contract-details-penalties-status-audit,.component-service-contract-details-contract-status-expiry,.component-service-contract-details-contract-rateplan-charge,.component-service-contract-details-contract-rateplan-charge-override {
 		font-style	: oblique;
 	}
 
@@ -11741,44 +11241,24 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 
 	/************************** START - Control - START **************************/
 
-	.control.mandatory input[type='text'][disabled],
-.control.mandatory input[type='number'][disabled],
-.control.mandatory input[type='date'][disabled],
-.control.mandatory select[disabled],
-.control.mandatory textarea[disabled],
-.control.invalid input[type='text'][disabled],
-.control.invalid input[type='number'][disabled],
-.control.invalid input[type='date'][disabled],
-.control.invalid select[disabled],
-.control.invalid textarea[disabled],
-.control.valid input[type='text'][disabled],
-.control.valid input[type='number'][disabled],
-.control.valid input[type='date'][disabled],
-.control.valid select[disabled],
-.control.valid textarea[disabled] {
+	.control.mandatory input[type='text'][disabled],.control.mandatory input[type='number'][disabled],.control.mandatory input[type='date'][disabled],.control.mandatory select[disabled],.control.mandatory textarea[disabled],.control.invalid input[type='text'][disabled],.control.invalid input[type='number'][disabled],.control.invalid input[type='date'][disabled],.control.invalid select[disabled],.control.invalid textarea[disabled],.control.valid input[type='text'][disabled],.control.valid input[type='number'][disabled],.control.valid input[type='date'][disabled],.control.valid select[disabled],.control.valid textarea[disabled] {
 		background-color	: #EFEBE7;
 		color				: #888;
 	}
 
-	.control.mandatory input,
-.control.mandatory select,
-.control.mandatory textarea {
+	.control.mandatory input,.control.mandatory select,.control.mandatory textarea {
 		background	: #fff;
 		color		: #111;
 		border		: .1em solid #da8;
 	}
 
-	.control.invalid input,
-.control.invalid select,
-.control.invalid textarea {
+	.control.invalid input,.control.invalid select,.control.invalid textarea {
 		background	: #ffecf0;
 		color		: #111;
 		border		: .1em solid #d30;
 	}
 
-	.control.valid input,
-.control.valid select,
-.control.valid textarea {
+	.control.valid input,.control.valid select,.control.valid textarea {
 		background		: #ecfff0;
 		color			: #111;
 		border-color	:	#33DD00;
@@ -11888,8 +11368,7 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span {
 		-moz-box-sizing	: border-box;
 	}
 
-	.reflex-propertylist > .reflex-propertylist-key,
-dl.reflex-propertylist > dt {
+	.reflex-propertylist > .reflex-propertylist-key,dl.reflex-propertylist > dt {
 		/* Key/Term */
 		float	: left;
 		clear	: both;
@@ -11908,8 +11387,7 @@ dl.reflex-propertylist > dt {
 		-moz-box-sizing	: border-box;
 	}
 
-	.reflex-propertylist > .reflex-propertylist-value,
-dl.reflex-propertylist > dd {
+	.reflex-propertylist > .reflex-propertylist-value,dl.reflex-propertylist > dd {
 		/* Value */
 		margin	: 0;
 		width	: 70%;
@@ -11921,12 +11399,10 @@ dl.reflex-propertylist > dd {
 		-moz-box-sizing	: border-box;
 	}
 
-	.reflex-propertylist > .reflex-propertylist-key > *,
-dl.reflex-propertylist > dt > * {
+	.reflex-propertylist > .reflex-propertylist-key > *,dl.reflex-propertylist > dt > * {
 		vertical-align	: top;
 	}
-	.reflex-propertylist > .reflex-propertylist-value > *,
-dl.reflex-propertylist > dd > * {
+	.reflex-propertylist > .reflex-propertylist-value > *,dl.reflex-propertylist > dd > * {
 		vertical-align	: top;
 	}
 
@@ -11938,10 +11414,7 @@ dl.reflex-propertylist > dd > * {
 		margin : 0.25em 0 !important;
 	}
 
-	.component-account-user-list thead tr th:nth-child(1),
-.component-account-user-list thead tr th:nth-child(2),
-.component-account-user-list thead tr th:nth-child(3),
-.component-account-user-list thead tr th:nth-child(4) {
+	.component-account-user-list thead tr th:nth-child(1),.component-account-user-list thead tr th:nth-child(2),.component-account-user-list thead tr th:nth-child(3),.component-account-user-list thead tr th:nth-child(4) {
 		width : 20%;
 	}
 
@@ -11966,9 +11439,7 @@ dl.reflex-propertylist > dd > * {
 		border-radius	: 4px 4px 4px 4px;
 	}
 
-	.component-account-user-edit .reflex-propertylist dd .control input[type="text"],
-.component-account-user-edit .reflex-propertylist dd .control input[type="password"],
-.component-account-user-edit .reflex-propertylist dd .control select {
+	.component-account-user-edit .reflex-propertylist dd .control input[type="text"],.component-account-user-edit .reflex-propertylist dd .control input[type="password"],.component-account-user-edit .reflex-propertylist dd .control select {
 		width : 100%;
 	}
 
@@ -14639,10 +14110,10 @@ background #fcfaf9 {
 .flex-page-report-manage table tr td:nth-child(2),
 .flex-page-report-manage table tr td:nth-child(3),
 .flex-page-report-manage table tr td:nth-child(4) {
-  width: 160px;
+  width: 10em;
 }
 .flex-page-report-manage table tr td:nth-child(5) {
-  width: 246px;
+  width: 20em;
 }
 .flex-page-report-manage-heading {
   display: block;
