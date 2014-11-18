@@ -13291,9 +13291,19 @@
 .flex-page-report-constraint-edit-details-name
 .flex-page-report-constraint-edit-details-validation
 .flex-page-report-constraint-edit-details-placeholder
-	& input
+	& input[type="text"]
 		appearance-flex-form-fieldset-field-control()
 		width: 10.0em
+	& input[type="checkbox"]
+		appearance-flex-form-fieldset-field-control()
+
+.flex-page-report-schedule-add-details-constraintContainer
+	.flex-page-report-schedule-add-details-constraintContainer-controlset-label
+		padding-top 0.25em
+
+.flex-page-report-run-details-constraintContainer
+	.flex-page-report-run-details-constraintContainer-controlset-label
+		padding-top 0.25em
 
 .flex-page-report-schedule-add-details-schedule-datetime
 .flex-page-report-schedule-add-details-schedule-end-datetime
@@ -13414,9 +13424,27 @@
 		margin-right 10px
 		margin-bottom: 0.5em
 
+.flex-page-report-run-details-constraintContainer-controlset
+.flex-page-report-schedule-add-details-constraintContainer-controlset
+	appearance-flex-form-controlset()
+	max-height 150px
+	overflow-y scroll 
+	overflow-x hidden 
+	background: #fff
+	color: #111
+
+	& label
+		padding 0.3em
+
 .flex-page-report-edit-details-reportemployee-controlset
+.flex-page-report-run-details-constraintContainer-controlset
+.flex-page-report-schedule-add-details-constraintContainer-controlset
 	box-sizing border-box
 	width 20em
+
+.flex-page-report-run-details-constraintContainer-controlset
+.flex-page-report-schedule-add-details-constraintContainer-controlset
+	display inline-flex
 
 .flex-page-report-run-details-deliveryemployee-controlset
 .flex-page-report-schedule-add-details-deliveryemployee-controlset
@@ -13506,6 +13534,8 @@
 .flex-page-report-edit-report-employee input
 .flex-page-report-run-delivery-employee input
 .flex-page-report-schedule-add-details-deliveryemployee input
+.flex-page-report-run-details-constraintContainer-checkbox
+.flex-page-report-schedule-add-details-constraintContainer-checkbox
 	float:left;
 	margin-right 0.5em
 
@@ -13515,12 +13545,14 @@
 	width 100%
 	& input
 		width 100%
+		padding 0.25em 0
 
 .flex-page-report-edit-details-reportemployee-filter
 	box-sizing border-box
 	width 19em
 	& input
 		width 100%
+		padding 0.25em 0
 
 .flex-page-report-schedule-add table
 .flex-page-report-manage table

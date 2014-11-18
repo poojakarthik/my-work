@@ -263,7 +263,7 @@ var self = new Class({
 				for (var i = 0;i < oServerResponse.length; i++) {
 					//Check for type here
 
-					if (oServerResponse[i]['component_type'] == "Text") {
+					if (oServerResponse[i]['component_type'] == self.REPORT_CONSTRAINT_TYPE_FREETEXT) {
 						if (oServerResponse[i]['validation_regex'] == "null") {
 							this._oConstraintContainer.appendChild(
 								H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
@@ -293,7 +293,7 @@ var self = new Class({
 								)
 							);
 						}
-					} else if (oServerResponse[i]['component_type'] == "Select") {
+					} else if (oServerResponse[i]['component_type'] == self.REPORT_CONSTRAINT_TYPE_DATABASELIST) {
 						//debugger;
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
@@ -316,7 +316,7 @@ var self = new Class({
 								})
 							)
 						);
-					} else if (oServerResponse[i]['component_type'] == "Date") {
+					} else if (oServerResponse[i]['component_type'] == self.REPORT_CONSTRAINT_TYPE_DATE) {
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
 								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
@@ -329,7 +329,7 @@ var self = new Class({
 								})
 							)
 						);
-					} else if(oServerResponse[i]['component_type'] == "DateTime") {
+					} else if(oServerResponse[i]['component_type'] == self.REPORT_CONSTRAINT_TYPE_DATETIME) {
 						this._oConstraintContainer.appendChild(
 							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
 								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
@@ -342,7 +342,38 @@ var self = new Class({
 								})
 							)
 						);
-
+					} else if (oServerResponse[i]['component_type'] == self.REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
+						var oConstraintListContainer = H.div({class: 'flex-page-report-schedule-add-details-constraintContainer'},
+							H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'}, 
+								oServerResponse[i]['name']
+							),
+							new Hidden({
+								sName : oServerResponse[i]['name'],
+								sLabel :  oServerResponse[i]['name'],
+								mMandatory : true
+							})
+						);
+						var oConstraintListControlset = H.div({class: 'flex-page-report-schedule-add-details-constraintContainer-controlset'});
+						for (var j = 0; j < oServerResponse[i]['source_data'].length; j++) {
+							oConstraintListControlset.appendChild(
+								H.label({class: 'flex-page-report-schedule-add-details-constraintContainer-div-container'},
+									H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-controlset-label'}, oServerResponse[i]['source_data'][j]['label']),
+									new Checkbox({
+										bChecked	: false,
+										mValue		: oServerResponse[i]['source_data'][j]['value'],
+										sName		: oServerResponse[i]['name'] + 'List[]',
+										sLabel		: oServerResponse[i]['name'],
+										sExtraClass	: 'flex-page-report-schedule-add-details-constraintContainer-checkbox'
+									})
+								)
+							);
+						}
+						oConstraintListContainer.appendChild(
+							oConstraintListControlset
+						);
+						this._oConstraintContainer.appendChild(
+							oConstraintListContainer
+						);
 					}
 				}
 			}.bind(this)
@@ -485,7 +516,36 @@ var self = new Class({
 		this.fire('complete');
     },
 
+    _populateMultipleSelectionConstraints: function() {
+		var aMultipleSelectionConstraints = this._oConstraintContainer.select('.flex-page-report-schedule-add-details-constraintContainer-controlset');
+		if (aMultipleSelectionConstraints.length > 0) {
+			for (var j in aMultipleSelectionConstraints) {
+				if (aMultipleSelectionConstraints.hasOwnProperty(j)) {
+					var aElements = aMultipleSelectionConstraints[j].select('input:checked');
+					if (aElements.length === 0) {
+						return;
+					} else {
+						var aConstraintValues = [];
+						var sConstraintName = "";
+						for (var i in aElements) {
+							if (aElements.hasOwnProperty(i)) {
+								var oElement = aElements[i];
+								var oValue = parseInt(oElement.value);
+								aConstraintValues.push(oValue);
+								if (sConstraintName === "") {
+									sConstraintName = oElement.name.replace("List[]", "");
+								}
+							}
+						}
+						this._oForm.control(sConstraintName).set('mValue', aConstraintValues.join());
+					}
+				}
+			}
+		}
+	},
+
 	_save : function(event) {
+		this._populateMultipleSelectionConstraints
 		var bValidation = this._oForm.validate();
 		if(bValidation) {
 			if (this._oForm.control('delivery_method') == null) {
@@ -496,7 +556,14 @@ var self = new Class({
 				new Alert("Please Select Delivery Format");
 				return;
 			}
-			this._oForm.control('selectedDeliveryEmployees').set('mValue', this._getSelectedDeliveryEmployees());
+			var aSelectedEmployees = this._getSelectedDeliveryEmployees();
+			if (this._oForm.control('delivery_method').getValue() == self.REPORT_DELIVERY_METHOD_EMAIL && aSelectedEmployees.length == 0) {
+				new Alert("Please Select Employees To Deliver");
+				return;
+			} else {
+				this._oForm.control('selectedDeliveryEmployees').set('mValue', aSelectedEmployees);
+			
+			}
 			jhr('Report_Schedule', 'saveSchedule', {arguments: this._oForm.getData()}).then(
 				function success(request) {
 					var oResponse = request.parseJSONResponse();
@@ -524,6 +591,13 @@ var self = new Class({
 	},
 
     statics : {
+    	REPORT_CONSTRAINT_TYPE_FREETEXT: 1,
+		REPORT_CONSTRAINT_TYPE_DATABASELIST: 2,
+		REPORT_CONSTRAINT_TYPE_DATE: 3,
+		REPORT_CONSTRAINT_TYPE_DATETIME: 4,
+		REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST: 5,
+		REPORT_DELIVERY_METHOD_EMAIL: 2,
+
 		createAsPopup : function() {
 			var oComponent = self.applyAsConstructor($A(arguments)),
 				oPopup = new Popup({

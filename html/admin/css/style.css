@@ -13634,16 +13634,32 @@ background #fcfaf9 {
   align-self: flex-start;
   padding-top: 2px;
 }
-.flex-page-report-edit-details-name input,
-.flex-page-report-edit-details-summary input,
-.flex-page-report-schedule-add-details-filename input,
-.flex-page-report-run-details-constraintContainer input,
-.flex-page-report-schedule-add-details-constraintContainer input,
-.flex-page-report-constraint-edit-details-name input,
-.flex-page-report-constraint-edit-details-validation input,
-.flex-page-report-constraint-edit-details-placeholder input {
+.flex-page-report-edit-details-name input[type="text"],
+.flex-page-report-edit-details-summary input[type="text"],
+.flex-page-report-schedule-add-details-filename input[type="text"],
+.flex-page-report-run-details-constraintContainer input[type="text"],
+.flex-page-report-schedule-add-details-constraintContainer input[type="text"],
+.flex-page-report-constraint-edit-details-name input[type="text"],
+.flex-page-report-constraint-edit-details-validation input[type="text"],
+.flex-page-report-constraint-edit-details-placeholder input[type="text"] {
   margin: 0;
   width: 10em;
+}
+.flex-page-report-edit-details-name input[type="checkbox"],
+.flex-page-report-edit-details-summary input[type="checkbox"],
+.flex-page-report-schedule-add-details-filename input[type="checkbox"],
+.flex-page-report-run-details-constraintContainer input[type="checkbox"],
+.flex-page-report-schedule-add-details-constraintContainer input[type="checkbox"],
+.flex-page-report-constraint-edit-details-name input[type="checkbox"],
+.flex-page-report-constraint-edit-details-validation input[type="checkbox"],
+.flex-page-report-constraint-edit-details-placeholder input[type="checkbox"] {
+  margin: 0;
+}
+.flex-page-report-schedule-add-details-constraintContainer .flex-page-report-schedule-add-details-constraintContainer-controlset-label {
+  padding-top: 0.25em;
+}
+.flex-page-report-run-details-constraintContainer .flex-page-report-run-details-constraintContainer-controlset-label {
+  padding-top: 0.25em;
 }
 .flex-page-report-schedule-add-details-schedule-datetime input,
 .flex-page-report-schedule-add-details-schedule-end-datetime input,
@@ -13858,9 +13874,33 @@ background #fcfaf9 {
   margin-right: 10px;
   margin-bottom: 0.5em;
 }
-.flex-page-report-edit-details-reportemployee-controlset {
+.flex-page-report-run-details-constraintContainer-controlset,
+.flex-page-report-schedule-add-details-constraintContainer-controlset {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 0;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background: #fff;
+  color: #111;
+}
+.flex-page-report-run-details-constraintContainer-controlset label,
+.flex-page-report-schedule-add-details-constraintContainer-controlset label {
+  padding: 0.3em;
+}
+.flex-page-report-edit-details-reportemployee-controlset,
+.flex-page-report-run-details-constraintContainer-controlset,
+.flex-page-report-schedule-add-details-constraintContainer-controlset {
   box-sizing: border-box;
   width: 20em;
+}
+.flex-page-report-run-details-constraintContainer-controlset,
+.flex-page-report-schedule-add-details-constraintContainer-controlset {
+  display: inline-flex;
 }
 .flex-page-report-run-details-deliveryemployee-controlset,
 .flex-page-report-schedule-add-details-deliveryemployee-controlset {
@@ -14054,7 +14094,9 @@ background #fcfaf9 {
 }
 .flex-page-report-edit-report-employee input,
 .flex-page-report-run-delivery-employee input,
-.flex-page-report-schedule-add-details-deliveryemployee input {
+.flex-page-report-schedule-add-details-deliveryemployee input,
+.flex-page-report-run-details-constraintContainer-checkbox,
+.flex-page-report-schedule-add-details-constraintContainer-checkbox {
   float: left;
   margin-right: 0.5em;
 }
@@ -14066,6 +14108,7 @@ background #fcfaf9 {
 .flex-page-report-run-details-deliveryemployee-filter input,
 .flex-page-report-schedule-add-details-deliveryemployee-filter input {
   width: 100%;
+  padding: 0.25em 0;
 }
 .flex-page-report-edit-details-reportemployee-filter {
   box-sizing: border-box;
@@ -14073,6 +14116,7 @@ background #fcfaf9 {
 }
 .flex-page-report-edit-details-reportemployee-filter input {
   width: 100%;
+  padding: 0.25em 0;
 }
 .flex-page-report-schedule-add table,
 .flex-page-report-manage table,

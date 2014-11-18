@@ -302,11 +302,10 @@ var self = new Class({
 				aReportConstraint : this._aReportConstraint,
 				oncomplete      : function(oData) {
 					this._aReportConstraint = oData.oEvent.oTarget.get('aReportConstraint');
-					if(this._iReportConstraintCount != this._aReportConstraint.length) {
+					if (this._iReportConstraintCount != this._aReportConstraint.length) {
 						this._bSaveChangesTrigger = true;
 					}
 					oPopup.hide();
-
 				}.bind(this),
 				onready : function () {
 					oPopup.display();

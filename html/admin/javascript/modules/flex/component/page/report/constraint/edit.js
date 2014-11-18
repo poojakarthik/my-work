@@ -161,6 +161,7 @@ var self = new Class({
 				this._oReportConstraintSourceQuery.set('mMandatory', false);
 				break
 			case self.REPORT_CONSTRAINT_TYPE_DATABASELIST:
+			case self.REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST:
 				this._oReportConstraintSourceQuery.set('mMandatory', true);
 				this._oSourceQueryContainer.show();
 				this._oValidationContainer.hide();
@@ -240,7 +241,7 @@ var self = new Class({
 						H.span(oReportConstraint.name)
 					),
 					H.td(
-						H.span(oReportConstraint.constraint_name)
+						H.span({class: 'flex-component-report-constraint-list-name'}, oReportConstraint.constraint_name)
 					),
 					H.td(
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].placeholder', mValue: oReportConstraint.placeholder}),
@@ -263,8 +264,9 @@ var self = new Class({
 				new Alert('Cannot add a duplicate constraint alias');
 				return;
 			}
-			if (this._oForm.control('report_constraint_type_id').getValue() == self.REPORT_CONSTRAINT_TYPE_DATABASELIST) {
-				if (this._oForm.control('source_query').getValue() == "") {
+			var iConstraintTypeId = this._oForm.control('report_constraint_type_id').getValue();
+			if (iConstraintTypeId == self.REPORT_CONSTRAINT_TYPE_DATABASELIST || iConstraintTypeId == self.REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
+				if (this._oForm.control('source_query').getValue() === "") {
 					new Alert('Source query cannnot be empty');
 					return;
 				} else {
@@ -274,6 +276,28 @@ var self = new Class({
 							if (!response.bSuccess) {
 								new Alert(response.sMessage);
 								return;
+							} else {
+								this._oConstraintList.appendChild(
+									H.tr({class: 'flex-component-report-constraint-list'},
+										H.td(
+											H.span(this._oForm.control('name').getValue())
+										),
+										H.td(
+											H.span({class: 'flex-component-report-constraint-list-name'},
+												this._oForm.control('report_constraint_type_id').getNode().select('select :selected').first().innerHTML
+											)
+										),
+										H.td(
+											new Hidden({sName: 'constraint['+this._iConstraintCount+'].placeholder', mValue: this._oForm.control('placeholder').getValue()}),
+											new Hidden({sName: 'constraint['+this._iConstraintCount+'].validation_regex', mValue: this._oForm.control('validation_regex').getValue()}),
+											new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: this._oForm.control('source_query').getValue()}),
+											new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: this._oForm.control('name').getValue()}),
+											new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: this._oForm.control('report_constraint_type_id').getValue()}),
+											H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function() { this.parentElement.parentElement.remove(); })
+										)
+									)
+								);
+								this._iConstraintCount++;
 							}
 						}.bind(this),
 						function (error) {
@@ -284,25 +308,6 @@ var self = new Class({
 					);
 				}
 			}
-			this._oConstraintList.appendChild(
-				H.tr({class: 'flex-component-report-constraint-list'},
-					H.td(
-						H.span(this._oForm.control('name').getValue())
-					),
-					H.td(
-						H.span(this._oForm.control('report_constraint_type_id').getNode().select('select :selected').first().innerHTML)
-					),
-					H.td(
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].placeholder', mValue: this._oForm.control('placeholder').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].validation_regex', mValue: this._oForm.control('validation_regex').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: this._oForm.control('source_query').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: this._oForm.control('name').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: this._oForm.control('report_constraint_type_id').getValue()}),
-						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function() { this.parentElement.parentElement.remove(); })
-					)
-				)
-			);
-			this._iConstraintCount++;
 		}
 	},
 	_checkForDuplicateConstraint: function(sConstraintName) {
@@ -340,7 +345,9 @@ var self = new Class({
 		for (var i in oList) {
 			if (oList.hasOwnProperty(i)) {
 				var aInputData = oList[i].select('.fw-control > input');
+				var aConstraintName = oList[i].select('.flex-component-report-constraint-list-name');
 				var oData = {};
+				oData['constraint_name'] = aConstraintName[0].innerHTML;
 				for (var x in aInputData) {
 					if (aInputData.hasOwnProperty(x)) {
 						var oElement = aInputData[x];
@@ -364,6 +371,7 @@ var self = new Class({
 		REPORT_CONSTRAINT_TYPE_DATABASELIST: 2,
 		REPORT_CONSTRAINT_TYPE_DATE: 3,
 		REPORT_CONSTRAINT_TYPE_DATETIME: 4,
+		REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST: 5,
 
 		createAsPopup : function() {
 		var oComponent = self.applyAsConstructor($A(arguments)),
