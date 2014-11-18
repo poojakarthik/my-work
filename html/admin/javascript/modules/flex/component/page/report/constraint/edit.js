@@ -170,6 +170,7 @@ var self = new Class({
 			case self.REPORT_CONSTRAINT_TYPE_DATE:
 			case self.REPORT_CONSTRAINT_TYPE_DATETIME:
 			default:
+				this._oReportConstraintSourceQuery.set('mMandatory', false);
 				this._oSourceQueryContainer.hide();
 				this._oValidationContainer.hide();
 				this._oPlaceholderContainer.hide();
@@ -307,6 +308,28 @@ var self = new Class({
 						}
 					);
 				}
+			} else {
+				this._oConstraintList.appendChild(
+					H.tr({class: 'flex-component-report-constraint-list'},
+						H.td(
+							H.span(this._oForm.control('name').getValue())
+						),
+						H.td(
+							H.span({class: 'flex-component-report-constraint-list-name'},
+								this._oForm.control('report_constraint_type_id').getNode().select('select :selected').first().innerHTML
+							)
+						),
+						H.td(
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].placeholder', mValue: this._oForm.control('placeholder').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].validation_regex', mValue: this._oForm.control('validation_regex').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: this._oForm.control('source_query').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: this._oForm.control('name').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: this._oForm.control('report_constraint_type_id').getValue()}),
+							H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function() { this.parentElement.parentElement.remove(); })
+						)
+					)
+				);
+				this._iConstraintCount++;
 			}
 		}
 	},
