@@ -62,7 +62,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 		$this->setNormalised('SequenceNo', $this->_iSequence++);
 
 		// Ignore header rows
-		if (preg_match('/^[\'"]?Call\s+Number|callno/', $aCDR['CDR'])) {
+		if (preg_match('/^[\'"]?(Call\s+Number|callno)/', $aCDR['CDR'])) {
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
 
