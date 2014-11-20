@@ -14110,10 +14110,10 @@ background #fcfaf9 {
 .flex-page-report-manage table tr td:nth-child(2),
 .flex-page-report-manage table tr td:nth-child(3),
 .flex-page-report-manage table tr td:nth-child(4) {
-  width: 160px;
+  width: 10em;
 }
 .flex-page-report-manage table tr td:nth-child(5) {
-  width: 245px;
+  width: 20em;
 }
 .flex-page-report-manage-heading {
   display: block;
