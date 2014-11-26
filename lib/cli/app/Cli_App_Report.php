@@ -134,23 +134,24 @@ class Cli_App_Report extends Cli {
 			$iEndScheduletendDateTimeTimestamp = 0; //Making sure end schedule date time is not affective if NULL
 		} else {
 			$dFinalSchedulendDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
-			$iEndScheduletendDateTimeTimestamp = $dFinalSchedulendDateTime->getTimestamp();
+			$iEndScheduletendDateTimeTimestamp = intval($dFinalSchedulendDateTime->format('U'));
 		}		
 		//Compute the next scheduled datetime
 		if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
 			$dLastExecutedDateTime = $oReportScheduleLog->executed_datetime;
-			$dNextScheduledDateTime = date_add(new DateTime($dLastExecutedDateTime), date_interval_create_from_date_string($oReportSchedule->frequency_multiple.' '.$sFrequencyType));
+			$dNextScheduledDateTime = new DateTime($dLastExecutedDateTime);
+			$dNextScheduledDateTime->modify('+' . $oReportSchedule->frequency_multiple.' '.$sFrequencyType);
 		} else {
 			$dNextScheduledDateTime = new DateTime($oReportSchedule->schedule_datetime);
 		}
 		if ($iEndScheduletendDateTimeTimestamp != 0) {
-			if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $iEndScheduletendDateTimeTimestamp) {
+			if ($iNow > intval($dNextScheduledDateTime->format('U')) && $iNow < $iEndScheduletendDateTimeTimestamp) {
 				return true;
 			} else {
 				return false;
 			}
 		} else {
-			if ($iNow > $dNextScheduledDateTime->getTimestamp()) {
+			if ($iNow > intval($dNextScheduledDateTime->format('U'))) {
 				return true;
 			} else {
 				return false;

@@ -12,7 +12,7 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 				//Mapping Constraint Type to UI Elements
 				switch($aConstraint['report_constraint_type_id']) {
 				 	case REPORT_CONSTRAINT_TYPE_FREETEXT:
-				 		$aConstraint['component_type'] = "Text";
+				 		$aConstraint['component_type'] = REPORT_CONSTRAINT_TYPE_FREETEXT;
 				 		break;
 				 	case REPORT_CONSTRAINT_TYPE_DATABASELIST:
 				 		$rQuery	= Query::run($aConstraint['source_query']);
@@ -20,15 +20,25 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 						while ($aResultSet = $rQuery->fetch_assoc()) {
 							$aDataSet[] = $aResultSet;
 						}
-						$aConstraint['component_type'] = "Select";
+						$aConstraint['component_type'] = REPORT_CONSTRAINT_TYPE_DATABASELIST;
+						$aConstraint['source_data'] = $aDataSet;
+						unset($aConstraint['source_query']);
+						break;
+					case REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST:
+				 		$rQuery	= Query::run($aConstraint['source_query']);
+						$aDataSet= array();
+						while ($aResultSet = $rQuery->fetch_assoc()) {
+							$aDataSet[] = $aResultSet;
+						}
+						$aConstraint['component_type'] = REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST;
 						$aConstraint['source_data'] = $aDataSet;
 						unset($aConstraint['source_query']);
 						break;
 					case REPORT_CONSTRAINT_TYPE_DATE:
-						$aConstraint['component_type'] = "Date";
+						$aConstraint['component_type'] = REPORT_CONSTRAINT_TYPE_DATE;
 				 		break;
 				 	case REPORT_CONSTRAINT_TYPE_DATETIME:
-						$aConstraint['component_type'] = "DateTime";
+						$aConstraint['component_type'] = REPORT_CONSTRAINT_TYPE_DATETIME;
 				 		break;
 				 	default:
 				 		break;
