@@ -13229,6 +13229,9 @@
 .flex-page-report-constraint-edit-details
 .flex-page-report-schedule-add-details-constraints
 .flex-page-report-run-details-constraints
+.flex-page-report-run-deliveryemployee
+.flex-page-report-schedule-add-deliveryemployee
+.flex-page-report-edit-reportemployee
 	appearance-flex-form-fieldset()
 	margin-left: -.5em
 	margin-right: -.5em
@@ -13237,14 +13240,19 @@
 
 .flex-page-report-run-details-constraints
 .flex-page-report-schedule-add-details-constraints
+.flex-page-report-run-deliveryemployee
+.flex-page-report-schedule-add-deliveryemployee
 	margin-top: 10px
 	display: none
+
+.flex-page-report-edit-reportemployee
+	margin-top: 10px
 
 .flex-page-report-edit-details-name
 .flex-page-report-edit-details-summary
 .flex-page-report-edit-details-query
 .flex-page-report-edit-details-category
-.flex-page-report-run-details-constraintContainer
+.flex-page-report-run-details-constraintContainer 
 .flex-page-report-schedule-add-details-schedule-datetime
 .flex-page-report-schedule-add-details-schedule-end-datetime
 .flex-page-report-schedule-add-details-filename
@@ -13275,7 +13283,7 @@
 	align-self flex-start
 	padding-top 2px
 
-.flex-page-report-edit-details-name
+.flex-page-report-edit-details-name 
 .flex-page-report-edit-details-summary
 .flex-page-report-schedule-add-details-filename
 .flex-page-report-run-details-constraintContainer
@@ -13283,9 +13291,19 @@
 .flex-page-report-constraint-edit-details-name
 .flex-page-report-constraint-edit-details-validation
 .flex-page-report-constraint-edit-details-placeholder
-	& input
+	& input[type="text"]
 		appearance-flex-form-fieldset-field-control()
 		width: 10.0em
+	& input[type="checkbox"]
+		appearance-flex-form-fieldset-field-control()
+
+.flex-page-report-schedule-add-details-constraintContainer
+	.flex-page-report-schedule-add-details-constraintContainer-controlset-label
+		padding-top 0.25em
+
+.flex-page-report-run-details-constraintContainer
+	.flex-page-report-run-details-constraintContainer-controlset-label
+		padding-top 0.25em
 
 .flex-page-report-schedule-add-details-schedule-datetime
 .flex-page-report-schedule-add-details-schedule-end-datetime
@@ -13315,7 +13333,7 @@
 		resize: vertical
 		height: 60px
 
-.flex-page-report-edit-details-category
+.flex-page-report-edit-details-category 
 .flex-page-report-run-details-constraintContainer
 .flex-page-report-constraint-edit-details-type
 	& select
@@ -13396,19 +13414,42 @@
 .flex-page-report-schedule-add-details-deliveryemployee-controlset
 	appearance-flex-form-controlset()
 	max-height 150px
-	width 200px
-	overflow-y scroll
-	overflow-x hidden
+	overflow-y scroll 
+	overflow-x hidden 
 	background: #fff
 	color: #111
-	border-color: #666
-	border-width: 1px
-	border-style: solid
 
 	& label
 		padding 0.6em 0.3em
 		margin-right 10px
 		margin-bottom: 0.5em
+
+.flex-page-report-run-details-constraintContainer-controlset
+.flex-page-report-schedule-add-details-constraintContainer-controlset
+	appearance-flex-form-controlset()
+	max-height 150px
+	overflow-y scroll 
+	overflow-x hidden 
+	background: #fff
+	color: #111
+
+	& label
+		padding 0.3em
+
+.flex-page-report-edit-details-reportemployee-controlset
+.flex-page-report-run-details-constraintContainer-controlset
+.flex-page-report-schedule-add-details-constraintContainer-controlset
+	box-sizing border-box
+	width 20em
+
+.flex-page-report-run-details-constraintContainer-controlset
+.flex-page-report-schedule-add-details-constraintContainer-controlset
+	display inline-flex
+
+.flex-page-report-run-details-deliveryemployee-controlset
+.flex-page-report-schedule-add-details-deliveryemployee-controlset
+	box-sizing border-box
+	width 100%
 
 .flex-page-report-run-details-deliverymethod-container
 .flex-page-report-run-details-deliveryformat-container
@@ -13488,13 +13529,30 @@
 	width: 500px;
 
 .flex-page-report-run
-	width: 400px;
+	width: 450px;
 
 .flex-page-report-edit-report-employee input
 .flex-page-report-run-delivery-employee input
 .flex-page-report-schedule-add-details-deliveryemployee input
+.flex-page-report-run-details-constraintContainer-checkbox
+.flex-page-report-schedule-add-details-constraintContainer-checkbox
 	float:left;
 	margin-right 0.5em
+
+.flex-page-report-run-details-deliveryemployee-filter 
+.flex-page-report-schedule-add-details-deliveryemployee-filter
+	box-sizing border-box
+	width 100%
+	& input
+		width 100%
+		padding 0.25em 0
+
+.flex-page-report-edit-details-reportemployee-filter
+	box-sizing border-box
+	width 19em
+	& input
+		width 100%
+		padding 0.25em 0
 
 .flex-page-report-schedule-add table
 .flex-page-report-manage table
@@ -13502,14 +13560,14 @@
 	skin-flex-table()
 
 	& .First
-		& th
+		& th 
 			text-align left
 
 .flex-page-report-manage table
 	& tr
 		td:nth-child(2)
 		td:nth-child(3)
-		td:nth-child(4)
+		td:nth-child(4) 
 			width 10em
 		td:nth-child(5)
 			width 20em

@@ -117,6 +117,7 @@ var self = new Class({
 			this._loadDeliveryEmployees();
 		} else {
 			$('.flex-page-report-run-details-deliveryemployee').hide();
+			$('.flex-page-report-run-deliveryemployee').hide();
 		}
 	},
 

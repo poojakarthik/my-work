@@ -482,6 +482,7 @@ var self = new Class({
 			this._loadDeliveryEmployees();
 		} else {
 			$('.flex-page-report-schedule-add-details-deliveryemployee').hide();
+			$('.flex-page-report-schedule-add-deliveryemployee').hide();
 		}
 	},
 
