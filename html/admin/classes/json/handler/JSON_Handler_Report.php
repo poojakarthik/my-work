@@ -357,11 +357,15 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 				if (isset($mData->{$sConstraintName})) {
 					$aConstraintValues[$sConstraintName] = Query::prepareByPHPType($mData->{$sConstraintName});
+
+					if ($oConstraint->report_constraint_type_id == REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
+						$aConstraintValues[$sConstraintName] = str_replace(",", "','", $aConstraintValues[$sConstraintName]);
+					}
 				} else {
 					return 	array(
 						'success' => true,
 						'bSuccess' => false,
-						'sMessage' => "Constraint Missing:"
+						'sMessage' => "Constraint Missing:" + $sConstraintName
 					);
 				}
 			}
