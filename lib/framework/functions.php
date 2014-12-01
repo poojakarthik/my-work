@@ -2801,7 +2801,7 @@ function getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML) {
 		}
 	} else {
 		// API not configured
-		throw "API Not Configured, failed to generate PDF in getFlexAPIAccountInvoicePDFForXML()";
+		throw new Exception("API Not Configured, failed to generate PDF in getFlexAPIAccountInvoicePDFForXML()");
 	}
 }
 
