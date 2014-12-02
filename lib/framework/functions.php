@@ -2714,6 +2714,7 @@ function GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, 
 			case '.bz2':
 				// Load the xml from the bz2 file
 				$sXML = file_get_contents("compress.bzip2://{$sInvoicePath}");
+				$sPDF = generateInvoicePDF($sXML, $iInvoiceId, $iTargetMedia, $iInvoiceRunId, $iAccount);
 			case '.xml':
 				if ($sExtension == '.xml') {
 					// Load the xml from the xml file
@@ -2750,27 +2751,33 @@ function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoice
 		} else {
 			$sExtension = substr($sInvoicePath, strrpos($sInvoicePath, '.'));
 			// Decide how to Generate a new PDF
-			switch ($sExtension) {
-				case '.pdf':
-					// Found PDF, return that, no generation is required
-					$sPDF = file_get_contents($sInvoicePath);
-					break;
-				case '.bz2':
-					$sXML = file_get_contents("compress.bzip2://{$sInvoicePath}");
-					// Found XML, generate a new PDF from the API using this XML
-					$sPDF = getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML);
-				case '.xml':
-					if ($sExtension == '.xml') {
-						$sXML = file_get_contents($sInvoicePath);
-					} else {
-						// The xml file was bzipped
-					}
-					// Found XML, generate a new PDF from the API using this XML
-					$sPDF = getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML);
-					break;
-				default:
-					// Couldnt find a PDF or XML file. Generate a new PDF from the API
-					$sPDF = getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
+			if (!isset($GLOBALS['**API']) && !isset($GLOBALS['**API']['host'])) {
+				// Generate Invoice PDF locally
+				$sPDF = GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
+			} else {
+				// Generate Invoice PDF from API
+				switch ($sExtension) {
+					case '.pdf':
+						// Found PDF, return that, no generation is required
+						$sPDF = file_get_contents($sInvoicePath);
+						break;
+					case '.bz2':
+						$sXML = file_get_contents("compress.bzip2://{$sInvoicePath}");
+						// Found XML, generate a new PDF from the API using this XML
+						$sPDF = getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML);
+					case '.xml':
+						if ($sExtension == '.xml') {
+							$sXML = file_get_contents($sInvoicePath);
+						} else {
+							// The xml file was bzipped
+						}
+						// Found XML, generate a new PDF from the API using this XML
+						$sPDF = getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML);
+						break;
+					default:
+						// Couldnt find a PDF or XML file. Generate a new PDF from the API
+						$sPDF = getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
+				}
 			}
 
 			return $sPDF;
