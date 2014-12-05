@@ -21,8 +21,9 @@ class API_Client_Request extends API_Request {
 		$this->cURL->SSL_VERIFYHOST = $verifyHost;
 		$this->cURL->RETURNTRANSFER = true;
 		$this->cURL->FOLLOWLOCATION = 1;
-		$this->cURL->TIMEOUT = 40;
-
+		if (isset($GLOBALS['**API']['timeout'])) {
+			$this->cURL->TIMEOUT = $GLOBALS['**API']['timeout'];
+		}
 		//set the server port as configured in the flex.cfg file
 		$this->cURL->PORT = $GLOBALS['**API']['port'];
 
