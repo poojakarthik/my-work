@@ -59,7 +59,3 @@ VixenRequire($strModuleDir."telcoblue/import.php");
 
 // Remote Copy
 VixenRequire("lib/framework/remote_copy.php");
-
-require_once("Mail.php");
-require_once("Mail/mime.php");
- ?>
