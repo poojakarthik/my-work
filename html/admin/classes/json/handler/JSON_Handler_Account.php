@@ -32,6 +32,8 @@ class JSON_Handler_Account extends JSON_Handler
 			$oAccount	= Account::getForId($iAccountId);
 			$aAccount	= $oAccount->toArray();
 			$aAccount['customer_group']	= Customer_Group::getForId($oAccount->CustomerGroup)->toArray();
+			// Remove logo BLOB (contains non-UTF8 strings, which breaks json_encode())
+			unset($aAccount['customer_group']['customer_logo']);
 			$aAccount['account_status'] = Account_Status::getForId($oAccount->Archived)->toArray();
 
 			return	array(
