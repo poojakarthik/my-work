@@ -5,10 +5,10 @@ class Flex_Rollout_Version_000281 extends Flex_Rollout_Version {
 	public function rollout() {
 		$aOperations = array(
 			array(
-				'sDescription'		=> "Increase ticket history subject length",
+				'sDescription'		=> "Increase ticket history subject length and update ticket history subject comment",
 				'sAlterSQL' => "
 					ALTER TABLE	ticketing_ticket_history
-					MODIFY COLUMN subject VARCHAR(255) NOT NULL COMMENT 'Name of the category';
+					MODIFY COLUMN subject VARCHAR(255) NOT NULL COMMENT 'Ticket subject';
 				",
 				'sRollbackSQL' => "
 					ALTER TABLE	ticketing_ticket_history
