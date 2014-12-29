@@ -11,10 +11,10 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 			{
 				throw new JSON_Handler_FollowUp_Reassign_Reason_Exception('You do not have permission to view Follow-Up Reassign Reasons.');
 			}
-			
-			$aSort		= get_object_vars($oSort);
+
+			$aSort		= is_object($oSort) ? get_object_vars($oSort) : $aSort;
 			$aFilter	= get_object_vars($oFilter);
-			
+
 			if ($bCountOnly)
 			{
 				// Count Only
@@ -29,14 +29,14 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
 				$aReasons	= FollowUp_Reassign_Reason::searchFor($iLimit, $iOffset, $aSort, $aFilter);
 				$aResults	= array();
-				$iCount		= 0;		
+				$iCount		= 0;
 				foreach ($aReasons as $oReason)
 				{
 					// Add to Result Set
 					$aResults[$iCount+$iOffset]	= $oReason->toStdClass();
 					$iCount++;
 				}
-				
+
 				// If no exceptions were thrown, then everything worked
 				return 	array(
 							"Success"		=> true,
@@ -60,7 +60,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 					);
 		}
 	}
-	
+
 	public function getForId($iId)
 	{
 		try
@@ -70,7 +70,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 			{
 				throw new JSON_Handler_FollowUp_Reassign_Reason_Exception('You do not have permission to view Follow-Up Reassign Reasons.');
 			}
-			
+
 			// If no exceptions were thrown, then everything worked
 			return 	array(
 						"Success"	=> true,
@@ -92,7 +92,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 					);
 		}
 	}
-	
+
 	public function deactivate($iId)
 	{
 		// Start a new database transaction
@@ -105,7 +105,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
 					);
 		}
-		
+
 		try
 		{
 			// Check permissions
@@ -113,14 +113,14 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 			{
 				throw new JSON_Handler_FollowUp_Reassign_Reason_Exception('You do not have permission to deactivate Follow-Up Reassign Reasons.');
 			}
-			
+
 			// Change status and save
 			$oReason			= FollowUp_Reassign_Reason::getForId($iId);
 			$oReason->status_id	= STATUS_INACTIVE;
 			$oReason->save();
-			
+
 			$oDataAccess->TransactionCommit();
-			
+
 			// If no exceptions were thrown, then everything worked
 			return 	array(
 						"Success"	=> true
@@ -129,7 +129,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 		catch (JSON_Handler_FollowUp_Reassign_Reason_Exception $oException)
 		{
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage()
@@ -138,14 +138,14 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 		catch (Exception $e)
 		{
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error deactivating the reason'
 					);
 		}
 	}
-	
+
 	public function save($iId, $oDetails)
 	{
 		// Start a new database transaction
@@ -158,7 +158,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
 					);
 		}
-		
+
 		try
 		{
 			// Check permissions
@@ -166,7 +166,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 			{
 				throw new JSON_Handler_FollowUp_Reassign_Reason_Exception('You do not have permission to view Follow-Up Reassign Reasons.');
 			}
-			
+
 			if ($iId)
 			{
 				$oReason	= FollowUp_Reassign_Reason::getForId($iId);
@@ -175,7 +175,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 			{
 				$oReason	= new FollowUp_Reassign_Reason();
 			}
-			
+
 			// Validate input
 			$iNameLength	= 128;
 			$iDescLength	= 256;
@@ -188,7 +188,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 			{
 				$aErrors[]	= "Name is too long, maximum {$iNameLength} characters.";
 			}
-			
+
 			if (is_null($oDetails->description) || strlen($oDetails->description) == 0)
 			{
 				$aErrors[]	= 'Description missing.';
@@ -197,19 +197,19 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 			{
 				$aErrors[]	= "Description is too long, maximum {$iDescLength} characters.";
 			}
-			
+
 			if (($oDetails->status_id != STATUS_ACTIVE) && ($oDetails->status_id != STATUS_INACTIVE))
 			{
 				$aErrors[]	= 'Invalid status';
 			}
-			
+
 			$oReason->name			= $oDetails->name;
 			$oReason->description	= $oDetails->description;
 			$oReason->status_id		= $oDetails->status_id;
 			$oReason->save();
-			
+
 			$oDataAccess->TransactionCommit();
-			
+
 			// If no exceptions were thrown, then everything worked
 			return 	array(
 						"Success"	=> true,
@@ -219,7 +219,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 		catch (JSON_Handler_FollowUp_Reassign_Reason_Exception $oException)
 		{
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage()
@@ -228,7 +228,7 @@ class JSON_Handler_FollowUp_Reassign_Reason extends JSON_Handler implements JSON
 		catch (Exception $e)
 		{
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error getting the reason details'
