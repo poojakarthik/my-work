@@ -229,7 +229,13 @@
 				$this->_cliEcho("'{$strDirectory}' is a Normal Directory");
 
 				// Normal Directory
-				$strDirectoryFullPath	= $strCurrentPath.'/'.$strDirectory;
+				if ($strCurrentPath === '' && $strDirectory === '.') {
+					// Some FTP servers (or PHP bug in parsing?) have problems with listing contents of /
+					$strDirectoryFullPath = $strDirectory;
+				} else {
+					// Sane FTP servers
+					$strDirectoryFullPath = $strCurrentPath.'/'.$strDirectory;
+				}
 
 				// Browse Subdirectories
 				if (array_key_exists('arrSubdirectories', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrSubdirectories']) && count($arrDirectories[$strDirectory]['arrSubdirectories']))
