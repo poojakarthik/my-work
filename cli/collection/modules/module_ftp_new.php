@@ -230,6 +230,11 @@
 
 				// Normal Directory
 				$strDirectoryFullPath	= $strCurrentPath.'/'.$strDirectory;
+				if ($strCurrentPath === '' && $strDirectory === '.') {
+					// Some FTP servers (or PHP bug in parsing?) have problems with listing contents of /
+					// Allow a way out by having '.' as the top-level directory, which makes everything resolve relative to the homedir
+					$strDirectoryFullPath = $strDirectory;
+				}
 
 				// Browse Subdirectories
 				if (array_key_exists('arrSubdirectories', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrSubdirectories']) && count($arrDirectories[$strDirectory]['arrSubdirectories']))
