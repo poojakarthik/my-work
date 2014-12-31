@@ -43,7 +43,7 @@ class Flex_Rollout_Version_000282 extends Flex_Rollout_Version {
 				",
 				'sRollbackSQL' => "
 					UPDATE ServiceTypeTotal
-					SET Units = (ServiceTypeTotal.Units + " . self::BIGINT_SIGNED_MAX . ") - 1
+					SET Units = (ServiceTypeTotal.Units + " . self::BIGINT_SIGNED_MAX . ") + 1
 					WHERE Units > " . self::MAX_VALUE_FOR_VALID_UNIT . "
 				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
