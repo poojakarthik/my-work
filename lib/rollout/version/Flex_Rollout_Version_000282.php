@@ -15,14 +15,18 @@ class Flex_Rollout_Version_000282 extends Flex_Rollout_Version {
 					SET Units = (" . self::BIGINT_SIGNED_MAX . " - (" . self::BIGINT_UNSIGNED_MAX . " - ServiceTypeTotal.Units))
 					WHERE Units > " . self::MAX_VALUE_FOR_VALID_UNIT . "
 				",
-				'sRollbackSQL' => "",
+				'sRollbackSQL' => "
+					UPDATE ServiceTypeTotal
+					SET Units = " . self::BIGINT_UNSIGNED_MAX . " - (" . self::BIGINT_SIGNED_MAX . " - ServiceTypeTotal.Units)
+					WHERE Units > " . self::MAX_VALUE_FOR_VALID_UNIT . "
+				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(
 				'sDescription' => "MODIFY table column Units to SIGNED.",
 				'sAlterSQL' => "
 					ALTER TABLE ServiceTypeTotal
-					MODIFY Units BIGINT(20) SIGNED NOT NULL COMMENT 'Service Type Total Units';
+					MODIFY Units BIGINT SIGNED NOT NULL;
 				",
 				'sRollbackSQL' => "
 					ALTER TABLE ServiceTypeTotal
@@ -34,10 +38,14 @@ class Flex_Rollout_Version_000282 extends Flex_Rollout_Version {
 				'sDescription' => "Recalculate correct SIGNED values for previously Underflowed values.",
 				'sAlterSQL' => "
 					UPDATE ServiceTypeTotal
-					SET Units = (ServiceTypeTotal.Units - " . self::BIGINT_SIGNED_MAX . ")-1
+					SET Units = (ServiceTypeTotal.Units - " . self::BIGINT_SIGNED_MAX . ") - 1
 					WHERE Units > " . self::MAX_VALUE_FOR_VALID_UNIT . "
 				",
-				'sRollbackSQL' => "",
+				'sRollbackSQL' => "
+					UPDATE ServiceTypeTotal
+					SET Units = (ServiceTypeTotal.Units + " . self::BIGINT_SIGNED_MAX . ") - 1
+					WHERE Units > " . self::MAX_VALUE_FOR_VALID_UNIT . "
+				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			)
 		);
