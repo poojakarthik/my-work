@@ -23,6 +23,36 @@ class Flex_Rollout_Version_000283 extends Flex_Rollout_Version {
 					ALTER TABLE ServiceTotal
 						MODIFY COLUMN FNN CHAR(25) NOT NULL;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
+			),
+			array(
+				'sDescription' => "Change ServiceTypeTotal.FNN to VARCHAR(512)",
+				'sAlterSQL' => "
+					ALTER TABLE ServiceTypeTotal
+						MODIFY COLUMN FNN VARCHAR(512) NOT NULL;",
+				'sRollbackSQL' => "
+					ALTER TABLE ServiceTypeTotal
+						MODIFY COLUMN FNN CHAR(25) NOT NULL;",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
+			),
+			array(
+				'sDescription' => "Change ProvisioningRequest.FNN to VARCHAR(512)",
+				'sAlterSQL' => "
+					ALTER TABLE ProvisioningRequest
+						MODIFY COLUMN FNN VARCHAR(512) NOT NULL;",
+				'sRollbackSQL' => "
+					ALTER TABLE ProvisioningRequest
+						MODIFY COLUMN FNN CHAR(25) NOT NULL;",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
+			),
+			array(
+				'sDescription' => "Change ProvisioningResponse.FNN to VARCHAR(512)",
+				'sAlterSQL' => "
+					ALTER TABLE ProvisioningResponse
+						MODIFY COLUMN FNN VARCHAR(512) DEFAULT NULL;",
+				'sRollbackSQL' => "
+					ALTER TABLE ProvisioningResponse
+						MODIFY COLUMN FNN CHAR(25) DEFAULT NULL;",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			)
 		);
 
