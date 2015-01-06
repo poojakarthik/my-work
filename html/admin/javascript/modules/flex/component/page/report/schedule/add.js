@@ -531,7 +531,7 @@ var self = new Class({
 						for (var i in aElements) {
 							if (aElements.hasOwnProperty(i)) {
 								var oElement = aElements[i];
-								var oValue = parseInt(oElement.value);
+								var oValue = oElement.value;
 								aConstraintValues.push(oValue);
 								if (sConstraintName === "") {
 									sConstraintName = oElement.name.replace("List[]", "");
@@ -546,7 +546,7 @@ var self = new Class({
 	},
 
 	_save : function(event) {
-		this._populateMultipleSelectionConstraints
+		this._populateMultipleSelectionConstraints();
 		var bValidation = this._oForm.validate();
 		if(bValidation) {
 			if (this._oForm.control('delivery_method') == null) {
