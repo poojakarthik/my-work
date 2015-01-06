@@ -44,11 +44,11 @@
  class CollectionModuleSSH extends CollectionModuleBase
  {
 	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_SSH2;
-	
+
 	private $_resConnection;
- 	
+
 	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_SSH2;
-	
+
 	public static function getConfigDefinition()
 	{
 		// Values defined in here are DEFAULT values
@@ -89,7 +89,7 @@
 									)
 				);
 	}
- 	
+
  	//------------------------------------------------------------------------//
 	// Connect
 	//------------------------------------------------------------------------//
@@ -111,7 +111,7 @@
 		$strPassword	= $this->_oConfig->Password;
 		$intPort		= $this->_oConfig->Port;
 		$bolSFTP		= $this->_oConfig->SFTP;
-		
+
  		// Connect to SSH2 server
  		if ($this->_resConnection = ssh2_connect($strHost, $intPort))
  		{
@@ -123,7 +123,7 @@
 				{
 					return "Unable to initialise SFTP subsystem";
 				}
-				
+
 				// Retrieve full file listing
 				$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
 				reset($this->_arrDownloadPaths);
@@ -137,11 +137,11 @@
  		{
  			return "Unable to connect to SSH2 server";
  		}
- 		
+
  		// All good, return TRUE
 		return TRUE;
  	}
- 	
+
   	//------------------------------------------------------------------------//
 	// Disconnect
 	//------------------------------------------------------------------------//
@@ -158,7 +158,7 @@
  	{
 		unset($this->_resConnection);
  	}
- 	
+
   	//------------------------------------------------------------------------//
 	// Download
 	//------------------------------------------------------------------------//
@@ -180,7 +180,7 @@
 		{
 			return "Download() called before Connect()";
 		}
-		
+
 		// Get the Current path element
 		if (!($arrCurrentFile = current($this->_arrDownloadPaths)))
 		{
@@ -191,10 +191,10 @@
 		{
 			// Advance the arrDownloadPaths internal pointer
 			next($this->_arrDownloadPaths);
-			
+
 			// Calculate Local Download Path
 			$arrCurrentFile['LocalPath']	= $strDestination.ltrim(basename($arrCurrentFile['RemotePath']), '/');
-			
+
 			// Attempt to download this file
 			$strSFTPPath	= "ssh2.sftp://{$this->_resSFTPConnection}{$arrCurrentFile['RemotePath']}";
 			if ($this->_resSFTPConnection && ($resFileStream = fopen($strSFTPPath, 'r')))
@@ -238,7 +238,7 @@
  		fclose($ptrStream);
  		return $strContents;
  	}
- 	
+
 	//------------------------------------------------------------------------//
 	// _SSH2IsDir
 	//------------------------------------------------------------------------//
@@ -261,7 +261,7 @@
  		$arrAttribs = explode("\n", $strOutput);
  		return (bool)stristr($arrAttribs[1], "directory");
  	}
- 	
+
 	//------------------------------------------------------------------------//
 	// _directoryListing
 	//------------------------------------------------------------------------//
@@ -280,6 +280,9 @@
 	 */
  	protected function _directoryListing($strPath)
  	{
+ 		// PHP 5.3.something+ current has an issue with opendir() and the root directory. Using /./ is functionally equivalent and works around the issue.
+ 		// https://bugs.php.net/bug.php?id=64169
+ 		$strPath = ($strPath === '/') ? '/./' : $strPath;
  		$arrFiles	= Array();
  		if ($this->_resSFTPConnection)
  		{
@@ -300,10 +303,10 @@
 			$strFiles	= $this->_SSH2Execute("ls $strPath");
 			$arrFiles	= explode("\n", trim($strFiles));
  		}
- 		
+
  		return $arrFiles;
  	}
- 	
+
   	//------------------------------------------------------------------------//
 	// _GetDownloadPaths
 	//------------------------------------------------------------------------//
@@ -322,7 +325,7 @@
 	{
 		// Get Path Definitions
 		$arrDefinitions		= $this->_oConfig->FileDefine;
-		
+
 		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
@@ -330,27 +333,27 @@
 			{
 				// Get Directory Listing
 				$arrFiles	= $this->_directoryListing($strPath);
-				
+
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
 				{
 					foreach ($arrFiles as $strFilePath)
 					{
 						$strFilePath	= trim($strFilePath);
-						
+
 						// Ignore directories
 						if (!$this->_resSFTPConnection && $this->_SSH2IsDir($strFilePath))
 						{
 							continue;
 						}
-						
+
 						// Does this file match our REGEX?
 						if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
 						{
 							// No match
 							continue;
 						}
-						
+
 						// Does this FileType have download uniqueness?
 						if ($arrFileType['DownloadUnique'])
 						{
@@ -361,10 +364,10 @@
 								continue;
 							}
 						}
-						
+
 						// Add the FileImport Type to our element
 						$arrFileType['FileImportType']	= $intFileType;
-						
+
 						// As far as we can tell, this file is valid
 						$strPath	.= ($strPath) ? '/' : '';
 						$arrDownloadPaths[]	= Array('RemotePath' => trim($strPath.$strFilePath), 'FileType' => $arrFileType);
