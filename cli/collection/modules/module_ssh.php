@@ -282,7 +282,9 @@
  	{
  		// PHP 5.3.something+ current has an issue with opendir() and the root directory. Using /./ is functionally equivalent and works around the issue.
  		// https://bugs.php.net/bug.php?id=64169
- 		$strPath = ($strPath === '/') ? '/./' : $strPath;
+		if ($strPath === '/') {
+			$strPath = '/./';
+		}
  		$arrFiles	= Array();
  		if ($this->_resSFTPConnection)
  		{
