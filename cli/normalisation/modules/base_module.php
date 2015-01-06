@@ -572,7 +572,7 @@ abstract class NormalisationModule extends CarrierModule {
 
 		$intUnits = (int)$this->_arrNormalisedData['Units'];
 		$fltCost = (float)$this->_arrNormalisedData['Cost'];
-		if ($fltCost < 0.0) {
+		if ($fltCost < 0.0 || $intUnits < 0) {
 			$this->_arrNormalisedData['Units'] = abs($intUnits);
 			$this->_arrNormalisedData['Cost'] = abs($fltCost);
 			$this->_AppendCDR('Credit', 1);

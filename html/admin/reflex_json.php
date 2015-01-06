@@ -12,14 +12,14 @@ $bIsLogin		= (($strHandler == 'Login') && ($strMethod == ''));
 if (!Flex::continueSession(Flex::FLEX_ADMIN_SESSION) && !$bIsLogin)
 {
 	require_once dirname(__FILE__) . '/../../lib/classes/json/JSON_Services.php';
-	
+
 	// Prompt the user to extend their session or logout
 	echo 	JSON_Services::encode(
 				array(
 					'ERROR'			=>'LOGIN',
 					'sHandler'		=> $strHandler,
 					'sMethod'		=> $strMethod,
-					'aParameters'	=> JSON_Services::decode(isset($_POST['json']) ? $_POST['json'] : array())
+					'aParameters'	=> JSON_Services::decode(isset($_POST['json']) ? $_POST['json'] : '[]')
 				)
 			);
 	exit;
@@ -31,7 +31,7 @@ Flex::load();
 if ($bIsLogin && isset($_POST['json']))
 {
 	require_once dirname(__FILE__) . '/../../lib/classes/json/JSON_Services.php';
-	
+
 	// Attempt to authenticate given the passed username and password
 	$aParameters	= JSON_Services::decode($_POST['json']);
 	echo	JSON_Services::encode(

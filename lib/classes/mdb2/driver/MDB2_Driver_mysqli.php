@@ -58,7 +58,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	public function listTableFields($sTable) {
 		try {
-			$oStatement = $this->_oPDO->query("SHOW COLUMNS FROM {$sTable}");
+			$oStatement = $this->_oPDO->query("SHOW COLUMNS FROM `{$sTable}`");
 			$aTableFields = $oStatement->fetchAll();
 			$aResult = array();
 			foreach($aTableFields as $aTable) {
@@ -72,7 +72,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	public function getTableFieldDefinition($sTable, $sFieldName) {
 		try {
-			$oStatement = $this->_oPDO->query("DESCRIBE {$sTable} {$sFieldName}");
+			$oStatement = $this->_oPDO->query("DESCRIBE `{$sTable}` `{$sFieldName}`");
 			$aDefinition = $oStatement->fetchAll(MDB2_FETCHMODE_ASSOC);
 			preg_match("/\((\d+)\)/", $aDefinition[0]['Type'], $aMatches);
 			$iLength = (isset($aMatches[1])) ? (int)$aMatches[1] : null;

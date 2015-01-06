@@ -9,6 +9,10 @@ class MDB2_Driver_mysqli_Result {
 		$this->_oPDOMySQLDriver = $oPDOMySQLDriver;
 	}
 
+	public function numRows() {
+		return $this->_oPDOStatement->rowCount();
+	}
+
 	public function fetchOne($mColnum=0, $iRownum=null) {
 		if ($mColnum !== 0) {
 			throw new Exception("Error in method fetchOne(), unsupported/unimplemented parameter mColnum={$mColnum}");

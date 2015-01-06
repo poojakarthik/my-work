@@ -1,0 +1,3 @@
+#!/bin/bash
+apt-get --quiet --quiet update &&
+apt-get --quiet --quiet --yes install zip;

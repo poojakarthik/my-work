@@ -30,8 +30,8 @@ class Flex_Process
 	const	PROCESS_LATE_NOTICES			= 'late-notices';
 	
 	// Other Class Constants
-	const	PROCESSES_DIRECTORY				= 'processes/running/';
-	
+	const	PROCESSES_DIRECTORY				= '/var/run/';
+
 	// Static Members
 	static protected	$_aProcesses	= array();
 	
@@ -98,7 +98,7 @@ class Flex_Process
 	
 	private static function _buildProcessRunningFilename($sProcessName)
 	{
-		$sLockFilePath	= FILES_BASE_PATH.self::PROCESSES_DIRECTORY;
+		$sLockFilePath	= FLEX_BASE_PATH . self::PROCESSES_DIRECTORY;
 		@mkdir($sLockFilePath, 0777, true);
 		return $sLockFilePath.$sProcessName;
 	}

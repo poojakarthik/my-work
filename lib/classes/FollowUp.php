@@ -21,12 +21,12 @@ class FollowUp extends ORM_Cached
 		}
 		return $strCacheName;
 	}
-	
+
 	protected static function getMaxCacheSize()
 	{
 		return 100;
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -40,7 +40,7 @@ class FollowUp extends ORM_Cached
 	{
 		return parent::getCachedObjects(__CLASS__);
 	}
-	
+
 	protected static function addToCache($mixObjects)
 	{
 		parent::addToCache($mixObjects, __CLASS__);
@@ -50,12 +50,12 @@ class FollowUp extends ORM_Cached
 	{
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
-	
+
 	public static function getAll($bolForceReload=false)
 	{
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -80,21 +80,21 @@ class FollowUp extends ORM_Cached
 							$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
 							$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 						}
-						
+
 						if ($oNote->Service)
 						{
 							$oService					= Service::getForId($oNote->Service);
 							$aDetails['service_id']		= $oService->Id;
 							$aDetails['service_fnn']	= $oService->FNN;
 						}
-						
+
 						if ($oNote->Contact)
 						{
 							$oContact					= Contact::getForId($oNote->Contact);
 							$aDetails['contact_id']		= $oContact->Id;
 							$aDetails['contact_name']	= "{$oContact->FirstName} {$oContact->LastName}";
 						}
-						
+
 						$aDetails['note_id']		= $oNote->Id;
 						$aDetails['note_type_id']	= $oNote->NoteType;
 					}
@@ -102,7 +102,7 @@ class FollowUp extends ORM_Cached
 				break;
 			case FOLLOWUP_TYPE_ACTION:
 				$oFollowUpAction	= FollowUp_Action::getForFollowUpId($this->id);
-				
+
 				// Check the action_association_type (through the action_type & action_type_action_association_type)
 				if ($oFollowUpAction)
 				{
@@ -117,28 +117,28 @@ class FollowUp extends ORM_Cached
 							$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
 							$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 						}
-						
+
 						$aServices	= $oAction->getAssociatedServices();
 						foreach ($aServices as $iServiceId => $oService)
 						{
 							$aDetails['service_id']		= $iServiceId;
 							$aDetails['service_fnn']	= $oService->FNN;
 						}
-						
+
 						$aContacts	= $oAction->getAssociatedContacts();
 						foreach ($aContacts as $iContactId => $oContact)
 						{
 							$aDetails['contact_id']		= $iContactId;
 							$aDetails['contact_name']	= $oContact->FirstName.' '.$aContacts[0]->LastName;
 						}
-						
+
 						$aDetails['action_id']	= $oAction->id;
 					}
 				}
 				break;
 			case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
 				$oFollowUpTicketCorrespondence	= FollowUp_Ticketing_Correspondence::getForFollowUpId($this->id);
-				
+
 				if ($oFollowUpTicketCorrespondence)
 				{
 					$oTicketingCorrespondence	= Ticketing_Correspondance::getForId($oFollowUpTicketCorrespondence->ticketing_correspondence_id);
@@ -148,7 +148,7 @@ class FollowUp extends ORM_Cached
 						if ($oTicket)
 						{
 							$aDetails['ticket_id']	= $oTicket->id;
-							
+
 							if ($oTicket->account_id)
 							{
 								$oAccount						= Account::getForId($oTicket->account_id);
@@ -158,19 +158,19 @@ class FollowUp extends ORM_Cached
 								$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 							}
 						}
-						
+
 						$oContact	= $oTicketingCorrespondence->getContact();
 						if ($oContact)
 						{
 							$aDetails['ticket_contact_name']	= $oContact->getName();
 						}
-						
+
 						$aDetails['ticketing_correspondence_id']	= $oTicketingCorrespondence->id;
 					}
 				}
 				break;
 		}
-		
+
 		return $aDetails;
 	}
 
@@ -192,7 +192,7 @@ class FollowUp extends ORM_Cached
 				break;
 			case FOLLOWUP_TYPE_ACTION:
 				$oFollowUpAction	= FollowUp_Action::getForFollowUpId($this->id);
-				
+
 				// Check the action_association_type (through the action_type & action_type_action_association_type)
 				if ($oFollowUpAction)
 				{
@@ -205,7 +205,7 @@ class FollowUp extends ORM_Cached
 				break;
 			case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
 				$oFollowUpTicketCorrespondence	= FollowUp_Ticketing_Correspondence::getForFollowUpId($this->id);
-				
+
 				if ($oFollowUpTicketCorrespondence)
 				{
 					$oTicketingCorrespondence	= Ticketing_Correspondance::getForId($oFollowUpTicketCorrespondence->ticketing_correspondence_id);
@@ -216,46 +216,46 @@ class FollowUp extends ORM_Cached
 				}
 				break;
 		}
-		
+
 		// Remove whitespace
 		if ($bRemoveWhitespace)
 		{
 			$sSummary	= preg_replace('/\s/', ' ', $sSummary);
 		}
-		
+
 		// Limit to $iCharacterLimit characters (30 is default)
 		if (!is_null($iCharacterLimit) && (strlen($sSummary) > $iCharacterLimit))
 		{
 			return substr($sSummary, 0, $iCharacterLimit).'...';
 		}
-		
+
 		return $sSummary;
 	}
-	
+
 	public function isAssignedTo($iEmployeeId)
 	{
 		return $iEmployeeId == $this->assigned_employee_id;
 	}
-	
+
 	public function assignTo($iEmployeeId, $iReassignReasonId)
 	{
 		// Do reassign
 		$this->assigned_employee_id	= $iEmployeeId;
 		$this->save(null, $iReassignReasonId);
-		
+
 		// Send email (need to set include path for the zend mail class require to work)
 		set_include_path(get_include_path().PATH_SEPARATOR.realpath(dirname(__FILE__).'/../'));
 		require_once 'Zend/Mail.php';
-		
+
 		$oEmployee	= Employee::getForId($iEmployeeId);
 		if ($oEmployee->email)
 		{
 			$sUserEmail		= $oEmployee->email;
-			
+
 			// DEBUG
 			//$sUserEmail		= "rmctainsh@yellowbilling.com.au";
 			// DEBUG
-			
+
 			$aDetails		= $this->getDetails();
 			$oCustomerGroup	= Customer_Group::getForId($aDetails['customer_group_id']);
 			$sAssignedBy	= Flex::getDisplayName();
@@ -267,28 +267,28 @@ class FollowUp extends ORM_Cached
 								"	You have been assigned a Follow-Up (of type '{$sType}') by {$sAssignedBy} with a category of '{$sCategory}' that is due on <span style='font-weight: bold;'>{$sDueOn}</span>.<br/><br/>\n" .
 								"	<a href='{$sUrl}'>Click here</a> to go to your Follow-Up Management page.\n" .
 								"</div>";
-			
+
 			$oEmail	= new Zend_Mail();
 			$oEmail->setBodyHtml($sEmailContent);
 			$oEmail->setFrom("followups@ybs.net.au");
 			$oEmail->addTo($sUserEmail, $oEmployee->getName());
 			$oEmail->setSubject("You have been assigned a follow-up");
 			$oEmail->send();
-			
+
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	public function save($mModifyReasonId=null, $iReassignReasonId=null)
 	{
 		// Update modified fields
 		$this->modified_datetime	= DataAccess::getDataAccess()->getNow();
 		$this->modified_employee_id	= Flex::getUserId();
-		
+
 		parent::save();
-		
+
 		// Create followup_history record
 		$oFollowUpHistory						= new FollowUp_History();
 		$oFollowUpHistory->followup_id			= $this->id;
@@ -297,7 +297,7 @@ class FollowUp extends ORM_Cached
 		$oFollowUpHistory->modified_datetime	= $this->modified_datetime;
 		$oFollowUpHistory->modified_employee_id	= $this->modified_employee_id;
 		$oFollowUpHistory->save();
-		
+
 		if (!is_null($mModifyReasonId))
 		{
 			// Modified
@@ -331,7 +331,7 @@ class FollowUp extends ORM_Cached
 			return false;
 		}
 	}
-	
+
 	public static function getForRecurringId($iFollowUpRecurringId)
 	{
 		$oSelect	= self::_preparedStatement('selByFollowUpRecurringId');
@@ -347,7 +347,7 @@ class FollowUp extends ORM_Cached
 	{
 		// Generate search table (temporary) and where clause data
 		$aWhereInfoSearch	= self::_buildSearchTable($aFilter);
-		
+
 		// Query the temp table 'followup_search'
 		$sSearchFrom	= '	followup_search fs
 							JOIN	followup_category fcat
@@ -356,20 +356,20 @@ class FollowUp extends ORM_Cached
 										ON fs.followup_type_id = ft.id
 							JOIN	Employee e
 										ON fs.assigned_employee_id = e.Id';
-		
+
 		// Get the count of the unlimited results
 		$oFollowUpSearchCountSelect	=	new StatementSelect(
-										$sSearchFrom, 
-										'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count', 
-										$aWhereInfoSearch['sClause'], 
-										'', 
+										$sSearchFrom,
+										'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count',
+										$aWhereInfoSearch['sClause'],
+										'',
 										''
 									);
 		if ($oFollowUpSearchCountSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
-		
+
 		$aCount	= $oFollowUpSearchCountSelect->Fetch();
 		return $aCount['count'];
 	}
@@ -382,16 +382,16 @@ class FollowUp extends ORM_Cached
 									'followup_category_id'	=> 'fcat.name',
 									'followup_type_id'		=> 'ft.name',
 									'assigned_employee_id'	=> "CONCAT(e.FirstName, ' ', e.LastName)"
-								), 
+								),
 								$aSort
 							);
-		
+
 		// LIMIT clause
 		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
-		
+
 		// Generate search table (temporary) and where clause data
 		$aWhereInfoSearch	= self::_buildSearchTable($aFilter);
-		
+
 		// Query the temp table 'followup_search'
 		$sSearchFrom	= '	followup_search fs
 							JOIN	followup_category fcat
@@ -400,40 +400,40 @@ class FollowUp extends ORM_Cached
 										ON fs.followup_type_id = ft.id
 							JOIN	Employee e
 										ON fs.assigned_employee_id = e.Id';
-		
+
 		// Get the count of the unlimited results
 		$oFollowUpSearchCountSelect	=	new StatementSelect(
-										$sSearchFrom, 
-										'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count', 
-										$aWhereInfoSearch['sClause'], 
-										'', 
+										$sSearchFrom,
+										'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count',
+										$aWhereInfoSearch['sClause'],
+										'',
 										''
 									);
 		if ($oFollowUpSearchCountSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
-		
+
 		$aCount	= $oFollowUpSearchCountSelect->Fetch();
 		if ($bCountOnly)
 		{
 			// Only want the count, return it
 			return $aCount['count'];
 		}
-		
-		// Get the limited + offset results 
+
+		// Get the limited + offset results
 		$oFollowUpSearchSelect	=	new StatementSelect(
-										$sSearchFrom, 
-										'fs.*', 
-										$aWhereInfoSearch['sClause'], 
-										$sOrderByClause, 
+										$sSearchFrom,
+										'fs.*',
+										$aWhereInfoSearch['sClause'],
+										$sOrderByClause,
 										$sLimitClause
 									);
 		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
-		
+
 		// Return the results as well as the count
 		return array('aData' => $oFollowUpSearchSelect->FetchAll(), 'iCount' => $aCount['count']);
 	}
@@ -446,16 +446,16 @@ class FollowUp extends ORM_Cached
 									'followup_category_id'	=> 'fcat.name',
 									'followup_type_id'		=> 'ft.name',
 									'assigned_employee_id'	=> "CONCAT(e.FirstName, ' ', e.LastName)"
-								), 
+								),
 								$aSort
 							);
-		
+
 		// LIMIT clause
 		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
-		
+
 		// Generate search table (temporary) and where clause data
 		$aWhereInfoSearch	= self::_buildSearchTable($aFilter);
-		
+
 		// Query the temp table 'followup_search'
 		$sSearchFrom	= '	followup_search fs
 							JOIN	followup_category fcat
@@ -464,20 +464,20 @@ class FollowUp extends ORM_Cached
 										ON fs.followup_type_id = ft.id
 							JOIN	Employee e
 										ON fs.assigned_employee_id = e.Id';
-		
-		// Get the limited + offset results 
+
+		// Get the limited + offset results
 		$oFollowUpSearchSelect	=	new StatementSelect(
-										$sSearchFrom, 
-										'fs.*', 
-										$aWhereInfoSearch['sClause'], 
-										$sOrderByClause, 
+										$sSearchFrom,
+										'fs.*',
+										$aWhereInfoSearch['sClause'],
+										$sOrderByClause,
 										$sLimitClause
 									);
 		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
-		
+
 		$mFollowUps	= $oFollowUpSearchSelect->FetchAll();
 		return ($mFollowUps === null ? array() : $mFollowUps);
 	}
@@ -494,7 +494,7 @@ class FollowUp extends ORM_Cached
 			// Active, check the date to see if overdue or current
 			$iDueDate	= strtotime($sDueDateTime);
 			$iNow		= time();
-			
+
 			if ($iDueDate >= $iNow)
 			{
 				// Current
@@ -507,51 +507,51 @@ class FollowUp extends ORM_Cached
 			}
 		}
 	}
-	
+
 	private static function _buildSearchTable($aFilter=null)
 	{
 		$iStart	= time();
 		$iLast	= $iStart;
-		
+
 		// Build query parts based on the limit, offset, sort and filter parameters
 		$sSelectClause	= '	f.*, fc.followup_closure_type_id';
-		$sFromClause	= '	followup f 
-							LEFT JOIN	followup_closure fc 
+		$sFromClause	= '	followup f
+							LEFT JOIN	followup_closure fc
 											ON f.followup_closure_id = fc.id';
-		
+
 		// WHERE clause for followup_search (includes closure constraints)
 		$aWhereInfoSearch	= StatementSelect::generateWhere(null, $aFilter);
-		
-		/* 
-		 * WHERE clause for followup. Any closure constraints are removed so that closed recurring fup 
+
+		/*
+		 * WHERE clause for followup. Any closure constraints are removed so that closed recurring fup
 		 * iterations are included in the temp table. These constraints are used when querying the resulting
-		 * temp table (using $aWhereInfoSearch, defined above). 
+		 * temp table (using $aWhereInfoSearch, defined above).
 		 */
 		unset($aFilter['followup_closure_id']);
 		unset($aFilter['followup_closure_type_id']);
 		$aWhereInfoFollowUp	= StatementSelect::generateWhere(null, $aFilter);
-			
+
 		// Get followups (ignore orderby and limit for this query, will be done on the temporary table)
 		$oFollowUpSelect	=	new StatementSelect(
-									$sFromClause, 
-									$sSelectClause, 
-									$aWhereInfoFollowUp['sClause'], 
-									'', 
+									$sFromClause,
+									$sSelectClause,
+									$aWhereInfoFollowUp['sClause'],
+									'',
 									''
 								);
 		if ($oFollowUpSelect->Execute($aWhereInfoFollowUp['aValues']) === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
-		
+
 		// Search for recurring followups, first remove followup specific fields from the filter
 		unset($aFilter['due_datetime']);
 		$aRecurringFollowUps	= FollowUp_Recurring::searchFor(null, null, null, $aFilter);
-		
+
 		// Create temporary table 'followup_search'
 		$oQuery					= new Query();
 		$mTempTablCheckResult	=	$oQuery->Execute(
-										"SELECT	count(*) 
+										"SELECT	count(*)
 										FROM 	followup_search"
 									);
 		if ($mTempTablCheckResult === false)
@@ -580,7 +580,7 @@ class FollowUp extends ORM_Cached
 			{
 				throw new Exception_Database("Error creating temporary table. Database Error = ".$oQuery->Error());
 			}
-			
+
 			// Add indexes to the followup_search table
 			$mResult	= 	$oQuery->Execute(
 								"	ALTER TABLE followup_search
@@ -607,7 +607,7 @@ class FollowUp extends ORM_Cached
 			// The table has already been created, clear it's contents for this search
 			$oQuery->Execute("DELETE FROM followup_search");
 		}
-		
+
 	 	// Insert followups into 'followup_search'
 	 	$aInserts	= array();
 		while ($aRow = $oFollowUpSelect->Fetch())
@@ -617,7 +617,7 @@ class FollowUp extends ORM_Cached
 			/*$sInsert	= 	sprintf(
 								"	INSERT INTO	followup_search (
 													followup_id,
-													assigned_employee_id, 
+													assigned_employee_id,
 													created_datetime,
 													due_datetime,
 													followup_type_id,
@@ -650,7 +650,7 @@ class FollowUp extends ORM_Cached
 			{
 				throw new Exception_Database("Error inserting followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 			}*/
-			
+
 			$aInserts[]	= "({$aRow['id']},
 							{$aRow['assigned_employee_id']},
 							'{$aRow['created_datetime']}',
@@ -659,20 +659,20 @@ class FollowUp extends ORM_Cached
 							{$aRow['followup_category_id']},
 							".($aRow['followup_closure_id'] 		? $aRow['followup_closure_id'] 		: 'NULL').",
 							".($aRow['followup_closure_type_id'] 	? $aRow['followup_closure_type_id']	: 'NULL').",
-							'".($aRow['closed_datetime'] 			? $aRow['closed_datetime']			: 'NULL')."',
+							'".($aRow['closed_datetime'] 			? $aRow['closed_datetime']			: date('Y-m-d H:i:s'))."',
 							".($aRow['followup_recurring_id']		? $aRow['followup_recurring_id'] 	: 'NULL').",
 							'{$aRow['modified_datetime']}',
 							{$aRow['modified_employee_id']},
 							'".FollowUp::getStatus($aRow['followup_closure_id'], $aRow['due_datetime'])."')";
-			
+
 		}
-		
+
 		// Do inserts
 		if (count($aInserts) > 0)
 		{
 			$sInsert	= "	INSERT INTO	followup_search (
 								followup_id,
-								assigned_employee_id, 
+								assigned_employee_id,
 								created_datetime,
 								due_datetime,
 								followup_type_id,
@@ -692,11 +692,11 @@ class FollowUp extends ORM_Cached
 				throw new Exception_Database("Error inserting followup into temporary table. Database Error = ".$oQuery->Error());
 			}
 		}
-		
+
 		Log::getLog()->log("Single: ".(time() - $iStart)." (".(time() - $iLast).")");
 		$iLast	= time();
-		
-		/* 
+
+		/*
 		 * Insert recurring followups into 'followup_search'. Calculate all 'projected' iterations of the
 		 * recurring followup. Check if they've already been closed (will exist as a once off followup) before
 		 * adding them to the temp table
@@ -714,10 +714,10 @@ class FollowUp extends ORM_Cached
 				/*
 				 * Projected date is within recurrence date limit
 				 */
-				
+
 				// Convert it to db string
 				$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
-			
+
 				// Check all followups (not just those in the temp table) for an existing closed iteration
 				$oExisting	= self::getForDateAndRecurringId($sDueDateTime, $oRecurringFollowUp->id);
 				if ($oExisting == false)
@@ -726,7 +726,7 @@ class FollowUp extends ORM_Cached
 					// This is the old query that was used to insert a recurring followup
 					/*$sInsert	= 	sprintf(
 										"	INSERT INTO	followup_search (
-															assigned_employee_id, 
+															assigned_employee_id,
 															created_datetime,
 															due_datetime,
 															followup_type_id,
@@ -754,7 +754,7 @@ class FollowUp extends ORM_Cached
 					{
 						throw new Exception_Database("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 					}*/
-					
+
 					$aRecurringInserts[]	= "($oRecurringFollowUp->assigned_employee_id,
 												'$oRecurringFollowUp->created_datetime',
 												'$sDueDateTime',
@@ -768,7 +768,7 @@ class FollowUp extends ORM_Cached
 												'$oRecurringFollowUp->modified_datetime',
 												$oRecurringFollowUp->modified_employee_id,
 												'".FollowUp::getStatus(null, $sDueDateTime)."')";
-					
+
 				}
 				else
 				{
@@ -786,7 +786,7 @@ class FollowUp extends ORM_Cached
 					{
 						throw new Exception_Database("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
 					}
-					
+
 					if ($mCheckResult->num_rows == 0)
 					{
 						/*
@@ -796,7 +796,7 @@ class FollowUp extends ORM_Cached
 						// This is the old query that was used to insert a recurring followup
 						/*$sInsert	= 	sprintf(
 											"	INSERT INTO	followup_search (
-																assigned_employee_id, 
+																assigned_employee_id,
 																created_datetime,
 																due_datetime,
 																followup_type_id,
@@ -830,7 +830,7 @@ class FollowUp extends ORM_Cached
 						{
 							throw new Exception_Database("Error inserting followup into temporary table (second attempt). Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 						}*/
-						
+
 						$aRecurringInserts[]	= "($oExisting->assigned_employee_id,
 													'$oExisting->created_datetime',
 													'$oExisting->due_datetime',
@@ -848,7 +848,7 @@ class FollowUp extends ORM_Cached
 					else
 					{
 						/*
-						 * It IS in the temp table, update it's recurring iteration 
+						 * It IS in the temp table, update it's recurring iteration
 						 * (which is a value that exists only within the temp table)
 						 */
 						$sUpdate	= 	sprintf(
@@ -867,29 +867,29 @@ class FollowUp extends ORM_Cached
 						}
 					}
 				}
-				
+
 				// Calculates the next projected followup date after incrementing the iterator
 				$i++;
 				$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDateSeconds($i);
 				if ($iProjectedDate > $iNow)
 				{
 					/*
-					 * We've gone past the present datetime, only a certain number of iterations are every 
+					 * We've gone past the present datetime, only a certain number of iterations are every
 					 * returned past the present, this value ($iAfterNow) helps maintain that limit.
-					 */ 
+					 */
 					$iAfterNow++;
 				}
 			}
 		}
-		
+
 		Log::getLog()->log("Recurring: ".(time() - $iStart)." (".(time() - $iLast).")");
 		$iLast	= time();
-		
+
 		// Do recurring inserts
 		if (count($aRecurringInserts) > 0)
 		{
 			$sRecurringInsert	= "	INSERT INTO	followup_search (
-										assigned_employee_id, 
+										assigned_employee_id,
 										created_datetime,
 										due_datetime,
 										followup_type_id,
@@ -910,25 +910,25 @@ class FollowUp extends ORM_Cached
 				throw new Exception_Database("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error());
 			}
 		}
-		
+
 		Log::getLog()->log("Recurring insert: ".(time() - $iStart)." (".(time() - $iLast).")");
 		$iLast	= time();
-		
+
 		return $aWhereInfoSearch;
 	}
-	
+
 	public function isClosed()
 	{
 		return !(is_null($this->followup_closure_id) && is_null($this->closed_datetime));
 	}
-	
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -957,19 +957,19 @@ class FollowUp extends ORM_Cached
 				case 'selByFollowUpRecurringId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>");
 					break;
-				
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}

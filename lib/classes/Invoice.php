@@ -88,7 +88,7 @@ class Invoice extends ORM_Cached {
 					}
 				}
 			} else {
-				throw new Exception("Too many database locks encountered (Maximum: ".Invoice_Run::MAXIMUM_LOCK_RETRIES.")");
+				throw new Exception("Too many database locks encountered (Maximum: ".Invoice::MAXIMUM_LOCK_RETRIES.")");
 			}
 		}
 	}

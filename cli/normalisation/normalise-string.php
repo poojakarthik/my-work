@@ -65,6 +65,7 @@ _log('Testing %d CDR data strings:', count($aArgs['_']));
 foreach ($aArgs['_'] as $i=>$sCDRData) {
 	_log('  #%d:', $i + 1);
 	_log($oNormaliser->Normalise(array(
+		'SequenceNo' => $i + 1,
 		'Carrier' => $aCarrierModule['Carrier'],
 		'FileName' => $aArgs['file-name'],
 		'CDR' => $sCDRData,
@@ -112,7 +113,7 @@ function _log() {
 function _arguments(array $aOptions, $aArgs) {
 	// First argument is the script name
 	$sScriptName = array_shift($aArgs);
-	
+
 	$aNonOptions = array();
 	$aParsed = array();
 

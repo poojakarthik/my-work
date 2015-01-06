@@ -45,8 +45,8 @@
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= SHARED_BASE_PATH."framework/"; 
- 
+ $strFrameworkDir		= SHARED_BASE_PATH."framework/";
+
 //----------------------------------------------------------------//
 // strApplicationDir
 //----------------------------------------------------------------//
@@ -61,8 +61,8 @@
  * @variable
  * @package	framework
  */
- $strApplicationDir		= ""; 
- 
+ $strApplicationDir		= "";
+
 //----------------------------------------------------------------//
 // strWebDir
 //----------------------------------------------------------------//
@@ -77,8 +77,8 @@
  * @variable
  * @package	framework
  */
- $strWebDir		= ""; 
- 
+ $strWebDir		= "";
+
 //----------------------------------------------------------------//
 // strModuleDir
 //----------------------------------------------------------------//
@@ -93,7 +93,7 @@
  * @variable
  * @package	framework
  */
- $strModuleDir		= $strApplicationDir."modules/"; 
+ $strModuleDir		= $strApplicationDir."modules/";
 
 
 
@@ -112,11 +112,6 @@ require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 require_once($strFrameworkDir."psxlsgen.php");
 require_once($strFrameworkDir."mail_attachment.php");
-
-// load PEAR components
-require_once("Mail.php");
-require_once("Mail/mime.php");
-require_once("Spreadsheet/Excel/Writer.php");
 
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
@@ -149,9 +144,9 @@ require_once($strModuleDir."aapt/import_module_aapt_reject.php");
 //require_once($strModuleDir."module_optus.php");
 //require_once($strModuleDir."module_aapt.php");
 
-// load application 
+// load application
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");
 require_once($strApplicationDir."application.php");
- 
+
  ?>

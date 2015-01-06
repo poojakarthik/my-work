@@ -46,8 +46,8 @@
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../framework/"; 
- 
+ $strFrameworkDir		= "../framework/";
+
 //----------------------------------------------------------------//
 // strApplicationDir
 //----------------------------------------------------------------//
@@ -62,8 +62,8 @@
  * @variable
  * @package	framework
  */
- $strApplicationDir		= ""; 
- 
+ $strApplicationDir		= "";
+
 //----------------------------------------------------------------//
 // strWebDir
 //----------------------------------------------------------------//
@@ -78,7 +78,7 @@
  * @variable
  * @package	framework
  */
- $strWebDir		= ""; 
+ $strWebDir		= "";
 
 
 
@@ -103,21 +103,13 @@ require_once($strFrameworkDir."exception_vixen.php");
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
-// load PEAR components
-require_once("Mail.php");
-require_once("Mail/mime.php");
-
 // load collection modules
 require_once($strApplicationDir."collection_modules/module_ftp.php");
 require_once($strApplicationDir."collection_modules/module_aapt.php");
 require_once($strApplicationDir."collection_modules/module_optus.php");
 
 
-// load application 
+// load application
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");
 require_once($strApplicationDir."application.php");
-
-
- 
- ?>
