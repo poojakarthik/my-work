@@ -21,49 +21,50 @@ class Archive_Tar {
 
 	// Operations
 	public function add($mFiles) {
-		return $this->_handleOperation(self::TAR_OPERATION_MODE_ADD, $mFiles);
+		return $this->_save(self::TAR_OPERATION_MODE_ADD, $mFiles);
 	}
 
 	public function addModify($mFiles, $sAddPath=null, $sRemovePath=null) {
 		if(!empty($sAddPath)) {
 			throw new Exception("Unsupported/unimplemented Parameter sAddPath: {$sAddPath}");
 		}
-		return $this->_handleOperation(self::TAR_OPERATION_MODE_ADD, $mFiles, $sRemovePath);
+		return $this->_save(self::TAR_OPERATION_MODE_ADD, $mFiles, $sRemovePath);
 	}
 
 	public function create($mFiles) {
-		return $this->_handleOperation(self::TAR_OPERATION_MODE_CREATE, $mFiles);
+		return $this->_save(self::TAR_OPERATION_MODE_CREATE, $mFiles);
 	}
 
 	public function createModify($mFiles, $sAddPath=null, $sRemovePath=null) {
 		if(!empty($sAddPath)) {
 			throw new Exception("Unsupported/unimplemented Parameter sAddPath: {$sAddPath}");
 		}
-		return $this->_handleOperation(self::TAR_OPERATION_MODE_CREATE, $mFiles, $sRemovePath);
+		return $this->_save(self::TAR_OPERATION_MODE_CREATE, $mFiles, $sRemovePath);
 	}
 
 	// Saving
-	private function _handleOperation($sOperationMode, $mFiles, $sRemovePath=null) {
-		// Files
-		$aFiles = is_array($mFiles) ? $mFiles : array($mFiles);
-		// Normalise filenames for shell.
-		$mFilelist = implode(" ", self::_normaliseForShell($aFiles));
-		$sFilelist = ($mFilelist) ? $mFilelist : '/dev/null';
-		$sCompressionMode = ($this->_getCompressionMode()) ? $this->_getCompressionMode() : null;
-
-		if ($sRemovePath) {
-			// Transform
-			$sRemovePath = implode("/", array_filter(explode("/", $sRemovePath)));
-			$sPathToRemove = implode(" ", str_replace("/", "\/", self::_normaliseForShell($sRemovePath)));
-			//$bResult = $this->_save("tar --transform='s/^\/{$sPathToRemove}//x' -P{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} -T {$sFilelist}");
-			$bResult = $this->_save("tar --transform='s/^\/{$sPathToRemove}//x' -P{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} {$sFilelist}");
-		} else {
-			// Nothing to do.
-			//$bResult = $this->_save("tar -{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} -T {$sFilelist}");
-			$bResult = $this->_save("tar -{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} {$sFilelist}");
+	private function _save($sOperationMode, $files, $sRemovePath=null) {
+		$tempFilesFromPath = tempnam(sys_get_temp_dir(), 'flex-archive-tar-files-from');
+		if (false === file_put_contents($tempFilesFromPath, implode("\n", $files))) {
+			throw new Exception();
 		}
-		return $bResult;
+
+		exec(sprintf('tar %s --files-from=%s -P%s%sf %s',
+			!$sRemovePath ? '' : '--transform=' . escapeshellarg('s/^\/' . str_replace('/', '\\/', implode('/', array_filter(explode('/', $sRemovePath)))) . '//x'),
+			escapeshellarg($tempFilesFromPath),
+			$this->_getCompressionMode() ?: '',
+			$sOperationMode,
+			$this->_sArchiveFile
+		), $outputLines, $errorCode);
+
+		if ($errorCode !== 0) {
+			throw new Exception();
+		}
+
+		@unlink($tempFilesFromPath);
+		return true;
 	}
+
 	private function _getCompressionMode() {
 		if ($this->_sCompression) {
 			// Compression.
@@ -78,24 +79,6 @@ class Archive_Tar {
 		} else {
 			return false;
 		}
-	}
-	private function _save($sCommand) {
-		exec($sCommand, $aOutput, $iErrorCode);
-		if ($iErrorCode !== 0) {
-			throw new Exception("Error creating tar with command {$sCommand}, failed with error: code={$iErrorCode}, output=" . implode("\n", $aOutput));
-		} else {
-			return true;
-		}
-	}
-
-	// Normalisation
-	private static function _normaliseForShell($mFiles) {
-		$aFiles = is_array($mFiles) ? $mFiles : array($mFiles);
-		$aEscapedFiles = array();
-		foreach($aFiles as $sFile) {
-			$aEscapedFiles[] = str_replace(" ", "\ ", escapeshellcmd($sFile));
-		}
-		return $aEscapedFiles;
 	}
 
 	public function save() {
