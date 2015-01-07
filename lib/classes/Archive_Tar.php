@@ -46,7 +46,7 @@ class Archive_Tar {
 	private function _save($sOperationMode, $files, $sRemovePath=null) {
 		$tempFilesFromPath = tempnam(sys_get_temp_dir(), 'flex-archive-tar-files-from');
 		if (false === file_put_contents($tempFilesFromPath, implode("\n", $files))) {
-			throw new Exception();
+			throw new Exception("Error creating temporary file: {$tempFilesFromPath}");
 		}
 
 		exec(sprintf('tar %s --files-from=%s -P%s%sf %s',
@@ -58,7 +58,7 @@ class Archive_Tar {
 		), $outputLines, $errorCode);
 
 		if ($errorCode !== 0) {
-			throw new Exception();
+			throw new Exception("Error creating tar with command {$sCommand}, failed with error: code={$errorCode}, output=" . implode("\n", $outputLines));
 		}
 
 		@unlink($tempFilesFromPath);
