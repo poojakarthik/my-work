@@ -45,8 +45,8 @@ class Archive_Tar {
 	// Saving
 	private function _save($sOperationMode, $files, $sRemovePath=null) {
 		$tempFilesFromPath = tempnam(sys_get_temp_dir(), 'flex-archive-tar-files-from');
-		if (false === file_put_contents($tempFilesFromPath, implode("\n", $files))) {
-			throw new Exception("Error creating temporary file: {$tempFilesFromPath}");
+		if (false === @file_put_contents($tempFilesFromPath, implode("\n", $files))) {
+			throw new Exception("Error creating temporary file: {$tempFilesFromPath}, message: {$php_errormsg}");
 		}
 
 		exec(sprintf('tar %s --files-from=%s -P%s%sf %s',
