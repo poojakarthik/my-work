@@ -58,7 +58,7 @@ class Archive_Tar {
 		), $outputLines, $errorCode);
 
 		if ($errorCode !== 0) {
-			throw new Exception("Error creating tar with command {$sCommand}, failed with error: code={$errorCode}, output=" . implode("\n", $outputLines));
+			throw new Exception("Error creating tar, error code={$errorCode}, output=" . implode("\n", $outputLines));
 		}
 
 		@unlink($tempFilesFromPath);
