@@ -5,20 +5,20 @@ class Flex_Rollout_Version_000284 extends Flex_Rollout_Version {
 	public function rollout() {
 		$aOperations = array(
 			array(
-				'sDescription' => "Change Service.CappedCharge to DEFAULT NULL",
+				'sDescription' => "Change Service.CappedCharge to DEFAULT 0",
 				'sAlterSQL' => "
 					ALTER TABLE Service
-						MODIFY COLUMN CappedCharge DECIMAL(13,4) DEFAULT NULL;",
+						MODIFY COLUMN CappedCharge DECIMAL(13,4) NOT NULL DEFAULT 0;",
 				'sRollbackSQL' => "
 					ALTER TABLE Service
 						MODIFY COLUMN CappedCharge DECIMAL(13,4) NOT NULL;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(
-				'sDescription' => "Change Service.UncappedCharge to DEFAULT NULL",
+				'sDescription' => "Change Service.UncappedCharge to DEFAULT 0",
 				'sAlterSQL' => "
 					ALTER TABLE Service
-						MODIFY COLUMN UncappedCharge DECIMAL(13,4) DEFAULT NULL;",
+						MODIFY COLUMN UncappedCharge DECIMAL(13,4) NOT NULL DEFAULT 0;",
 				'sRollbackSQL' => "
 					ALTER TABLE Service
 						MODIFY COLUMN UncappedCharge DECIMAL(13,4) NOT NULL;",
