@@ -41,9 +41,13 @@ class Report_Schedule extends ORM_Cached {
 			$sConstraintName = $oConstraint->name;
 
 			$oScheduleConstraintValue = Report_Schedule_Constraint_Value::getConstraintValueForScheduleIdConstraintId($this->id, $oConstraint->id);
-
+			
 			//Replace constraint placeholder in query
-			$sCompiledQuery = str_ireplace("<".$sConstraintName.">", Query::prepareByPHPType($oScheduleConstraintValue), $sCompiledQuery);
+			if ($oConstraint->report_constraint_type_id == REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
+				$sCompiledQuery = str_ireplace("<".$sConstraintName.">", Query::prepareByPHPType(explode("," , $oScheduleConstraintValue)), $sCompiledQuery);
+			} else {
+				$sCompiledQuery = str_ireplace("<".$sConstraintName.">", Query::prepareByPHPType($oScheduleConstraintValue), $sCompiledQuery);
+			}
 		}
 		return $sCompiledQuery;
 	}

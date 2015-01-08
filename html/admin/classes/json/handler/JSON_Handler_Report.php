@@ -351,16 +351,18 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
 		
 		$aConstraintValues = array();
+		$sCompiledQuery = $oReport->query;
 		if (count($aConstraintResult)) {
 			foreach ($aConstraintResult as $oConstraint) {
 				$sConstraintName = $oConstraint->name;
 
 				if (isset($mData->{$sConstraintName})) {
-					$aConstraintValues[$sConstraintName] = Query::prepareByPHPType($mData->{$sConstraintName});
-
 					if ($oConstraint->report_constraint_type_id == REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
-						$aConstraintValues[$sConstraintName] = str_replace(",", "','", $aConstraintValues[$sConstraintName]);
+						$aConstraintValues[$sConstraintName] = Query::prepareByPHPType(explode(',',$mData->{$sConstraintName}));
+					} else {
+						$aConstraintValues[$sConstraintName] = Query::prepareByPHPType($mData->{$sConstraintName});
 					}
+					$sCompiledQuery = str_ireplace("<" . $sConstraintName .">", $aConstraintValues[$sConstraintName], $sCompiledQuery);
 				} else {
 					return 	array(
 						'success' => true,
@@ -371,7 +373,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			}
 		}
 		try {
-			$oResult = Query::run($oReport->query, $aConstraintValues);
+			$oResult = Query::execute($sCompiledQuery);
 			if ($oResult) {
 				$iResultCount = $oResult->num_rows;
 				
