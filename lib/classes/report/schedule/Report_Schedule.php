@@ -4,17 +4,33 @@ class Report_Schedule extends ORM_Cached {
 	protected static $_strStaticTableName = "report_schedule";
 
 	public function generate() {
-		$sCompiledQuery = $this->getCompiledQuery();
-		$aReportSchedule = $this->toArray();
-		//Update Compiled Query into Report Schedule Object if compiled query is not yet set
-		if ($aReportSchedule['compiled_query'] == ""){
-			$aReportSchedule['compiled_query'] = $sCompiledQuery;
-			$oReportSchedule = new self($aReportSchedule);
-			$oReportSchedule->save();
+		$oReport = Report_New::getForId($this->report_id);
+		$aConstraints = Report_Constraint::getConstraintForReportId($oReport->id);
+
+		$aConstraintValues = array();
+		if (sizeof($aConstraints)) {
+			foreach ($aConstraints as $oConstraint) {
+				$sConstraintName = $oConstraint->name;
+
+				$oScheduleConstraintValue = Report_Schedule_Constraint_Value::getConstraintValueForScheduleIdConstraintId($this->id, $oConstraint->id);
+
+				if ($oConstraint->report_constraint_type_id == REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
+					$aConstraintValues[$sConstraintName] = explode(',',$oScheduleConstraintValue);
+				} else {
+					$aConstraintValues[$sConstraintName] = $oScheduleConstraintValue;
+				}
+			}
 		}
+		$aReportSchedule = $this->toArray();
+
 		try {
-			$oResult = Query::run($sCompiledQuery);
-			
+			$oResult = Query::run($oReport->query, $aConstraintValues);
+			//Update Compiled Query into Report Schedule Object if compiled query is not yet set
+			if ($aReportSchedule['compiled_query'] == ""){
+				$aReportSchedule['compiled_query'] = $oResult->getQuery();
+				$oReportSchedule = new self($aReportSchedule);
+				$oReportSchedule->save();
+			}
 			return $oResult;
 		} catch (Exception $e) {
 			// Update  ReportScheduleLog Entry
@@ -25,29 +41,6 @@ class Report_Schedule extends ORM_Cached {
 		}
 	}
 
-	private function getCompiledQuery() {
-		//Get the report from reports table
-		
-		$oReport = Report_New::getForId($this->report_id);
-		$aConstraints = Report_Constraint::getConstraintForReportId($oReport->id);
-
-		$sCompiledQuery = $oReport->query;
-		
-		if (!sizeof($aConstraints)) {
-			return $sCompiledQuery;
-		}
-
-		foreach ($aConstraints as $oConstraint) {
-			$sConstraintName = $oConstraint->name;
-
-			$oScheduleConstraintValue = Report_Schedule_Constraint_Value::getConstraintValueForScheduleIdConstraintId($this->id, $oConstraint->id);
-
-			//Replace constraint placeholder in query
-			$sCompiledQuery = str_ireplace("<".$sConstraintName.">", Query::prepareByPHPType($oScheduleConstraintValue), $sCompiledQuery);
-		}
-		return $sCompiledQuery;
-	}
-
 	public static function getScheduledReports() {
 		$aReportSchedules = array();
 		$aResult = Query::run("
@@ -55,12 +48,12 @@ class Report_Schedule extends ORM_Cached {
 			FROM report_schedule
 			WHERE frequency_multiple > 0 and is_enabled = 1
 		");
-		
+
 		while ($aReportSchedule = $aResult->fetch_assoc())	{
 			$oReportSchedule	= new self($aReportSchedule);
 			$aReportSchedules[$oReportSchedule->id]	= $oReportSchedule;
 		}
-		
+
 		return $aReportSchedules;
 	}
 

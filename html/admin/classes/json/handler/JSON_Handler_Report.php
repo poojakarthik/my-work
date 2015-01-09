@@ -13,7 +13,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				// Clear existing data
 				DataAccess::get()->query("DELETE FROM report_employee WHERE report_id = <report_id>", array('report_id' => $mData->report->id));
 				DataAccess::get()->query("DELETE FROM report_constraint WHERE report_id = <report_id>", array('report_id' => $mData->report->id));
-				
+
 				// Save existing Report.
 				$aRow = (array)$mData->report;
 				$oReport = new Report_New($aRow, $bLoad=true);
@@ -172,7 +172,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
-		
+
 		$rQuery	= DataAccess::get()->query("
 			SELECT rs.*, rft.name as 'frequency_type'
 			FROM report_schedule rs
@@ -260,25 +260,25 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			//JSON Object from Dataset could not be parsed into an JSON parameter to this function and hence php://input is used as an alternative way to capture the request payload
 			$sRequestContent = file_get_contents('php://input');
 			$oRequest = json_decode($sRequestContent);
-			
+
 			$bCountOnly = $oRequest->bCountOnly;
 			$iLimit = $oRequest->iLimit;
 			$iOffset = $oRequest->iOffset;
 			$oSort = $oRequest->oSort;
 			$oFilter = $oRequest->oFilter;
 			$sOrderBy = Statement::generateOrderBy($aAliases, get_object_vars($oSort));
-			
+
 			if ($sOrderBy != "") {
 				$sOrderBy = " ORDER BY " . $sOrderBy;
 			}
-			
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {					
+
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {
 				$mResult = Query::run(
 					"SELECT	r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
 					 FROM report r
 					 JOIN Employee e ON
 					 	e.Id = r.created_employee_id
-					 JOIN report_category rc ON 
+					 JOIN report_category rc ON
 					 	rc.id = r.report_category_id
 					" . $sOrderBy);
 			} else {
@@ -294,7 +294,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			if ($bCountOnly) {
 				return array('iRecordCount' => $mResult->num_rows);
 			}
-			
+
 			$iLimit	= ($iLimit === null ? 0 : $iLimit);
 			$iOffset = ($iOffset === null ? 0 : $iOffset);
 			$i = $iOffset;
@@ -305,20 +305,20 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {
 						$bCanManage = true;
 					}
-					$aRow['bCanManage'] = $bCanManage; 
+					$aRow['bCanManage'] = $bCanManage;
 					$aReport[] = $aRow;
 				}
 			} else {
 				$aRow['message'] = "There are no reports added for you";
 				$bCanManage = false;
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {
-					
+
 					$bCanManage = true;
 				}
-				$aRow['bCanManage'] = $bCanManage; 
+				$aRow['bCanManage'] = $bCanManage;
 				$aReport[] = $aRow;
 			}
-			
+
 
 			return array(
 				'bSuccess' => true,
@@ -349,17 +349,17 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		$oReport = Report_New::getForId($mData->id);
 
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
-		
+
 		$aConstraintValues = array();
 		if (count($aConstraintResult)) {
 			foreach ($aConstraintResult as $oConstraint) {
 				$sConstraintName = $oConstraint->name;
 
 				if (isset($mData->{$sConstraintName})) {
-					$aConstraintValues[$sConstraintName] = Query::prepareByPHPType($mData->{$sConstraintName});
-
 					if ($oConstraint->report_constraint_type_id == REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
-						$aConstraintValues[$sConstraintName] = str_replace(",", "','", $aConstraintValues[$sConstraintName]);
+						$aConstraintValues[$sConstraintName] = explode(',',$mData->{$sConstraintName});
+					} else {
+						$aConstraintValues[$sConstraintName] = $mData->{$sConstraintName};
 					}
 				} else {
 					return 	array(
@@ -374,13 +374,13 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$oResult = Query::run($oReport->query, $aConstraintValues);
 			if ($oResult) {
 				$iResultCount = $oResult->num_rows;
-				
+
 				if ($iResultCount > 0) {
 					$oReportDeliveryFormat = Report_Delivery_Format::getForId($mData->delivery_format);
 					$oReportDeliveryMethod = Report_Delivery_Method::getForId($mData->delivery_method);
-					
+
 					$oSpreadsheet = new Logic_Spreadsheet(array());
-				
+
 					$iRow = 0;
 					while ($aRow = $oResult->fetch_assoc())	{
 						$aKeys = array_keys($aRow);
@@ -400,10 +400,10 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 					//Create required file path folder if it doesn't exist
 					while (!is_dir($sReportTempPath)) {
-						mkdir($sReportTempPath, '0777',true);
-						chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y'), 0777);
-						chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
-						chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
+						@mkdir($sReportTempPath, '0777',true);
+						@chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y'), 0777);
+						@chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
+						@chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
 					}
 
 					//Create Workbook
@@ -417,7 +417,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 					//Use Proper Delivery Method
 					if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_EMAIL) {
-						
+
 						$sAttachmentContent = file_get_contents($sTmpFilePath);
 						$sCurrentTimestamp = date('d/m/Y H:i:s');
 						$aHeaders = array(
