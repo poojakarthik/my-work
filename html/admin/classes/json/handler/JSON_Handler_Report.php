@@ -1,7 +1,7 @@
 <?php
 class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable, JSON_Handler_Catchable {
 	const TEMP_REPORT_UPLOAD_PATH = "files/temp/";
-
+	private $_bScriptSuccess = true;
 	public function save($mData) {
 		try {
 			// Check user authorisfation and permissions
@@ -346,6 +346,8 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
+		register_shutdown_function(array($this, "__handleLargeFile"));
+
 		$oReport = Report_New::getForId($mData->id);
 
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
@@ -362,6 +364,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$aConstraintValues[$sConstraintName] = $mData->{$sConstraintName};
 					}
 				} else {
+					$this->_bScriptSuccess = true;
 					return 	array(
 						'success' => true,
 						'bSuccess' => false,
@@ -379,23 +382,6 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$oReportDeliveryFormat = Report_Delivery_Format::getForId($mData->delivery_format);
 					$oReportDeliveryMethod = Report_Delivery_Method::getForId($mData->delivery_method);
 
-					$oSpreadsheet = new Logic_Spreadsheet(array());
-
-					$iRow = 0;
-					while ($aRow = $oResult->fetch_assoc())	{
-						$aKeys = array_keys($aRow);
-						$aValues = array_values($aRow);
-
-						//Get the Field names if first row and write them to sheet before inserting any data
-						if (!$iRow) {
-							$oSpreadsheet->addRecord($aKeys);
-						}
-
-						$oSpreadsheet->addRecord($aValues);
-
-						$iRow++;
-					}
-
 					$sReportTempPath = FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j')."/";
 
 					//Create required file path folder if it doesn't exist
@@ -406,13 +392,47 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						@chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
 					}
 
-					//Create Workbook
 					$sFilename = str_replace(" ", "_", $oReport->name) . "." .strtolower($oReportDeliveryFormat->name);
 					$sTmpFilePath = $sReportTempPath . $sFilename;
-					@unlink($sFilename);
 
-					// Set File type for Logic Spreadsheet as CSV
-					$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
+					if ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS) {
+						$oSpreadsheet = new Logic_Spreadsheet(array());
+
+						$iRow = 0;
+						while ($aRow = $oResult->fetch_assoc())	{
+							$aKeys = array_keys($aRow);
+							$aValues = array_values($aRow);
+
+							//Get the Field names if first row and write them to sheet before inserting any data
+							if (!$iRow) {
+								$oSpreadsheet->addRecord($aKeys);
+							}
+
+							$oSpreadsheet->addRecord($aValues);
+
+							$iRow++;
+						}
+
+						// Set File type for Logic Spreadsheet as CSV
+						$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
+					} else {
+						$oTmpFileHandle = fopen($sTmpFilePath, 'w');
+
+						$iRow = 0;
+						while ($aRow = $oResult->fetch_assoc())	{
+							$aKeys = array_keys($aRow);
+							$aValues = array_values($aRow);
+
+							//Get the Field names if first row and write them to sheet before inserting any data
+							if (!$iRow) {
+								fputcsv($oTmpFileHandle, $aKeys);
+							}
+
+							fputcsv($oTmpFileHandle, $aValues);
+
+							$iRow++;
+						}
+					}
 					chmod($sTmpFilePath, 0777);
 
 					//Use Proper Delivery Method
@@ -459,14 +479,16 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 								$oEmailFlex->send();
 								$aReceivers[] = $aEmployee['FirstName'];
 	 						} catch (Zend_Mail_Transport_Exception $oException) {
+	 							$this->_bScriptSuccess = true;
 								// Sending the email failed
-								return 	array(
+	 							return 	array(
 									'success' => true,
 									'bSuccess' => false,
 									'sMessage' => $oException->getMessage()
 								);
 							}
 						}
+						$this->_bScriptSuccess = true;
 						return 	array(
 								'success' => true,
 								'bSuccess' => true,
@@ -474,6 +496,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 								'sMessage' => "Report emailed successfully to " . implode(", ",$aReceivers)
 							);
 					} else if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_FTP) {
+						$this->_bScriptSuccess = true;
 						return 	array(
 								'success' => true,
 								'bSuccess' => true,
@@ -482,6 +505,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 							);
 					}
 				} else {
+					$this->_bScriptSuccess = true;
 					return 	array(
 							'success' => true,
 							'bSuccess' => false,
@@ -489,6 +513,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					);
 				}
 			} else {
+				$this->_bScriptSuccess = true;
 				return 	array(
 						'success' => true,
 						'bSuccess' => false,
@@ -496,11 +521,17 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					);
 			}
 		} catch (Exception $oException) {
+			$this->_bScriptSuccess = true;
 			return 	array(
 				'success' => true,
 				'bSuccess' => false,
 				'sMessage' => $oException->getMessage()
 			);
+		}
+	}
+	function __handleLargeFile() {
+		if (!$this->_bScriptSuccess) {
+			return false;
 		}
 	}
 }
