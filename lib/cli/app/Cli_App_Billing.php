@@ -347,19 +347,13 @@ class Cli_App_Billing extends Cli
 		Log::getLog()->log("Today's date\t: {$strDatetime} ({$strDate})");
 
 		//Was there a Customer Group provided?
-		$iCustomerGroupId = (int)$this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID];
+		$iCustomerGroupId = intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID]);
 
 		// Are there any Invoice Runs due?
-		$aSelPaymentTermArgs = array();
-		if ($iCustomerGroupId) {
-			$selPaymentTerms = new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "customer_group_id = <customer_group_id> and id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
-			$aSelPaymentTermArgs['customer_group_id'] = $iCustomerGroupId;
-		} else {
-			$selPaymentTerms = new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
-		}
+		$selPaymentTerms = new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "(<customer_group_id> IS NULL OR customer_group_id = <customer_group_id>) AND id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
 		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND '{$strDate}' = ADDDATE(<InvoiceDate>, INTERVAL invoice_day_offset DAY)");
 
-		if (!$selPaymentTerms->Execute($aSelPaymentTermArgs))
+		if (!$selPaymentTerms->Execute(['customer_group_id' => ($iCustomerGroupId) ? $iCustomerGroupId : null]))
 		{
 			if ($selPaymentTerms->Error())
 			{
