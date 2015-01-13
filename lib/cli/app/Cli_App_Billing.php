@@ -22,6 +22,7 @@ class Cli_App_Billing extends Cli
 	const	SWITCH_FAKE_DATE			= "d";
 	const	SWITCH_EXPORT_MODULE		= 'e';
 	const	SWITCH_MAX_CACHE_AGE		= 'x';
+	const	SWITCH_CUSTOMER_GROUP_ID	= 'g';
 
 	const	FLEX_FRONTEND_HOST				= "bne-feprod-01.ybs.net.au";
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
@@ -345,11 +346,20 @@ class Cli_App_Billing extends Cli
 		$strDate		= date("Y-m-d", strtotime($strDatetime));
 		Log::getLog()->log("Today's date\t: {$strDatetime} ({$strDate})");
 
+		//Was there a Customer Group provided?
+		$iCustomerGroupId = (int)$this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID];
+
 		// Are there any Invoice Runs due?
-		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
+		$aSelPaymentTermArgs = array();
+		if ($iCustomerGroupId) {
+			$selPaymentTerms = new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "customer_group_id = <customer_group_id> and id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
+			$aSelPaymentTermArgs['customer_group_id'] = $iCustomerGroupId;
+		} else {
+			$selPaymentTerms = new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
+		}
 		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND '{$strDate}' = ADDDATE(<InvoiceDate>, INTERVAL invoice_day_offset DAY)");
 
-		if (!$selPaymentTerms->Execute())
+		if (!$selPaymentTerms->Execute($aSelPaymentTermArgs))
 		{
 			if ($selPaymentTerms->Error())
 			{
@@ -799,6 +809,14 @@ class Cli_App_Billing extends Cli
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "Maximum age in days for a cached Invoice to exist before it is cleaned up (only applicable to CLEAN_PDF_CACHE)",
 				self::ARG_DEFAULT		=> self::MAX_CACHE_AGE_DAYS_DEFAULT,
+				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
+			),
+
+			self::SWITCH_CUSTOMER_GROUP_ID	=> array(
+				self::ARG_LABEL			=> "CUSTOMER_GROUP_ID",
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "The Customer Group Id to generate invoices (only applicable to GENERATE)",
+				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);
