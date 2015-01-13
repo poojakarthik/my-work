@@ -12,7 +12,7 @@ class Cli_App_Report extends Cli {
 			foreach ($aReportSchedules as $oReportSchedule) {
 				if ($this->_isScheduledToRun($oReportSchedule)) {
 					echo "Running Scheduled Report";
-					//Creating the current report Schedule instance					
+					//Creating the current report Schedule instance
 					$oReportScheduleInstance = new Report_Schedule($oReportSchedule->toArray(),TRUE); //bolLoadById set true
 					//Create ReportScheduleLog Entry
 					$oReportScheduleLogAdd = new Report_Schedule_Log();
@@ -22,7 +22,7 @@ class Cli_App_Report extends Cli {
 					$oReportScheduleLogAdd->download_path = "";
 					$oReportScheduleLogAdd->save();
 
-					if ($aResult = $oReportScheduleInstance->generate()) {						
+					if ($aResult = $oReportScheduleInstance->generate()) {
 						$oReport = Report_New::getForId($oReportSchedule->report_id);
 						$oReportCategory = Report_Category::getForId($oReport->report_category_id);
 						$oReportDeliveryFormat = Report_Delivery_Format::getForId($oReportSchedule->report_delivery_format_id);
@@ -43,21 +43,42 @@ class Cli_App_Report extends Cli {
 
 						$sFilename = $sReportSavePath . $oReport->id . "_" . $sReportName . "_" . date('YmdHis') . "." . strtolower($oReportDeliveryFormat->name);
 						@unlink($sFilename);
-						//Create Workbook
-						$oSpreadsheet = new Logic_Spreadsheet(array());
-						$iRow = 0;
-						while ($aRow = $aResult->fetch_assoc())	{
-							$aKeys = array_keys($aRow);
-							$aValues = array_values($aRow);
-							//Get the Field names if first row and write them to sheet before inserting any data
-							if(!$iRow) {
-								$oSpreadsheet->addRecord($aKeys);
+
+						if ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS) {
+							//Create Workbook
+							$oSpreadsheet = new Logic_Spreadsheet(array());
+							$iRow = 0;
+							while ($aRow = $aResult->fetch_assoc())	{
+								$aKeys = array_keys($aRow);
+								$aValues = array_values($aRow);
+								//Get the Field names if first row and write them to sheet before inserting any data
+								if(!$iRow) {
+									$oSpreadsheet->addRecord($aKeys);
+								}
+								$oSpreadsheet->addRecord($aValues);
+								$iRow++;
 							}
-							$oSpreadsheet->addRecord($aValues);
-							$iRow++;
-						}		
-						// Set File type for Logic Spreadsheet as Selected Delivery Format Type
-						$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
+							// Set File type for Logic Spreadsheet as Selected Delivery Format Type
+							$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
+						}
+						else {
+							$rTmpFileHandle = fopen($sFilename, 'w');
+
+							$iRow = 0;
+							while ($aRow = $aResult->fetch_assoc())	{
+								$aKeys = array_keys($aRow);
+								$aValues = array_values($aRow);
+
+								//Get the Field names if first row and write them to sheet before inserting any data
+								if (!$iRow) {
+									fputcsv($rTmpFileHandle, $aKeys);
+								}
+
+								fputcsv($rTmpFileHandle, $aValues);
+
+								$iRow++;
+							}
+						}
 						chmod($sFilename,0777);
 						// Update Download Path for ReportScheduleLog Entry
 						$oReportScheduleLogAdd->is_error = 0;
@@ -67,7 +88,7 @@ class Cli_App_Report extends Cli {
 						if ($oReportDeliveryMethod->id == REPORT_DELIVERY_METHOD_EMAIL) {
 							$sAttachmentContent = file_get_contents($sFilename);
 							$sCurrentTimestamp = date('d/m/Y H:i:s');
-							
+
 							$aHeaders = array(
 									'From' => "reports@yellowbilling.com.au",
 									'Subject' => "{$oReport->name} executed on {$sCurrentTimestamp}"
@@ -75,7 +96,7 @@ class Cli_App_Report extends Cli {
 							$oEmailFlex = new Email_Flex();
 							$oEmailFlex->setSubject($aHeaders['Subject']);
 
-							$aReportDeliveryEmployees = Report_Delivery_Employee::getForReportScheduleId($oReportSchedule->id); 		
+							$aReportDeliveryEmployees = Report_Delivery_Employee::getForReportScheduleId($oReportSchedule->id);
 							$aReceivers = array();
 							foreach ($aReportDeliveryEmployees as $oReportDeliveryEmployee) {
 								$oEmployee = Employee::getForId($oReportDeliveryEmployee->employee_id);
@@ -135,7 +156,7 @@ class Cli_App_Report extends Cli {
 		} else {
 			$dFinalSchedulendDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
 			$iEndScheduletendDateTimeTimestamp = intval($dFinalSchedulendDateTime->format('U'));
-		}		
+		}
 		//Compute the next scheduled datetime
 		if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
 			$dLastExecutedDateTime = $oReportScheduleLog->executed_datetime;

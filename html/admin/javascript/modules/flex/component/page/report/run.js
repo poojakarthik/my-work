@@ -141,7 +141,7 @@ var self = new Class({
 				}
 			}.bind(this),
 			function (error) {
-				
+
 			}
 		);
 	},
@@ -167,7 +167,7 @@ var self = new Class({
 				}
 			}.bind(this),
 			function (error) {
-				
+
 			}
 		);
 	},
@@ -195,7 +195,7 @@ var self = new Class({
 				}.bind(this));
 			}.bind(this),
 			function (error) {
-				
+
 			}
 		);
 	},
@@ -301,7 +301,7 @@ var self = new Class({
 						);
 					} else if (oServerResponse[i]['component_type'] == self.REPORT_CONSTRAINT_TYPE_MULTIPLESELECTIONLIST) {
 						var oConstraintListContainer = H.label({class: 'flex-page-report-run-details-constraintContainer'},
-							H.span({class: 'flex-page-report-run-details-constraintContainer-label'}, 
+							H.span({class: 'flex-page-report-run-details-constraintContainer-label'},
 								oServerResponse[i]['name']
 							),
 							new Hidden({
@@ -333,7 +333,7 @@ var self = new Class({
 						);
 					}
 				};
-				
+
 			}.bind(this)
 		});
 	},
@@ -397,7 +397,6 @@ var self = new Class({
 				return;
 			} else {
 				this._oForm.control('selectedDeliveryEmployees').set('mValue', aSelectedEmployees);
-			
 			}
 			this._obody.hide();
 			this._oloading.show();
@@ -408,14 +407,14 @@ var self = new Class({
 					this.fire('complete');
 				}.bind(this),
 				function (error) {
-					
+
 				}
 			);
 		}
 	},
 
 	_executeReponse	: function(oResponse) {
-		if (oResponse.bSuccess) {
+		if (oResponse.bReportGenerated) {
 			if (oResponse.bIsEmail) {
 				new Alert(oResponse.sMessage);
 			} else {
@@ -431,7 +430,7 @@ var self = new Class({
 		this.fire('cancel');
 	},
 
-	
+
 	statics : {
 		REPORT_CONSTRAINT_TYPE_FREETEXT: 1,
 		REPORT_CONSTRAINT_TYPE_DATABASELIST: 2,
