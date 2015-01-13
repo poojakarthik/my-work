@@ -62,7 +62,7 @@ class Cli_App_Report extends Cli {
 							$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
 						}
 						else {
-							$oTmpFileHandle = fopen($sFilename, 'w');
+							$rTmpFileHandle = fopen($sFilename, 'w');
 
 							$iRow = 0;
 							while ($aRow = $aResult->fetch_assoc())	{
@@ -71,10 +71,10 @@ class Cli_App_Report extends Cli {
 
 								//Get the Field names if first row and write them to sheet before inserting any data
 								if (!$iRow) {
-									fputcsv($oTmpFileHandle, $aKeys);
+									fputcsv($rTmpFileHandle, $aKeys);
 								}
 
-								fputcsv($oTmpFileHandle, $aValues);
+								fputcsv($rTmpFileHandle, $aValues);
 
 								$iRow++;
 							}

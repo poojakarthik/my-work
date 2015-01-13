@@ -397,7 +397,6 @@ var self = new Class({
 				return;
 			} else {
 				this._oForm.control('selectedDeliveryEmployees').set('mValue', aSelectedEmployees);
-
 			}
 			this._obody.hide();
 			this._oloading.show();
@@ -415,11 +414,7 @@ var self = new Class({
 	},
 
 	_executeReponse	: function(oResponse) {
-		if (!oResponse) {
-			new Alert("The EXCEL file is too large to be generated. Please change the delivery format to CSV instead and try again.");
-			return;
-		}
-		if (oResponse.bSuccess) {
+		if (oResponse.bReportGenerated) {
 			if (oResponse.bIsEmail) {
 				new Alert(oResponse.sMessage);
 			} else {

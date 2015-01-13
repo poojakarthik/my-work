@@ -346,7 +346,6 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
-		register_shutdown_function(array($this, "__handleLargeFile"));
 
 		$oReport = Report_New::getForId($mData->id);
 
@@ -364,10 +363,9 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$aConstraintValues[$sConstraintName] = $mData->{$sConstraintName};
 					}
 				} else {
-					$this->_bScriptSuccess = true;
 					return 	array(
 						'success' => true,
-						'bSuccess' => false,
+						'bReportGenerated' => false,
 						'sMessage' => "Constraint Missing:" + $sConstraintName
 					);
 				}
@@ -414,9 +412,12 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						}
 
 						// Set File type for Logic Spreadsheet as CSV
+						$this->_bScriptSuccess = false;
+						register_shutdown_function(array($this, "_handleLargeFile"));
 						$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->id === REPORT_DELIVERY_FORMAT_XLS?'Excel2007':$oReportDeliveryFormat->name));
+
 					} else {
-						$oTmpFileHandle = fopen($sTmpFilePath, 'w');
+						$rTmpFileHandle = fopen($sTmpFilePath, 'w');
 
 						$iRow = 0;
 						while ($aRow = $oResult->fetch_assoc())	{
@@ -425,10 +426,10 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 							//Get the Field names if first row and write them to sheet before inserting any data
 							if (!$iRow) {
-								fputcsv($oTmpFileHandle, $aKeys);
+								fputcsv($rTmpFileHandle, $aKeys);
 							}
 
-							fputcsv($oTmpFileHandle, $aValues);
+							fputcsv($rTmpFileHandle, $aValues);
 
 							$iRow++;
 						}
@@ -483,7 +484,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 								// Sending the email failed
 	 							return 	array(
 									'success' => true,
-									'bSuccess' => false,
+									'bReportGenerated' => false,
 									'sMessage' => $oException->getMessage()
 								);
 							}
@@ -491,7 +492,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$this->_bScriptSuccess = true;
 						return 	array(
 								'success' => true,
-								'bSuccess' => true,
+								'bReportGenerated' => true,
 								'bIsEmail' => true,
 								'sMessage' => "Report emailed successfully to " . implode(", ",$aReceivers)
 							);
@@ -499,7 +500,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$this->_bScriptSuccess = true;
 						return 	array(
 								'success' => true,
-								'bSuccess' => true,
+								'bReportGenerated' => true,
 								'bIsEmail' => false,
 								'sFilename' => $sFilename
 							);
@@ -508,7 +509,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$this->_bScriptSuccess = true;
 					return 	array(
 							'success' => true,
-							'bSuccess' => false,
+							'bReportGenerated' => false,
 							'sMessage' => "No Result Available for Report"
 					);
 				}
@@ -516,7 +517,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$this->_bScriptSuccess = true;
 				return 	array(
 						'success' => true,
-						'bSuccess' => false,
+						'bReportGenerated' => false,
 						'sMessage' => "Error While Generating report"
 					);
 			}
@@ -524,14 +525,18 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$this->_bScriptSuccess = true;
 			return 	array(
 				'success' => true,
-				'bSuccess' => false,
+				'bReportGenerated' => false,
 				'sMessage' => $oException->getMessage()
 			);
 		}
 	}
-	function __handleLargeFile() {
+	private function _handleLargeFile() {
 		if (!$this->_bScriptSuccess) {
-			return false;
+			echo json_encode(array(
+				'success' => true,
+				'bReportGenerated' => false,
+				'sMessage' => 'The report content is too large to be generated as Excel. Please change the delivery format to CSV instead and try again.'
+			));
 		}
 	}
 }
