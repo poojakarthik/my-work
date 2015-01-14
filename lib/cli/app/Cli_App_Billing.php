@@ -391,7 +391,7 @@ class Cli_App_Billing extends Cli
 					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 					{
 						Log::getLog()->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".Customer_Group::getForId($arrInvoiceRunSchedule['customer_group_id'])->externalName."\n");
-						continue;
+
 						// Yes, so lets Generate!
 						try
 						{
