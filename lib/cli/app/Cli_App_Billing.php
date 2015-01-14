@@ -350,7 +350,7 @@ class Cli_App_Billing extends Cli
 		$iCustomerGroupId = null;
 		if (intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])) {
 			$iCustomerGroupId = intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID]);
-			if (Customer_Group::getForId(intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])) === NULL) {
+			if (Customer_Group::getForId(intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])) === null) {
 				throw new Exception("Invalid Customer Group Id supplied");
 			}
 		}
