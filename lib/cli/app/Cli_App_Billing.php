@@ -347,13 +347,19 @@ class Cli_App_Billing extends Cli
 		Log::getLog()->log("Today's date\t: {$strDatetime} ({$strDate})");
 
 		//Was there a Customer Group provided?
-		$iCustomerGroupId = intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID]);
+		$iCustomerGroupId = null;
+		if (intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])) {
+			$iCustomerGroupId = intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID]);
+			if (Customer_Group::getForId(intval($this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])) === NULL) {
+				throw new Exception("Invalid Customer Group Id supplied");
+			}
+		}
 
 		// Are there any Invoice Runs due?
 		$selPaymentTerms = new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "(<customer_group_id> IS NULL OR customer_group_id = <customer_group_id>) AND id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
 		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND '{$strDate}' = ADDDATE(<InvoiceDate>, INTERVAL invoice_day_offset DAY)");
 
-		if (!$selPaymentTerms->Execute(['customer_group_id' => ($iCustomerGroupId) ? $iCustomerGroupId : null]))
+		if (!$selPaymentTerms->Execute(['customer_group_id' => ($iCustomerGroupId) ?: null]))
 		{
 			if ($selPaymentTerms->Error())
 			{
@@ -385,7 +391,7 @@ class Cli_App_Billing extends Cli
 					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 					{
 						Log::getLog()->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".Customer_Group::getForId($arrInvoiceRunSchedule['customer_group_id'])->externalName."\n");
-
+						continue;
 						// Yes, so lets Generate!
 						try
 						{
