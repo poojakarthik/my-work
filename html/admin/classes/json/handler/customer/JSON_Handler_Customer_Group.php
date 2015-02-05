@@ -44,7 +44,11 @@ class JSON_Handler_Customer_Group extends JSON_Handler implements JSON_Handler_L
 			$aResults	= array();
 			foreach ($aItems as $oItem)
 			{
-				$aResults[$oItem->id]	= $oItem->toArray();
+				$aItemFields = $oItem->toArray();
+				//Nullify customer_logo as PHP throws error while encoding Non-UTF8 Content
+				$aItemFields['customer_logo'] = null;
+				$aResults[$oItem->id]	= $aItemFields;
+
 			}
 
 			return	array(
