@@ -136,7 +136,7 @@ class ApplicationNormalise extends ApplicationBaseClass {
 		$intCount = 0;
 		$this->_intImportFail = 0;
 		$this->_intImportPass = 0;
-		
+
 		$iTotalCDRsImported = 0;
 
 		// Loop through the CDR File entries until we have imported the minimum number of CDRs (or there are no files left)
@@ -145,7 +145,7 @@ class ApplicationNormalise extends ApplicationBaseClass {
 			if (!DataAccess::getDataAccess()->TransactionStart()) {
 				throw new Exception("Unable to start a transaction");
 			}
-			
+
 			try {
 				// Make sure the file exists
 				if (!file_exists($arrCDRFile['Location'])) {
@@ -176,7 +176,7 @@ class ApplicationNormalise extends ApplicationBaseClass {
 				}
 
 				$intCount++;
-				
+
 				// Commit the Transaction
 				if (!DataAccess::getDataAccess()->TransactionCommit()) {
 					throw new Exception("Unable to commit the transaction");
@@ -277,47 +277,50 @@ class ApplicationNormalise extends ApplicationBaseClass {
 				foreach ($aFileContents as $sLine) {
 					$oStopwatch->lap();
 
-					// Set fields that are consistent over all CDRs for this file
-					$arrCDRLine = array(
-						"File" => $arrCDRFile["Id"],
-						"Carrier" => $arrCDRFile["Carrier"]
-					);
-
 					// Add to report <Action> CDR <SeqNo> from <FileName>...");
 					$arrReportLine['<Action>'] = "Importing";
 					$arrReportLine['<SeqNo>'] = $intSequence;
 					$arrReportLine['<FileName>'] = TruncateName($arrCDRFile['FileName'], MSG_MAX_FILENAME_LENGTH);
 					//$this->AddToNormalisationReport(MSG_LINE, $arrReportLine);
 
-					$arrCDRLine["SequenceNo"] = $intSequence;
-					$arrCDRLine["Status"] = CDR_READY;
-
 					//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} configured in : ".$oStopwatch->lapSplit(4));
 
 					// run Preprocessor
+					$cdrLineRecords = [$sLine];
 					if ($bolPreprocessor) {
-						$arrCDRLine["CDR"] = $this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]]->Preprocessor($sLine);
-					} else {
-						$arrCDRLine["CDR"] = $sLine;
+						 $preprocessedLines = $this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]]->Preprocessor($sLine);
+						 if (is_array($preprocessedLines)) {
+						 	$cdrLineRecords = $preprocessedLines;
+						 } else {
+						 	$cdrLineRecords = [$preprocessedLines];
+						 }
 					}
 					//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} pre-processed in : ".$oStopwatch->lapSplit(4));
 
 					if ($arrCDRLine["CDR"] === false) {
 						throw new Exception("Attempting to read line {$intSequence} from the file failed: {$php_errormsg}");
 					}
+					foreach ($cdrLineRecords as $cdrLineRecord) {
+						if (trim($cdrLineRecord)) {
+							//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
+							$insInsertCDRLine->Execute([
+								"File" => $arrCDRFile["Id"],
+								"Carrier" => $arrCDRFile["Carrier"],
+								"CDR" => $cdrLineRecord,
+								"SequenceNo" => $intSequence,
+								"Status" => CDR_READY,
 
-					if (trim($arrCDRLine["CDR"])) {
-						//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
-						$insInsertCDRLine->Execute($arrCDRLine);
-						if ($insInsertCDRLine->Error()) {
-							// error inserting
-							throw new Exception("There was an error inserting line {$intSequence} into the database");
+							]);
+							if ($insInsertCDRLine->Error()) {
+								// error inserting
+								throw new Exception("There was an error inserting line {$intSequence} into the database");
+							}
+							//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} inserted in : ".$oStopwatch->lapSplit(4));
+						} else {
+							//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
 						}
-						//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} inserted in : ".$oStopwatch->lapSplit(4));
-					} else {
-						//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
+						$intSequence++;
 					}
-					$intSequence++;
 
 					// Report
 					//$this->AddToNormalisationReport(MSG_OK);

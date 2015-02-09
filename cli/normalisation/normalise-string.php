@@ -61,30 +61,38 @@ _log('Using CarrierModule #%d (%s: %s [%s])', $aCarrierModule['Id'], $aCarrierMo
 $sNormaliser = $aCarrierModule['Module'];
 $oNormaliser = new $sNormaliser($aCarrierModule['Carrier']);
 
-_log('Testing %d CDR data strings:', count($aArgs['_']));
-foreach ($aArgs['_'] as $i=>$sCDRData) {
-	_log('  #%d:', $i + 1);
-	_log($oNormaliser->Normalise(array(
-		'SequenceNo' => $i + 1,
-		'Carrier' => $aCarrierModule['Carrier'],
-		'FileName' => $aArgs['file-name'],
-		'CDR' => $sCDRData,
-		'DestinationCode' => 0
-	)));
+$aRecords = [];
+
+while ($sLine = fgets(STDIN)) {
+	array_push($aRecords, $sLine);
 }
 
+if (method_exists($oNormaliser, 'Preprocessor')) {
+	// run Preprocessor
+	$aLines = $aRecords;
+    $aRecords = [];
+    foreach ($aLines as $sLine) {
+        $lineRecords = $oNormaliser->Preprocessor($sLine);
+        $aRecords = array_merge($aRecords, is_array($lineRecords) ? $lineRecords : [$lineRecords]);
+    }
+}
+
+$i=0;
+foreach($aRecords as $aRecord) {
+	$i++;
+	_log($oNormaliser->Normalise(
+			array(
+			'SequenceNo' => $i + 1,
+			'Carrier' => $aCarrierModule['Carrier'],
+			'FileName' => $aArgs['file-name'],
+			'CDR' => $aRecord,
+			'DestinationCode' => 0
+		)
+	));
+}
+
+//_log('Testing %d CDR data strings:', count($aArgs['_']));
 exit(0);
-
-
-
-
-
-
-
-
-
-
-
 
 function _log() {
 	$aArgs = func_get_args();
