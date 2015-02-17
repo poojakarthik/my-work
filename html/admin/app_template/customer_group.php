@@ -62,7 +62,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 				Ajax()->RenderHtmlTemplate("CustomerGroupNew", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return true;
 			}
-			// DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email");
+			DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email,flex_url,email_domain,default_account_class_id");
 			// The CustomerGroup is valid.  Save it
 			if (!DBO()->CustomerGroup->Save()) {
 				// The CustomerGroup could not be saved for some unforseen reason
