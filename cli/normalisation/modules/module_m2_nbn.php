@@ -68,8 +68,8 @@ class NormalisationModuleM2NBN extends NormalisationModule {
 			throw new Exception_Assertion("M2 NBN Usage Normalisation Module Preprocessor Expected 3 Columns; encountered " . count($aCDRItems) . ":" . $sCDR);
 		}
 
-		array_push($aCDRLines, array($aCDRItems[0], self::DIRECTION_UPLOAD, $aCDRItems[1]));
-		array_push($aCDRLines, array($aCDRItems[0], self::DIRECTION_DOWNLOAD, $aCDRItems[2]));
+		array_push($aCDRLines, implode(',', array($aCDRItems[0], self::DIRECTION_UPLOAD, $aCDRItems[1])));
+		array_push($aCDRLines, implode(',', array($aCDRItems[0], self::DIRECTION_DOWNLOAD, $aCDRItems[2])));
 
 		return $aCDRLines;
 	}
