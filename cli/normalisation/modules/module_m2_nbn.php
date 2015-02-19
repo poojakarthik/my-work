@@ -1,6 +1,6 @@
 <?php
 class NormalisationModuleM2NBN extends NormalisationModule {
-	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_M2_NBN;
+	const RESOURCE_TYPE	= RESOURCE_TYPE_FILE_IMPORT_CDR_M2_NBN;
 	const DEBUG_LOGGING = true;
 	const DIRECTION_UPLOAD = 'Upload';
     const DIRECTION_DOWNLOAD = 'Download';
@@ -69,8 +69,8 @@ class NormalisationModuleM2NBN extends NormalisationModule {
 		}
 
 		return [
-			File_CSV::buildLineRFC4180([$aCDRItems[0], self::DIRECTION_UPLOAD, $aCDRItems[1]]),
-			File_CSV::buildLineRFC4180([$aCDRItems[0], self::DIRECTION_DOWNLOAD, $aCDRItems[2]])
+		File_CSV::buildLineRFC4180([$aCDRItems[0], self::DIRECTION_UPLOAD, $aCDRItems[1]]),
+		File_CSV::buildLineRFC4180([$aCDRItems[0], self::DIRECTION_DOWNLOAD, $aCDRItems[2]])
 		];
 	}
 
@@ -83,7 +83,7 @@ class NormalisationModuleM2NBN extends NormalisationModule {
 
 		//--------------------------------------------------------------------//
 		Log::get()->logIf(self::DEBUG_LOGGING, "Record #{$this->_iSequence}");
-		$aParsed = $aCDR['CDR'];
+		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
 		if (count($aParsed) < 3) {
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
@@ -137,7 +137,7 @@ class NormalisationModuleM2NBN extends NormalisationModule {
 		// StartDatetime
 		//Get Filename and replace text and compute start datetime
 		$sFileDate = trim(preg_replace("/[a-zA-Z_.]/", '', $this->getNormalised('FileName')));
-		$sStartDate = substr($sFileDate, 0, 4) . "-" . substr($sFileDate, 4, 2) . "-" . substr($sFileDate, 6, 2);
+		$sStartDate = substr($sFileDate, 0, 10);
 		$this->setNormalised('StartDatetime', $sStartDate . " 00:00:00");
 		Log::get()->logIf(self::DEBUG_LOGGING, '  ' . "StartDatetime: " . var_export($this->getNormalised('StartDatetime'), true) . " (FileName: '" . $this->getNormalised('FileName') . "')");
 
