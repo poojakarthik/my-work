@@ -71,7 +71,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MGMT);
 
 		// Context menu
 		// (Nothing to add)
@@ -139,12 +139,12 @@ class AppTemplateEmployee extends ApplicationTemplate
 
 	function Edit($bolEditSelf=false) {
 		AuthenticatedUser()->CheckAuth();
-		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		$bolProperAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		//$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolUserMgmtUser = AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MGMT);
 		$bolUserIsSelf = false;
 
 		if (DBO()->Employee->Id->Value != AuthenticatedUser()->GetUserId()) {
-			AuthenticatedUser()->PermissionOrDie($bolProperAdminUser);
+			AuthenticatedUser()->PermissionOrDie($bolUserMgmtUser);
 		} else {
 			$bolUserIsSelf = true;
 		}
@@ -182,7 +182,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 					DBO()->Employee->is_god = 0;
 				}
 
-				if (!$bolEditSelf && $bolAdminUser) {
+				if (!$bolEditSelf && $bolUserMgmtUser) {
 					DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
 					DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
 					DBO()->Employee->LastName = trim(DBO()->Employee->LastName->Value);
@@ -208,7 +208,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 				// Check that the password has been entered and confirmed, as appropriate
 				$this->_ValidatePassword($arrValidationErrors, $bolCreateNew);
 
-				if (!$bolEditSelf && $bolAdminUser) {
+				if (!$bolEditSelf && $bolUserMgmtUser) {
 					// Sanitize the permissions that have been set
 					$this->_SetPrivileges();
 				}
@@ -222,7 +222,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 					$updatedColumns[] = "Mobile";
 
 					// Only change the following through the admin console, not when editing self
-					if (!$bolEditSelf && $bolAdminUser) {
+					if (!$bolEditSelf && $bolUserMgmtUser) {
 						$updatedColumns[] = "FirstName";
 						$updatedColumns[] = "LastName";
 						$updatedColumns[] = "DOB";

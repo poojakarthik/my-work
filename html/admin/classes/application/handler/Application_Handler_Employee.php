@@ -6,6 +6,7 @@ class Application_Handler_Employee extends Application_Handler
 	public function ManageDailyMessages($subPath)
 	{
 		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MGMT);
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		BreadCrumb()->Employee_Console();
@@ -37,6 +38,7 @@ class Application_Handler_Employee extends Application_Handler
 
 	public function TechnicalNoticeManagement($subPath) {
 		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MGMT);
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		BreadCrumb()->Employee_Console();
@@ -70,7 +72,7 @@ class Application_Handler_Employee extends Application_Handler
 	{
 		try
 		{
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MGMT))
 			{
 				throw new Exception('You do not have permission to view this page');
 			}
