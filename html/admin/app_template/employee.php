@@ -54,9 +54,9 @@ class AppTemplateEmployee extends ApplicationTemplate
 		try {
 			// Create an assertion
 			Flex::assert(
-				false, 
-				"CLASS: AppTemplateEmployee, the function EmployeeList was called.", 
-				null, 
+				false,
+				"CLASS: AppTemplateEmployee, the function EmployeeList was called.",
+				null,
 				"Deprecated Function Accessed: AppTemplateEmployee::EmployeeList"
 			);
 		} catch (Exception_Assertion $e) {
@@ -68,10 +68,10 @@ class AppTemplateEmployee extends ApplicationTemplate
 		//////////////////////////////
 		//////////////////////////////
 		*/
-		
+
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MGMT);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MANAGEMENT);
 
 		// Context menu
 		// (Nothing to add)
@@ -140,7 +140,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 	function Edit($bolEditSelf=false) {
 		AuthenticatedUser()->CheckAuth();
 		//$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		$bolUserMgmtUser = AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MGMT);
+		$bolUserMgmtUser = AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MANAGEMENT);
 		$bolUserIsSelf = false;
 
 		if (DBO()->Employee->Id->Value != AuthenticatedUser()->GetUserId()) {

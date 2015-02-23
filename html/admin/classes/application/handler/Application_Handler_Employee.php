@@ -6,9 +6,9 @@ class Application_Handler_Employee extends Application_Handler
 	public function ManageDailyMessages($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MGMT);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MANAGEMENT);
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
+
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Daily Message Management");
 
@@ -21,10 +21,10 @@ class Application_Handler_Employee extends Application_Handler
 			//$arrMessages = Employee_Message::getAllEffectiveSince($strEarliestEffectiveOnTimestamp);
 			$arrMessages = Employee_Message::getMesagesForTypeAndFromEffectiveOnTimestamp($strEarliestEffectiveOnTimestamp, constant('EMPLOYEE_MESSAGE_TYPE_GENERAL'));
 			//$arrMessages = Employee_Message::getAll(20);
-	
+
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['MessageHistory'] = $arrMessages;
-	
+
 			$this->LoadPage('employee_message_management', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		catch (Exception $e)
@@ -34,13 +34,13 @@ class Application_Handler_Employee extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 	}
-	
+
 
 	public function TechnicalNoticeManagement($subPath) {
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MGMT);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_USER_MANAGEMENT);
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
+
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Technical Notice Management");
 
@@ -54,10 +54,10 @@ class Application_Handler_Employee extends Application_Handler
 			$arrMessages = Employee_Message::getMesagesForTypeAndFromEffectiveOnTimestamp($strEarliestEffectiveOnTimestamp, constant('EMPLOYEE_MESSAGE_TYPE_TECHNICAL'));
 
 			//$arrMessages = Employee_Message::getAll(20);
-	
+
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['MessageHistory'] = $arrMessages;
-	
+
 			$this->LoadPage('employee_technical_notice_management', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		catch (Exception $e)
@@ -72,11 +72,11 @@ class Application_Handler_Employee extends Application_Handler
 	{
 		try
 		{
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MGMT))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MANAGEMENT))
 			{
 				throw new Exception('You do not have permission to view this page');
 			}
-			
+
 			$aDetailsToRender	= array();
 			$this->LoadPage('employee_list_all', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}

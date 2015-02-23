@@ -179,7 +179,7 @@ class Application
 			ContextMenu()->Admin->Reports->manageAllReports();
 		}
 
-		if(AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MGMT)) {
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MANAGEMENT)) {
 			ContextMenu()->Admin->Employees->ManageEmployees();
 
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
@@ -470,7 +470,7 @@ class Application
 			ContextMenu()->Admin->Reports->manageAllReports();
 		}
 
-		if(AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MGMT)) {
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MANAGEMENT)) {
 			ContextMenu()->Admin->Employees->ManageEmployees();
 
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {

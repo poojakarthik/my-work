@@ -35,7 +35,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	function __construct($intContext, $strId) {
 		$this->_intContext = $intContext;
 		$this->_strId = $strId;
-		
+
 		$this->LoadJavascript("permissions");
 		$this->LoadJavascript("employee_edit");
 		$this->LoadJavascript("date_time_picker_xy");
@@ -44,7 +44,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			//$this->LoadJavascript("vixen_modal");
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -76,7 +76,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	private function _RenderFullDetail() {
 		$objUserRole = User_Role::getForId(DBO()->Employee->user_role_id->Value);
 		$strUserRole = ($objUserRole != NULL)? $objUserRole->name : "[Not Specified]";
-		
+
 		echo "<!-- START HtmlTemplateEmployeeEdit -->\n";
 		$bolProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolAdding		= FALSE;
@@ -101,18 +101,18 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		}
 
 		$this->FormStart('Employee', 'Employee', $bolAdding ? 'Create' : 'Edit');
-		
+
 		if (DBO()->Employee->EditSelf->Value) {
 			echo "<input type='hidden' name='Employee.EditSelf' value='1'/>\n";
 			$bolEditSelf = TRUE;
 		}
-		
+
 		//$strMinWidth = $bolEditSelf ? " style='width: 400px;'" : "";
-		
+
 		echo "<div class='GroupedContent'$strMinWidth>";
-		
+
 		echo "<div id='Employee.Edit'$strEditDisplay>";
-		
+
 		DBO()->Employee->Id->RenderHidden();
 		if ($bolAdding && !$bolEditSelf && $bolProperAdminUser) {
 			DBO()->Employee->DOB->Value = "";
@@ -120,7 +120,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		} else {
 			DBO()->Employee->UserName->RenderOutput(CONTEXT_DEFAULT, TRUE);
 		}
-		
+
 		if (!$bolEditSelf && $bolProperAdminUser) {
 			DBO()->Employee->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE);
 			DBO()->Employee->LastName->RenderInput(CONTEXT_DEFAULT, TRUE);
@@ -140,7 +140,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		DBO()->Employee->Phone->RenderInput();
 		DBO()->Employee->Mobile->RenderInput();
 		DBO()->Employee->Password->RenderInput(CONTEXT_DEFAULT, $bolAdding);
-		
+
 		if (!$bolAdding && !$bolEditSelf) {
 			DBO()->Employee->Archived->RenderInput();
 		}
@@ -178,7 +178,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			";
 			}
 		}
-		
+
 		if (!$bolEditSelf && $bolProperAdminUser) {
 			// The user can change the role of the employee
 			$arrUserRoles = User_Role::getAll();
@@ -190,7 +190,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 				}
 				$strRoleOptions .= "<option $strSelected value='{$objRole->id}'>{$objRole->name}</option>";
 			}
-			
+
 			echo "
 <div class='DefaultElement'>
 	<select id='Employee.user_role_id' name='Employee.user_role_id' class='DefaultInputText Default' style='width:210px'>$strRoleOptions</select>
@@ -212,12 +212,12 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 </div>
 ";
 		}
-		
+
 
 		echo "</div>";
 
 		echo "<div id='Employee.View'$strViewDisplay>";
-		
+
 		DBO()->Employee->UserName->RenderOutput();
 		DBO()->Employee->FirstName->RenderOutput();
 		DBO()->Employee->LastName->RenderOutput();
@@ -244,7 +244,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	</div>
 			";
 		}
-		
+
 		echo "
 <div class='DefaultElement'>
    <div class='DefaultOutput Default'>$strUserRole</div>
@@ -257,8 +257,8 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 
 		echo "</div>";
 		echo "</div>";
-		
-		
+
+
 		// Control the display of the permissions lists
 		$arrCurrentPerms = array();
 		$strSelectedPerms = '';
@@ -270,7 +270,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			if (PERMISSION_SUPER_ADMIN == $intKey && !AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
 				continue;
 			}
-			
+
 			// Only allow admins to set credit card and rate management permissions
 			// This is a redundant check as, at present, only admins can change any permissions!
 			if (PermCheck(PERMISSION_CREDIT_MANAGEMENT | PERMISSION_RATE_MANAGEMENT, $intKey)) {
@@ -282,7 +282,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			if (PermCheck(PERMISSION_CUSTOMER_GROUP_ADMIN, $intKey) && !AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
 				continue;
 			}
-			
+
 			if (PermCheck(DBO()->Employee->Privileges->Value, $intKey)) {
 				$strDisableAdmin = ($bolUserIsSelf && PermCheck(PERMISSION_ADMIN, $intKey)) ? " disabled" : "";
 				$strSelectedPerms .= "<option value='$intKey'$strDisableAdmin>$strValue</option>";
@@ -291,14 +291,14 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 				$strAvailPerms .= "<option value='$intKey'>$strValue</option>";
 			}
 		}
-		
+
 		$strCurrentPerms = !empty($arrCurrentPerms) ? implode($arrCurrentPerms, "<br/>") : "[No permissions]";
-		
+
 		echo "<p>
 
 			  <div class='GroupedContent'>
 				  <div class='SmallSeperator'></div>";
-		
+
 		if ($bolProperAdminUser && !$bolEditSelf) {
 			echo "
 					<div id='Permissions.Edit'$strEditDisplay>
@@ -346,7 +346,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 							</tr>
 						</table>
 					</div>";
-			
+
 		echo "
 				</div>
 			</div>
@@ -356,32 +356,32 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR)) {
 			echo "<div class='ButtonContainer' id='EmployeeButtons.Edit'$strEditDisplay><div class='right'>\n";
-			
+
 			if (!$bolAdding && $bolProperAdminUser) {
 				$this->Button("Reassign Tickets & Follow-Ups", "EmployeeEdit.showReassignPopup(".DBO()->Employee->Id->Value.", Vixen.Popup.arrOverlayZIndexHistory.pop());");
 			}
-			
+
 			$this->_renderSaveButton(DBO()->Employee->Id->Value, 'Save', NULL, $bolAdding ? 'Create' : 'Edit');
-			
+
 			if (!$bolAdding) {
 				$this->Button("Cancel", "EmployeeEdit.toggle();");
 			} else {
 				$this->Button("Cancel", "Vixen.Popup.Close(this);");
 			}
-			
+
 			echo "</div></div>";
-	
+
 			if (!$bolAdding) {
 				echo "<div class='ButtonContainer' id='EmployeeButtons.View'$strViewDisplay><div class='right'>\n";
-				
+
 				if ($bolProperAdminUser) {
 					$this->Button("Reassign Tickets & Follow-Ups", "EmployeeEdit.showReassignPopup(".DBO()->Employee->Id->Value.", Vixen.Popup.arrOverlayZIndexHistory.pop());");
 				}
-				
+
 				if ($bolProperAdminUser || $bolEditSelf) {
 					$this->Button("Edit", "EmployeeEdit.toggle();");
 				}
-				
+
 				$this->Button("Close", "Vixen.Popup.Close(" . ($this->IsModal() ? "'CloseFlexModalWindow'" : "this") . ");");
 				echo "</div></div>";
 			}
@@ -390,16 +390,16 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		echo "</div>\n";
 
 		$this->FormEnd();
-		
+
 		echo "<!-- END HtmlTemplateEmployeeEdit -->\n";
 	}
-	
+
 	// This is a copy of HtmlTemplate::AjaxSubmit, customised so that the save button can have an intermediate click event
 	private function _renderSaveButton($iEmployeeId, $strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit", $strButtonId='VixenButtonId') {
 		$strTarget = '';
 		$strId = '';
 		$strSize = '';
-		
+
 		if (!$strTemplate) {
 			$strTemplate = $this->_strTemplate;
 		}
@@ -412,11 +412,11 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			$strId = $this->_objAjax->strId;
 			$strSize = $this->_objAjax->strSize;
 		}
-		
+
 		if ($strTargetType !== NULL) {
 			$strTarget = $strTargetType;
 		}
-		
+
 		echo "<input type='button' value='$strLabel' class='$strStyleClass' id='$strButtonId' name='VixenButtonId' onclick=\"EmployeeEdit.checkForAssignedTasks({$iEmployeeId}, function() {Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}');});\"></input>\n";
 	}
 }
