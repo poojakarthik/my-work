@@ -179,6 +179,15 @@ class Application
 			ContextMenu()->Admin->Reports->manageAllReports();
 		}
 
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MANAGEMENT)) {
+			ContextMenu()->Admin->Employees->ManageEmployees();
+
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
+				ContextMenu()->Admin->Employees->TechnicalNoticeManagement();
+			}
+		}
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
@@ -199,19 +208,15 @@ class Application
 
 
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
-			
 
-			ContextMenu()->Admin->Employees->ManageEmployees();
+
+
 
 			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-			{
-				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
-				ContextMenu()->Admin->Employees->TechnicalNoticeManagement();
-			}
+
 
 			// Permissions menu
 			//ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
@@ -237,14 +242,9 @@ class Application
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
 
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-			{
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
 				ContextMenu()->Admin->System_Settings->CarrierModuleList();
 				ContextMenu()->Admin->System_Settings->EmailQueueList();
-			}
-
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-			{
 				ContextMenu()->Admin->System_Settings->ManageLogo();
 			}
 
@@ -466,6 +466,19 @@ class Application
 			ContextMenu()->Ticketing->Administration->TicketingAttachmentTypes();
 		}
 
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {
+			ContextMenu()->Admin->Reports->manageAllReports();
+		}
+
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_USER_MANAGEMENT)) {
+			ContextMenu()->Admin->Employees->ManageEmployees();
+
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
+				ContextMenu()->Admin->Employees->TechnicalNoticeManagement();
+			}
+		}
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
@@ -486,17 +499,10 @@ class Application
 
 
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
-			ContextMenu()->Admin->Reports->manageAllReports();
-
-			ContextMenu()->Admin->Employees->ManageEmployees();
 
 			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
-			}
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-			{
-				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 			}
 
 			// Permissions menu
@@ -523,14 +529,9 @@ class Application
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
 
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-			{
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
 				ContextMenu()->Admin->System_Settings->CarrierModuleList();
 				ContextMenu()->Admin->System_Settings->EmailQueueList();
-			}
-
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-			{
 				ContextMenu()->Admin->System_Settings->ManageLogo();
 			}
 
