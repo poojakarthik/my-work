@@ -33,7 +33,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-iftel-email-create-email'},
 				H.span({class: 'flex-servicetype-iftel-email-create-email-label'}, 'Email Address'),
-				H.input({name: 'email', type: 'email', required: true})
+				H.input({name: 'email', type: 'email', required: true, onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value);
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)})
 			)
 		);
 	},

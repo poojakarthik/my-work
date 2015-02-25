@@ -33,7 +33,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-inbound-create-fnn'},
 				H.abbr({class: 'flex-servicetype-inbound-create-fnn-label', title: 'Full National Number'}, 'FNN'),
-				H.input({name: 'fnn', maxlength: 10, pattern: '^(13\\d{4}|1[38]00\\d{6})$'})
+				H.input({name: 'fnn', maxlength: 10, pattern: '^(13\\d{4}|1[38]00\\d{6})$', required: '', onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value);
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)})
 			),
 
 			H.label({class: 'flex-servicetype-inbound-create-answerpoint'},

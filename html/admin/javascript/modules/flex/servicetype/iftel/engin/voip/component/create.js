@@ -33,7 +33,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-iftel-engin-voip-create-fnn'},
 				H.abbr({class: 'flex-servicetype-iftel-engin-voip-create-fnn-label', title: 'Full National Number'}, 'FNN'),
-				H.input({name: 'fnn', maxlength: 10, pattern: '^0[2378]\\d{8}$', required: true})
+				H.input({name: 'fnn', maxlength: 10, pattern: '^0[2378]\\d{8}$', required: true, onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value);
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)})
 			)
 		);
 	},

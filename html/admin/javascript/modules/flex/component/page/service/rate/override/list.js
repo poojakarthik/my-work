@@ -13,6 +13,8 @@ var H = require('fw/dom/factory'), // HTML
 	jsonForm = require('json-form'),
 	promise = require('promise')
 ;
+var ServiceRateAdd = require('flex/component/popup/service/rate/override/add');
+var ServiceRateModify = require('flex/component/popup/service/rate/override/modify');
 
 function objectValues(object) {
 	return Object.keys(object).map(function (key) {
@@ -111,6 +113,18 @@ var self = new Class({
 		var serviceId = this.get('serviceId');
 		var serviceRatesPromise = this.get('serviceRates');
 
+		// NOTE: These are re-checked on the server at time of submission
+		var permissions = this.get('permissions');
+		if (permissions && permissions.newOverrideRate) {
+			this._addOverrideButton.disabled = false;
+		} else {
+			this._addOverrideButton.disabled = true;
+		}
+
+		// Dynamically pull serviceRates based on serviceId (if they weren't provided up front)
+		this._syncServiceRates().then(this._onReady.bind(this));
+	},
+
 		serviceRatesPromise.then(function (serviceRates) {
 			this._recordTypesElement.appendChild(
 				H.$fragment.apply(H,
@@ -119,6 +133,7 @@ var self = new Class({
 			);
 			this._onReady();
 		}.bind(this));
+	},
 
 		// TODO: Dynamically pull serviceRates based on serviceId
 		// if (serviceId !== this._configCache.serviceId) {

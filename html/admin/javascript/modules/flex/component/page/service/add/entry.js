@@ -29,10 +29,11 @@ var self = new Class({
 					}
 					return account;
 				}).bind(this)
-			}
+			},
+			costCentres: {}
 		}, this.CONFIG || {});
 		this._super.apply(this, arguments);
-		this.NODE.addClassName('flex-page-service-add-entry');
+		this.NODE.addClassName('flex-page-service-add-servicelist-service');
 
 		if (this.get('id') == null) {
 			throw new Error('Can\'t create an Add Services Service entry without supplying the `id` config property');
@@ -40,27 +41,47 @@ var self = new Class({
 		if (!this.get('account')) {
 			throw new Error('Can\'t create an Add Services Service entry without supplying the `account` config property');
 		}
+
+		this._identifierAttributeObserver = new MutationObserver(function (aMutations) {
+			aMutations.forEach(function (oMutation) {
+				if (oMutation.type === 'attributes' && oMutation.attributeName === 'data-identifier' && oMutation.target === this._propertiesContent) {
+					this._syncHeading();
+				}
+			}.bind(this));
+		}.bind(this));
 	},
 
 	_buildUI: function () {
-		this.NODE = H.div({class: 'flex-page-service-add-servicelist-service', 'data-fieldset': true},
+		this.NODE = H.div({'data-fieldset': true},
 			H.h3({class: 'flex-page-service-add-servicelist-service-heading', title: 'Service'},
-				H.span({class: 'flex-page-service-add-servicelist-service-heading-servicetype'}),
-				H.span({class: 'flex-page-service-add-servicelist-service-heading-serviceidentifier'}),
-				H.span({class: 'flex-page-service-add-servicelist-service-heading-rateplan'}),
+				H.button({name: 'collapse', type: 'button', onclick: this._syncVisibility.bind(this)}),
+				this.headingServiceType = H.img({class: 'flex-page-service-add-servicelist-service-heading-servicetype'}),
+				this.headingIdentifier = H.span({class: 'flex-page-service-add-servicelist-service-heading-serviceidentifier'}),
+				this.headingRatePlan = H.span({class: 'flex-page-service-add-servicelist-service-heading-rateplan'}),
 				H.button({name: 'remove', type: 'button', onclick: this._remove.bind(this)})
 			),
 
 			H.div({class: 'flex-page-service-add-servicelist-service-details'},
 				H.label({class: 'flex-page-service-add-servicelist-service-details-servicetype'},
 					H.span({class: 'flex-page-service-add-servicelist-service-details-servicetype-label'}, 'Service Type'),
-					this._serviceTypeSelect = H.select({name: 'service_type_id', required: true, onchange: [this._populateRatePlan.bind(this), this._populateServiceProperties.bind(this)]})
+					this._serviceTypeSelect = H.select({name: 'service_type_id', required: true, onchange: [
+						this._populateRatePlan.bind(this),
+						this._populateServiceProperties.bind(this),
+						this._syncHeading.bind(this)
+					]})
 				),
 
 				H.label({class: 'flex-page-service-add-servicelist-service-details-rateplan'},
 					H.span({class: 'flex-page-service-add-servicelist-service-details-rateplan-label'}, 'Rate Plan'),
-					this._ratePlanSelect = H.select({name: 'rate_plan_id'},
+					this._ratePlanSelect = H.select({name: 'rate_plan_id', onchange: this._syncHeading.bind(this)},
 						H.option({value: ''}, '∅ No Rate Plan')
+					)
+				),
+
+				H.label({class: 'flex-page-service-add-servicelist-service-details-costcentre'},
+					H.span({class: 'flex-page-service-add-servicelist-service-details-costcentre-label'}, 'Cost Centre'),
+					this._costCentreSelect = H.select({name: 'cost_centre_id'},
+						H.option({value: ''}, '∅ No Cost Centre')
 					)
 				),
 
@@ -92,7 +113,8 @@ var self = new Class({
 						this._populateServiceProperties()
 					]);
 				}.bind(this)),
-				this._syncActivateImmediately()
+				this._syncActivateImmediately(),
+				this._syncHeading()
 			]).then(
 				this._onReady.bind(this),
 				(function rejected() {
@@ -125,7 +147,7 @@ var self = new Class({
 			});
 
 			Object.keys(serviceTypes).map(function (serviceTypeId) {
-				return H.option({value: serviceTypeId}, serviceTypes[serviceTypeId].name);
+				return H.option({value: serviceTypeId, 'data-module': serviceTypes[serviceTypeId].module}, serviceTypes[serviceTypeId].name);
 			}).forEach(function (option) {
 				this._serviceTypeSelect.appendChild(option);
 			}.bind(this));
@@ -186,12 +208,61 @@ var self = new Class({
 	},
 
 	_populateServiceProperties: function () {
+		this._propertiesContainer.innerHTML = '';
+		this._propertiesContent = null;
+		this._identifierAttributeObserver.disconnect();
 		return this._fetchServiceTypes().then(function (serviceTypes) {
 			return ServiceType.getModule(serviceTypes[this._serviceTypeSelect.value].module).then(function (serviceTypeModule) {
-				this._propertiesContainer.innerHTML = '';
-				this._propertiesContainer.appendChild(serviceTypeModule.getCreateNode());
+				this._propertiesContent = serviceTypeModule.getCreateNode();
+				this._propertiesContainer.appendChild(this._propertiesContent);
+				this._identifierAttributeObserver.observe(this._propertiesContent, {attributes: true, attributeFilter: ['data-identifier']});
 			}.bind(this));
 		}.bind(this));
+	},
+
+	_syncHeading: function () {
+		// Service Type Icon
+		if (this._serviceTypeSelect.value) {
+			var serviceTypeOption = this._serviceTypeSelect.querySelector(':checked');
+			this.headingServiceType.src = '/admin/img/template/servicetype/' + serviceTypeOption.dataset.module.toLowerCase() + '.png';
+			this.headingServiceType.title = 'Service Type: ' + serviceTypeOption.innerText;
+			this.headingServiceType.alt = 'Service Type: ' + serviceTypeOption.innerText;
+		} else {
+			if (this.headingServiceType.hasAttribute('src')) {
+				this.headingServiceType.removeAttribute('src');
+			}
+			this.headingServiceType.title = '';
+			this.headingServiceType.alt = '';
+		}
+
+		// Identifier
+		if (this._propertiesContent && this._propertiesContent.hasAttribute('data-identifier')) {
+			this.headingIdentifier.innerText = this._propertiesContent.getAttribute('data-identifier');
+		} else {
+			this.headingIdentifier.innerText = '';
+		}
+
+		// Rate Plan
+		if (this._ratePlanSelect.value) {
+			var ratePlanOption = this._ratePlanSelect.querySelector(':checked');
+			this.headingRatePlan.innerText = ratePlanOption.innerText;
+		} else {
+			this.headingRatePlan.innerText = '';
+		}
+
+		// For consistency with other "sync*" methods, "wrap" in a promise (not really, because this is sync)
+		return promise().fulfill();
+	},
+
+	_syncVisibility: function () {
+		if (this.NODE.hasAttribute('data-collapsed')) {
+			this.NODE.removeAttribute('data-collapsed');
+		} else {
+			this.NODE.setAttribute('data-collapsed', '');
+		}
+
+		// For consistency with other "sync*" methods, "wrap" in a promise (not really, because this is sync)
+		return promise().fulfill();
 	},
 
 	_remove: function () {

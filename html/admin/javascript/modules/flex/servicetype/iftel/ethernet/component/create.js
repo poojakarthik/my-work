@@ -33,7 +33,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-iftel-ethernet-create-identifier'},
 				H.span({class: 'flex-servicetype-iftel-ethernet-create-identifier-label'}, 'Service Number'),
-				H.input({name: 'identifier', type: 'text', pattern: '^\\d+$', required: true})
+				H.input({name: 'identifier', type: 'text', pattern: '^\\d+$', required: true, onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value);
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)})
 			)
 		);
 	},

@@ -36,7 +36,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-landline-create-fnn'},
 				H.abbr({class: 'flex-servicetype-landline-create-fnn-label', title: 'Full National Number'}, 'FNN'),
-				H.input({name: 'fnn', maxlength: 10, pattern: '^0[2378]\\d{8}$'})
+				H.input({name: 'fnn', maxlength: 10, pattern: '^0[2378]\\d{8}$', required: '', onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value);
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)})
 			),
 
 			H.div({class: 'flex-servicetype-landline-create-linetype'},
@@ -51,6 +57,13 @@ var self = new Class({
 						H.span('Business')
 					)
 				)
+			),
+
+			H.label({class: 'flex-servicetype-landline-create-indial100'},
+				H.span({class: 'flex-servicetype-landline-create-indial100-label'}, 'Indial'),
+				H.input({name: 'is_indial100', type: 'checkbox'}),
+				H.span('Does this service have an indial 100 range?'),
+				H.span({class: 'flex-servicetype-landline-create-indial100-fnnnotice'}, '(FNN should be the Primary FNN for the range)')
 			),
 
 			this._addressContainer = H.div({class: 'flex-servicetype-landline-create-address'},

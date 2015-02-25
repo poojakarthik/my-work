@@ -194,6 +194,10 @@ class Account
 		return $arrContacts;
 	}
 
+	public function getPrimaryContact() {
+		return Contact::getForId($this->PrimaryContact);
+	}
+
 	public static function getForTicket(Ticketing_Ticket $objTicket)
 	{
 		return Account::getForId($objTicket->accountId);

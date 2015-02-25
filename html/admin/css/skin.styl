@@ -15,6 +15,17 @@ button-icon(url, width=auto, height=auto)
 	margin-right .5ch
 	vertical-align bottom
 
+button-icon-background(url, width=auto, height=auto)
+	content '\0020'
+	background-image url(url)
+	background-size width height
+	background-repeat no-repeat
+	height width
+	width height
+	display inline-block
+	margin-right .5ch
+	vertical-align bottom
+
 // Forms
 defieldsetify()
 	border none
@@ -22,13 +33,16 @@ defieldsetify()
 	padding 0
 
 appearance-flex-form-fieldset()
-	display flex
-	flex-direction column
-	align-items stretch
-	align-content stretch
+	-vnd-display-flex()
+	-vnd-flex-direction column
+	-vnd-align-items stretch
+	-vnd-align-content stretch
 	border 1px solid #d1d1d1
 	background #ddd
 	padding 0 .25em
+
+	& input
+		padding .25em
 
 	& :required
 		background #fff
@@ -53,13 +67,13 @@ appearance-flex-form-heading()
 	border-bottom 1px solid #d1d1d1
 
 appearance-flex-form-fieldset-field()
-	display flex
-	flex-direction row
+	-vnd-display-flex()
+	-vnd-flex-direction row
 	border 0
 	margin 0
 	padding 0
-	justify-content flex-start
-	align-items center
+	-vnd-justify-content flex-start
+	-vnd-align-items baseline
 
 appearance-flex-form-fieldset-field-label()
 	border 0
@@ -68,16 +82,25 @@ appearance-flex-form-fieldset-field-label()
 	text-align right
 	//background-color #efefef
 
+appearance-flex-form-controlset()
+	-vnd-display-flex()
+	-vnd-flex-direction column
+	-vnd-align-items stretch
+	-vnd-align-content stretch
+	border 0
+	padding 0
+	// margin .25em 0
+
+appearance-flex-form-controlset-control()
+	margin 0 0 .5em 0
+
 appearance-flex-form-fieldset-field-control()
 	//padding .2em
 	margin .25em 0
+	margin 0
 	//flex-grow 1
 
-appearance-flex-form-controlset()
-	display flex
-	flex-direction column
-	align-items stretch
-	align-content stretch
+appearance-flex-form-buttonpanel()
 	border 0
 	padding 0
 	margin .25em 0

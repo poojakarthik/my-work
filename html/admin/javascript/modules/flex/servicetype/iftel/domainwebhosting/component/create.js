@@ -33,7 +33,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-iftel-domainwebhosting-create-domain'},
 				H.span({class: 'flex-servicetype-iftel-domainwebhosting-create-domain-label'}, 'Domain'),
-				H.input({name: 'domain', type: 'text', placeholder: 'e.g. yellowbilling.com.au', required: true, pattern: '^([a-z0-9\\-]+\\.)+[a-z]{2,}(\\.[a-z]{2,})?$'})
+				H.input({name: 'domain', type: 'text', placeholder: 'e.g. yellowbilling.com.au', required: true, pattern: '^([a-z0-9\\-]+\\.)+[a-z]{2,}(\\.[a-z]{2,})?$', onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value);
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)})
 			)
 		);
 	},

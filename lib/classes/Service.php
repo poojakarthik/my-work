@@ -865,6 +865,20 @@ class Service extends ORM
 		return $this->_propertySet;
 	}
 
+	public static function createNew($iServiceTypeId, $iAccountId, stdClass $oServicePropertyData) {
+		$oAccount = Account::getForId($iAccountId);
+		$oServiceType = Service_Type::getForId($iServiceTypeId);
+		$oService = new Service(array(
+			'ServiceType' => $iServiceTypeId,
+			'AccountGroup' => $oAccount->AccountGroup,
+			'Account' => $oAccount->Id
+		));
+
+		// Load Module
+		$oServiceTypeModule = ServiceType::getForServiceType($iServiceTypeId);
+		$oService = $oServiceTypeModule->createNew($oService, $oServicePropertyData);
+	}
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//

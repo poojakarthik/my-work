@@ -505,6 +505,7 @@ final class Flex {
 			if ($bolSilentFail) {
 				return false;
 			} else {
+				error_log($strBody);
 				throw new Exception("Failed to send alert email - ". $e->getMessage());
 			}
 		}

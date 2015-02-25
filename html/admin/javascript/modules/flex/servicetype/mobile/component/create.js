@@ -33,7 +33,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-mobile-create-msn'},
 				H.abbr({class: 'flex-servicetype-mobile-create-msn-label', title: 'Mobile Service Number'}, 'MSN'),
-				H.input({name: 'msn', maxlength: 10, pattern: '^04\\d{8}$'})
+				H.input({name: 'msn', maxlength: 10, pattern: '^04\\d{8}$', required: '', onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value);
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)})
 			),
 
 			H.label({class: 'flex-servicetype-mobile-create-puk'},

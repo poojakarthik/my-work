@@ -33,7 +33,13 @@ var self = new Class({
 		this.NODE = H.div(
 			H.label({class: 'flex-servicetype-adsl-create-fnn'},
 				H.abbr({class: 'flex-servicetype-adsl-create-fnn-label', title: 'Full National Number'}, 'FNN'),
-				H.input({name: 'fnn', maxlength: 10, pattern: '^0[2378]\\d{8}$'}),
+				H.input({name: 'fnn', maxlength: 10, pattern: '^0[2378]\\d{8}$', required: '', onchange: function (oEvent) {
+					if (oEvent.target.validity.valid) {
+						this.NODE.setAttribute('data-identifier', oEvent.target.value + 'i');
+					} else {
+						this.NODE.setAttribute('data-identifier', '');
+					}
+				}.bind(this)}),
 				H.span({class: 'flex-servicetype-adsl-create-fnn-suffix'}, 'i')
 			)
 		);
