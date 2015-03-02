@@ -95,6 +95,7 @@ class Cli_App_Report extends Cli {
 								);
 							$oEmailFlex = new Email_Flex();
 							$oEmailFlex->setSubject($aHeaders['Subject']);
+							$oEmailFlex->setFrom($aHeaders['From']);
 
 							$aReportDeliveryEmployees = Report_Delivery_Employee::getForReportScheduleId($oReportSchedule->id);
 							$aReceivers = array();
@@ -102,7 +103,6 @@ class Cli_App_Report extends Cli {
 								$oEmployee = Employee::getForId($oReportDeliveryEmployee->employee_id);
 								$aEmployee = $oEmployee->toArray();
 								$oEmailFlex->addTo($oEmployee->Email);
-								$oEmailFlex->setFrom($aHeaders['From']);
 								// Generate Content
 					 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
 								$strContent .= "Attached is the Scheduled Report ({$oReport->name}) .";

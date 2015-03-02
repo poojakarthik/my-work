@@ -449,6 +449,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 						$oEmailFlex	= new Email_Flex();
 						$oEmailFlex->setSubject($aHeaders['Subject']);
+						$oEmailFlex->setFrom($aHeaders['From']);
 
 						$delivery_employees = explode(",", $mData->selectedDeliveryEmployees);
 						$aReceivers = array();
@@ -456,7 +457,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 							$oEmployee = Employee::getForId($delivery_employees[$i]);
 							$aEmployee = $oEmployee->toArray();
 							$oEmailFlex->addTo($oEmployee->Email);
-							$oEmailFlex->setFrom($aHeaders['From']);
+
 							// Generate Content
 				 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
 							$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
