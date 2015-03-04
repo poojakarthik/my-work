@@ -442,7 +442,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$sAttachmentContent = file_get_contents($sTmpFilePath);
 						$sCurrentTimestamp = date('d/m/Y H:i:s');
 						$aHeaders = array(
-								'From' => "reports@yellowbilling.com.au",
+								'From' => "reports@billingsite.com.au",
 								'Subject' => "{$oReport->name} requested on {$sCurrentTimestamp}"
 							);
 
@@ -450,6 +450,19 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$oEmailFlex	= new Email_Flex();
 						$oEmailFlex->setSubject($aHeaders['Subject']);
 						$oEmailFlex->setFrom($aHeaders['From']);
+						// Attachment (file to deliver)
+						if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
+							$sMimeType = "application/x-msexcel";
+						} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
+							$sMimeType = "text/csv";
+						}
+						$oEmailFlex->createAttachment(
+							$sAttachmentContent,
+							$sMimeType,
+							Zend_Mime::DISPOSITION_ATTACHMENT,
+							Zend_Mime::ENCODING_BASE64,
+							$sFilename
+						);
 
 						$delivery_employees = explode(",", $mData->selectedDeliveryEmployees);
 						$aReceivers = array();
@@ -457,39 +470,28 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 							$oEmployee = Employee::getForId($delivery_employees[$i]);
 							$aEmployee = $oEmployee->toArray();
 							$oEmailFlex->addTo($oEmployee->Email);
-
-							// Generate Content
-				 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
-							$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
-							$strContent .= "\n\nPablo\nYellow Billing Mascot";
-							$oEmailFlex->setBodyText($strContent);
-							// Attachment (file to deliver)
-							if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
-								$sMimeType = "application/x-msexcel";
-							} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
-								$sMimeType = "text/csv";
-							}
-							$oEmailFlex->createAttachment(
-								$sAttachmentContent,
-								$sMimeType,
-								Zend_Mime::DISPOSITION_ATTACHMENT,
-								Zend_Mime::ENCODING_BASE64,
-								$sFilename
-							);
-							// Send the email
-							try {
-								$oEmailFlex->send();
-								$aReceivers[] = $aEmployee['FirstName'];
-	 						} catch (Zend_Mail_Transport_Exception $oException) {
-	 							$this->_bScriptSuccess = true;
-								// Sending the email failed
-	 							return 	array(
-									'success' => true,
-									'bReportGenerated' => false,
-									'sMessage' => $oException->getMessage()
-								);
-							}
+							$aReceivers[] = $aEmployee['FirstName'];
 						}
+
+						// Generate Content
+			 			$strContent	= "Dear " . implode("/", $aReceivers) . ",\n\n";
+						$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
+						$strContent .= "\nRegards\nFlex @ Billing Site";
+						$oEmailFlex->setBodyText($strContent);
+
+						// Send the email
+						try {
+							$oEmailFlex->send();
+ 						} catch (Zend_Mail_Transport_Exception $oException) {
+ 							$this->_bScriptSuccess = true;
+							// Sending the email failed
+ 							return 	array(
+								'success' => true,
+								'bReportGenerated' => false,
+								'sMessage' => $oException->getMessage()
+							);
+						}
+
 						$this->_bScriptSuccess = true;
 						return 	array(
 								'success' => true,
