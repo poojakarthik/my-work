@@ -90,11 +90,25 @@ class Cli_App_Report extends Cli {
 							$sCurrentTimestamp = date('d/m/Y H:i:s');
 
 							$aHeaders = array(
-									'From' => "reports@yellowbilling.com.au",
+									'From' => "reports@billingsite.com.au",
 									'Subject' => "{$oReport->name} executed on {$sCurrentTimestamp}"
 								);
 							$oEmailFlex = new Email_Flex();
 							$oEmailFlex->setSubject($aHeaders['Subject']);
+							$oEmailFlex->setFrom($aHeaders['From']);
+							// Attachment (file to deliver)
+							if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
+								$sMimeType = "application/x-msexcel";
+							} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
+								$sMimeType = "text/csv";
+							}
+							$oEmailFlex->createAttachment(
+								$sAttachmentContent,
+								$sMimeType,
+								Zend_Mime::DISPOSITION_ATTACHMENT,
+								Zend_Mime::ENCODING_BASE64,
+								$sFilename
+							);
 
 							$aReportDeliveryEmployees = Report_Delivery_Employee::getForReportScheduleId($oReportSchedule->id);
 							$aReceivers = array();
@@ -102,34 +116,21 @@ class Cli_App_Report extends Cli {
 								$oEmployee = Employee::getForId($oReportDeliveryEmployee->employee_id);
 								$aEmployee = $oEmployee->toArray();
 								$oEmailFlex->addTo($oEmployee->Email);
-								$oEmailFlex->setFrom($aHeaders['From']);
-								// Generate Content
-					 			$strContent	= "Dear {$aEmployee['FirstName']},\n\n";
-								$strContent .= "Attached is the Scheduled Report ({$oReport->name}) .";
-								$strContent .= "\n\nPablo\nYellow Billing Mascot";
-								$oEmailFlex->setBodyText($strContent);
-								// Attachment (file to deliver)
-								if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_XLS) {
-									$sMimeType = "application/x-msexcel";
-								} else if ($oReportDeliveryFormat->id == REPORT_DELIVERY_FORMAT_CSV) {
-									$sMimeType = "text/csv";
-								}
-								$oEmailFlex->createAttachment(
-									$sAttachmentContent,
-									$sMimeType,
-									Zend_Mime::DISPOSITION_ATTACHMENT,
-									Zend_Mime::ENCODING_BASE64,
-									$sFilename
-								);
-								// Send the email
-								try {
-									$oEmailFlex->send();
-									$aReceivers[] = $aEmployee['FirstName'];
-		 						} catch (Zend_Mail_Transport_Exception $oException) {
-									// Sending the email failed
-									Log::getLog()->log("Failed to send email to " . $aEmployee['FirstName']);
-									throw $oException;
-								}
+								$aReceivers[] = $aEmployee['FirstName'];
+							}
+							// Generate Content
+				 			$strContent	= "Dear " . implode("/", $aReceivers) . ",\n\n";
+							$strContent .= "Attached is the Scheduled Report ({$oReport->name}) .";
+							$strContent .= "\nRegards\nFlex @ Billing Site";
+							$oEmailFlex->setBodyText($strContent);
+
+							// Send the email
+							try {
+								$oEmailFlex->send();
+	 						} catch (Zend_Mail_Transport_Exception $oException) {
+								// Sending the email failed
+								Log::getLog()->log("Failed to send email to " . $aEmployee['FirstName']);
+								throw $oException;
 							}
 						}
 					} else {
