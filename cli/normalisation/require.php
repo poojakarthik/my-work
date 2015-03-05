@@ -20,3 +20,4 @@ VixenRequire($strApplicationDir."module_telcoblue.php");
 VixenRequire($strApplicationDir."module_utilibill.php");
 VixenRequire($strApplicationDir."module_engin_voip.php");
 VixenRequire($strApplicationDir."module_m2_nbn.php");
+VixenRequire($strApplicationDir."module_m2_nbn_hourly.php");

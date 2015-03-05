@@ -30,7 +30,7 @@ class ApplicationNormalise extends ApplicationBaseClass {
 		parent::__construct();
 
 		// Initialise framework components
-		$this->rptNormalisationReport = new Report("Normalisation Report for " . date("Y-m-d H:i:s"), "rdavis@ybs.net.au");
+		$this->rptNormalisationReport = new Report("Normalisation Report for " . date("Y-m-d H:i:s"), "sanjeevm@smartbusinesstelecom.com.au");
 		$this->rptDelinquentsReport = new Report("Delinquents Report for ". date("Y-m-d H:i:s"), $mixEmailAddress, false);
 		$this->errErrorHandler = new ErrorHandler();
 
@@ -301,24 +301,43 @@ class ApplicationNormalise extends ApplicationBaseClass {
 						throw new Exception("Attempting to read line {$intSequence} from the file failed: {$php_errormsg}");
 					}
 					foreach ($cdrLineRecords as $cdrLineRecord) {
-						if (trim($cdrLineRecord)) {
-							//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
-							$insInsertCDRLine->Execute([
-								"File" => $arrCDRFile["Id"],
-								"Carrier" => $arrCDRFile["Carrier"],
-								"CDR" => $cdrLineRecord,
-								"SequenceNo" => $intSequence,
-								"Status" => CDR_READY,
-
-							]);
-							if ($insInsertCDRLine->Error()) {
-								// error inserting
-								throw new Exception("There was an error inserting line {$intSequence} into the database");
-							}
+						if (!is_array($cdrLineRecord)) {
+							if (trim($cdrLineRecord)) {
+								//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
+								$insInsertCDRLine->Execute([
+									"File" => $arrCDRFile["Id"],
+									"Carrier" => $arrCDRFile["Carrier"],
+									"CDR" => $cdrLineRecord,
+									"SequenceNo" => $intSequence,
+									"Status" => CDR_READY
+								]);
+								if ($insInsertCDRLine->Error()) {
+									// error inserting
+									throw new Exception("There was an error inserting line {$intSequence} into the database");
+								}
 							//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} inserted in : ".$oStopwatch->lapSplit(4));
-						} else {
-							//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
+							} else {
+								//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
+							}
 						}
+						else {
+							$updUpdateCDRLine = new StatementUpdateById("CDR");
+
+							$aCDRLine = [
+											"Id" => $cdrLineRecord["Id"],
+											"File" => $arrCDRFile["Id"],
+											"Carrier" => $arrCDRFile["Carrier"],
+											"CDR" => $cdrLineRecord["CDR"],
+											"SequenceNo" => $intSequence,
+											"Status" => CDR_READY
+										];
+							$this->rptNormalisationReport->AddMessage("\tUpdating CDR :".var_export($aCDRLine)."...");
+							if ($updUpdateCDRLine->Execute($aCDRLine) === false) {
+								// error updating
+								throw new Exception("There was an error updating CDR line {$intSequence} into the database");
+							}
+						}
+
 						$intSequence++;
 					}
 
@@ -500,6 +519,11 @@ class ApplicationNormalise extends ApplicationBaseClass {
 
 					case CDR_CANT_NORMALISE_NON_CDR:
 						//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, array('<Reason>' => "Non-CDR"));
+						break;
+
+					case CDR_NOT_BILLABLE:
+						//Though the CDR is not BILLABLE, it has passed Normalisation
+						$intNormalisePassed++;
 						break;
 
 					case CDR_BAD_OWNER:
