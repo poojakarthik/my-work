@@ -49,23 +49,28 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 	function Preprocessor($sCDR) {
 		$aCDRLines = [];
 		// Split the CDR
-		$aCDRItems = File_CSV::parseLineRFC4180($sCDR);
+		$aCDRItems = File_CSV::parseLine($sCDR);
 
-		if (count($aCDRItems) != 8) {
-			throw new Exception_Assertion("M2 NBN Usage Normalisation Module Preprocessor Expected 8 Columns; encountered " . count($aCDRItems) . ":" . $sCDR);
+		if (count($aCDRItems) != 9) {
+			throw new Exception_Assertion("M2 NBN Usage Normalisation Module Preprocessor Expected 9 Columns; encountered " . count($aCDRItems) . ":" . $sCDR);
 		}
 		// Calculate StartDatetime from Anniversary day
-		$iAnniversaryDay = intval($aCDRItems[6]);
+		$iAnniversaryDay = intval($aCDRItems[7]);
 		$sFileDate = date("Y-m-d");
 		$iFileDay = intval(substr($sFileDate, 8, 2));
 		$iStartMonth = (($iFileDay - $iAnniversaryDay) >= 0) ? substr($sFileDate, 5, 2) : sprintf("%02d", intval(substr($sFileDate, 5, 2) - 1));
-		$sStartDate = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-" . sprintf("%02d", $iAnniversaryDay);
+		$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-" . sprintf("%02d", $iAnniversaryDay) . " 00:00:00";
+
+		if (!checkdate($iStartMonth, $iAnniversaryDay, intval(substr($sFileDate, 0, 4)))) {
+			$iStartMonth++;
+			$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-01 00:00:00";
+		}
 
 		$iUsageKiloBytes = intval(ceil(floatval($aCDRItems[4]) * 1024));
 
 		$aParams = [
-			"FNN" => $aCDRItems[0],
-			"StartDatetime" => $sStartDate . " 00:00:00",
+			"FNN" => substr(trim($aCDRItems[0]), 2, 10) . "n",
+			"StartDatetime" => $sStartDatetime,
 			"RecordType" => $this->GetConfigField('period_allowance_consumed_type_id'),
 			"ConsumedData" => $iUsageKiloBytes
 		];
@@ -97,20 +102,21 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 
 		//--------------------------------------------------------------------//
 		Log::get()->logIf(self::DEBUG_LOGGING, "Record #{$this->_iSequence}");
-		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
-		if (count($aParsed) < 8) {
+		$aParsed = File_CSV::parseLine($aCDR['CDR']);
+		if (count($aParsed) < 9) {
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 
 		$this->_arrRawData = array_associate(array(
 			0 => 'Username',
-			1 => 'Name',
+			1 => 'ServiceReference',
 			2 => 'Allowance',
 			3 => 'Status',
 			4 => 'Consumed_data',
 			5 => 'Remaining_data',
-			6 => 'Anniversary_date',
-			7 => 'Date_Shaped'
+			6 => 'Consumed_Percentage',
+			7 => 'Anniversary_date',
+			8 => 'Date_Shaped'
 		), $aParsed);
 
 		//Check if more recent CDR is already there
@@ -119,11 +125,17 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 		$iFileDate = intval(substr($sFileDate, 8, 2));
 		$iStartMonth = (($iFileDate - $iAnniversaryDay) >= 0) ? substr($sFileDate, 5, 2) : sprintf("%02d", intval(substr($sFileDate, 5, 2) - 1));
 		$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-" . sprintf("%02d", $iAnniversaryDay) . " 00:00:00";
+
+		if (!checkdate($iStartMonth, $iAnniversaryDay, intval(substr($sFileDate, 0, 4)))) {
+			$iStartMonth++;
+			$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-01 00:00:00";
+		}
+
 		$sEndDatetime = substr($sFileDate, 0, 10) . " " . substr($sFileDate, 10,2). ":00:00";
 
 		$aParams = [
-			"FNN" => trim($this->getRaw('Username')),
-			"StartDatetime" => $sStartDatetime,
+			"FNN" => substr(trim($this->getRaw('ServiceReference')), 2, 10) . "n",
+			"StartDatetime" =>  date('Y-m-d H:i:s', strtotime($sStartDatetime)), //to avoid the invalid datetime values such as 2015-02-29 which is not valid
 			"RecordType" => $this->GetConfigField('period_allowance_consumed_type_id'),
 			"EndDatetime" => $sEndDatetime
 		];
@@ -167,9 +179,9 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 		$this->setNormalised('CarrierRef', $this->getNormalised('FileName') . ":" . trim($this->getRaw('Username')) . ":" . $this->getRaw('Direction'));
 
 		// FNN
-		$sUsername = trim($this->getRaw('Username'));
-		$this->setNormalised('FNN', $sUsername);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  ' . $this->_describeNormalisedField('FNN', 'Username'));
+		$sServiceReference = substr(trim($this->getRaw('ServiceReference')), 2, 10) . "n";
+		$this->setNormalised('FNN', $sServiceReference);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  ' . $this->_describeNormalisedField('FNN', 'ServiceReference'));
 
 		// Cost
 		$this->setNormalised('Cost', 0.0);
@@ -192,8 +204,13 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 		$iAnniversaryDay = intval($this->getRaw('Anniversary_date'));
 		$iFileDate = intval(substr($sFileDate, 8, 2));
 		$iStartMonth = (($iFileDate - $iAnniversaryDay) >= 0) ? substr($sFileDate, 5, 2) : sprintf("%02d", intval(substr($sFileDate, 5, 2) - 1));
-		$sStartDate = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-" . sprintf("%02d", $iAnniversaryDay);
-		$this->setNormalised('StartDatetime', $sStartDate . " 00:00:00");
+		$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-" . sprintf("%02d", $iAnniversaryDay) . " 00:00:00";
+
+		if (!checkdate($iStartMonth, $iAnniversaryDay, intval(substr($sFileDate, 0, 4)))) {
+			$iStartMonth++;
+			$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-01 00:00:00";
+		}
+		$this->setNormalised('StartDatetime', $sStartDatetime);
 		Log::get()->logIf(self::DEBUG_LOGGING, '  ' . "StartDatetime: " . var_export($this->getNormalised('StartDatetime'), true) . " (FileName: '" . $this->getNormalised('FileName') . "', Anniversary Date: '" . $this->getRaw('Anniversary_date') . "') ");
 
 		// EndDatetime
