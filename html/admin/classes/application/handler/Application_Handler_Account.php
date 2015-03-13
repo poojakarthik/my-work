@@ -471,6 +471,7 @@ class Application_Handler_Account extends Application_Handler
 
 	public function ManageClasses($aSubPath)
 	{
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		$aDetailsToRender = array();
 		try
 		{
