@@ -10,19 +10,19 @@ class Application_Handler_FollowUp extends Application_Handler
 	 *	- If 'All'			: all follow-ups are shown (only if proper admin(
 	 * 	- If an employee id	: that employees follow-ups are shown
 	 */
-	
+
 	public function Manage($subPath)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
-		
+
 		$aDetailsToRender	= array();
-		
+
 		try
 		{
 			$sEmployee		= $subPath[0];
 			$bUserIsAdmin	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
-			
+
 			if ($sEmployee)
 			{
 				if ($sEmployee == 'All')
@@ -33,7 +33,7 @@ class Application_Handler_FollowUp extends Application_Handler
 					}
 					else
 					{
-						// Only admin users can 
+						// Only admin users can
 						throw new Exception('You do not have permission to view this page');
 					}
 				}
@@ -49,13 +49,13 @@ class Application_Handler_FollowUp extends Application_Handler
 				$sBreadCrumb						= 'Manage Follow-Ups For '.$oEmployee->getName();
 				$aDetailsToRender['iEmployeeId']	= $oEmployee->Id;
 			}
-			
+
 			$aDetailsToRender['bEditMode']	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 			$aDetailsToRender['bActive']	= (isset($_GET['Active']) && $_GET['Active'] == '1' ? true : false);
-			
+
 			BreadCrumb()->Employee_Console();
 			BreadCrumb()->SetCurrentPage($sBreadCrumb);
-			
+
 			$this->LoadPage('followup_list', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
@@ -65,20 +65,20 @@ class Application_Handler_FollowUp extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
-	
+
 	public function ManageRecurring($subPath)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
-		
+
 		$aDetailsToRender	= array();
-		
+
 		try
 		{
 			// Set the bread crumb, diffferent if an employee id is specified in the url
 			$sEmployee		= $subPath[0];
 			$bUserIsAdmin	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
-			
+
 			if ($sEmployee)
 			{
 				if ($sEmployee == 'All')
@@ -89,7 +89,7 @@ class Application_Handler_FollowUp extends Application_Handler
 					}
 					else
 					{
-						// Only admin users can 
+						// Only admin users can
 						throw new Exception('You do not have permission to view this page');
 					}
 				}
@@ -105,13 +105,13 @@ class Application_Handler_FollowUp extends Application_Handler
 				$sBreadCrumb						= 'Manage Recurring Follow-Ups For '.$oEmployee->getName();
 				$aDetailsToRender['iEmployeeId']	= $oEmployee->Id;
 			}
-			
+
 			$aDetailsToRender['bEditMode']		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 			$aDetailsToRender['bRecurringOnly']	= true;
-			
+
 			BreadCrumb()->Employee_Console();
 			BreadCrumb()->SetCurrentPage($sBreadCrumb);
-			
+
 			$this->LoadPage('followup_recurring_list', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
@@ -121,14 +121,15 @@ class Application_Handler_FollowUp extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
-	
+
 	public function Configure($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
-		
+		//AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+
 		$aDetailsToRender	= array();
-		
+
 		try
 		{
 			BreadCrumb()->Employee_Console();
