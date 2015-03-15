@@ -20,7 +20,7 @@ class Application_Handler_Collections extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
-	
+
 	public function Events($subPath)
 	{
 		// Check user permissions
@@ -39,11 +39,12 @@ class Application_Handler_Collections extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
-	
+
 	public function Configure($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
+		//AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		$aDetailsToRender = array();
 		try
 		{
@@ -58,7 +59,7 @@ class Application_Handler_Collections extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
-	
+
 	public function OCAReferrals($subPath)
 	{
 		// Check user permissions
@@ -76,8 +77,8 @@ class Application_Handler_Collections extends Application_Handler
 			$aDetailsToRender['ErrorMessage']	= $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
-	}	
-	
+	}
+
 	public function DownloadLedgerFile($aSubPath)
 	{
 		try
@@ -102,7 +103,7 @@ class Application_Handler_Collections extends Application_Handler
 
 		die;
 	}
-	
+
 	public function Scenario($aSubPath)
 	{
 		$aDetailsToRender = array();
@@ -118,39 +119,39 @@ class Application_Handler_Collections extends Application_Handler
 					{
 						$iScenarioId = (int)$aSubPath[1];
 					}
-					
+
 					$bRenderMode	= true;
 					$bLoadOnly		= true;
 					$sTitle			= 'Collections - Create Scenario';
 					break;
-				
+
 				case 'View':
 					if (!isset($aSubPath[1]))
 					{
 						throw new Exception("Incorrect use of page, no source Scenario supplied.");
 					}
-					
+
 					$iScenarioId	= (int)$aSubPath[1];
-					$bRenderMode	= false; 
+					$bRenderMode	= false;
 					$sTitle			= 'Collections - View Scenario';
 					break;
-					
+
 				case 'Edit':
 					if (!isset($aSubPath[1]))
 					{
 						throw new Exception("Incorrect use of page, no edit Scenario supplied.");
 					}
-					
+
 					$iScenarioId	= (int)$aSubPath[1];
-					$bRenderMode	= true; 
+					$bRenderMode	= true;
 					$sTitle			= 'Collections - Edit Scenario';
 					break;
 			}
-			
+
 			$aDetailsToRender['iScenarioId'] 	= $iScenarioId;
 			$aDetailsToRender['bRenderMode'] 	= $bRenderMode;
 			$aDetailsToRender['bLoadOnly']		= $bLoadOnly;
-			
+
 			BreadCrumb()->Employee_Console();
 			BreadCrumb()->SetCurrentPage($sTitle);
 			$this->LoadPage('collections_scenario', HTML_CONTEXT_DEFAULT, $aDetailsToRender);

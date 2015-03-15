@@ -268,13 +268,15 @@ class Application
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
 			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->Actions->ManageActionTypes();
+				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
+			}
 
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				ContextMenu()->Admin->Actions->ManageActionTypes();
 				ContextMenu()->Admin->Follow_Ups->ManageAllFollowUps();
 				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
-				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
 
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
@@ -282,14 +284,16 @@ class Application
 				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
-				ContextMenu()->Admin->Correspondence->Configuration->CorrespondenceTemplateList();
-			}
 
-			ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsScenario();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
+			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->Correspondence->Configuration->CorrespondenceTemplateList();
+				ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsScenario();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
+			}
 
 			if (Employee::getForId(Flex::getUserId())->isGod())
 			{
@@ -303,7 +307,9 @@ class Application
 			ContextMenu()->Admin->Barring->BarringAuthorisationLedger();
 			ContextMenu()->Admin->Barring->BarringActionLedger();
 
-			ContextMenu()->Admin->ManageAccountClasses();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->ManageAccountClasses();
+			}
 		}
 
 		// Document Management
@@ -555,13 +561,15 @@ class Application
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
 			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->Actions->ManageActionTypes();
+				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
+			}
 
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				ContextMenu()->Admin->Actions->ManageActionTypes();
 				ContextMenu()->Admin->Follow_Ups->ManageAllFollowUps();
 				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
-				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
 
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
@@ -569,14 +577,16 @@ class Application
 				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
-				ContextMenu()->Admin->Correspondence->Configuration->CorrespondenceTemplateList();
-			}
 
-			ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsScenario();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
-			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
+			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->Correspondence->Configuration->CorrespondenceTemplateList();
+				ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsScenario();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
+				ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
+			}
 
 			if (Employee::getForId(Flex::getUserId())->isGod())
 			{
@@ -590,7 +600,9 @@ class Application
 			ContextMenu()->Admin->Barring->BarringAuthorisationLedger();
 			ContextMenu()->Admin->Barring->BarringActionLedger();
 
-			ContextMenu()->Admin->ManageAccountClasses();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+				ContextMenu()->Admin->ManageAccountClasses();
+			}
 		}
 
 		// Document Management
