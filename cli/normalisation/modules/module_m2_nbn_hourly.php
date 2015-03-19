@@ -63,7 +63,7 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 
 		if (!checkdate($iStartMonth, $iAnniversaryDay, intval(substr($sFileDate, 0, 4)))) {
 			$iStartMonth++;
-			$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-01 00:00:00";
+			$sStartDatetime = substr($sFileDate, 0, 4) . "-" . sprintf("%02d", $iStartMonth) . "-01 00:00:00";
 		}
 
 		$iUsageKiloBytes = intval(ceil(floatval($aCDRItems[4]) * 1024));
