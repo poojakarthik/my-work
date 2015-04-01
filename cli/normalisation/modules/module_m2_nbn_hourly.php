@@ -59,7 +59,7 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 		$sFileDate = date("Y-m-d");
 		$iFileDay = intval(substr($sFileDate, 8, 2));
 		$iStartMonth = (($iFileDay - $iAnniversaryDay) >= 0) ? substr($sFileDate, 5, 2) : sprintf("%02d", intval(substr($sFileDate, 5, 2) - 1));
-		$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-" . sprintf("%02d", $iAnniversaryDay) . " 00:00:00";
+		$sStartDatetime = substr($sFileDate, 0, 4) . "-" . sprintf("%02d", $iStartMonth) . "-" . sprintf("%02d", $iAnniversaryDay) . " 00:00:00";
 
 		if (!checkdate($iStartMonth, $iAnniversaryDay, intval(substr($sFileDate, 0, 4)))) {
 			$iStartMonth++;
@@ -124,11 +124,11 @@ class NormalisationModuleM2NBNHourly extends NormalisationModule {
 		$iAnniversaryDay = intval($this->getRaw('Anniversary_date'));
 		$iFileDate = intval(substr($sFileDate, 8, 2));
 		$iStartMonth = (($iFileDate - $iAnniversaryDay) >= 0) ? substr($sFileDate, 5, 2) : sprintf("%02d", intval(substr($sFileDate, 5, 2) - 1));
-		$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-" . sprintf("%02d", $iAnniversaryDay) . " 00:00:00";
+		$sStartDatetime = substr($sFileDate, 0, 4) . "-" . sprintf("%02d", $iStartMonth) . "-" . sprintf("%02d", $iAnniversaryDay) . " 00:00:00";
 
 		if (!checkdate($iStartMonth, $iAnniversaryDay, intval(substr($sFileDate, 0, 4)))) {
 			$iStartMonth++;
-			$sStartDatetime = substr($sFileDate, 0, 4) . "-" . $iStartMonth . "-01 00:00:00";
+			$sStartDatetime = substr($sFileDate, 0, 4) . "-" . sprintf("%02d", $iStartMonth) . "-01 00:00:00";
 		}
 
 		$sEndDatetime = substr($sFileDate, 0, 10) . " " . substr($sFileDate, 10,2). ":00:00";
