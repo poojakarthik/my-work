@@ -64,13 +64,13 @@ class NormalisationModuleM2NBN extends NormalisationModule {
 		// Split the CDR
 		$aCDRItems = File_CSV::parseLineRFC4180($sCDR);
 
-		if (count($aCDRItems) != 3) {
-			throw new Exception_Assertion("M2 NBN Usage Normalisation Module Preprocessor Expected 3 Columns; encountered " . count($aCDRItems) . ":" . $sCDR);
+		if (count($aCDRItems) != 4) {
+			throw new Exception_Assertion("M2 NBN Usage Normalisation Module Preprocessor Expected 4 Columns; encountered " . count($aCDRItems) . ":" . $sCDR);
 		}
 
 		return [
-		File_CSV::buildLineRFC4180([$aCDRItems[0], self::DIRECTION_UPLOAD, $aCDRItems[1]]),
-		File_CSV::buildLineRFC4180([$aCDRItems[0], self::DIRECTION_DOWNLOAD, $aCDRItems[2]])
+		File_CSV::buildLineRFC4180([$aCDRItems[0], $aCDRItems[1], self::DIRECTION_UPLOAD, $aCDRItems[2]]),
+		File_CSV::buildLineRFC4180([$aCDRItems[0], $aCDRItems[1], self::DIRECTION_DOWNLOAD, $aCDRItems[3]])
 		];
 	}
 
@@ -84,14 +84,15 @@ class NormalisationModuleM2NBN extends NormalisationModule {
 		//--------------------------------------------------------------------//
 		Log::get()->logIf(self::DEBUG_LOGGING, "Record #{$this->_iSequence}");
 		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
-		if (count($aParsed) < 3) {
+		if (count($aParsed) < 4) {
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 
 		$this->_arrRawData = array_associate(array(
 			0 => 'Username',
-			1 => 'Direction',
-			2 => 'MB_Quantity'
+			1 => 'ServiceReference',
+			2 => 'Direction',
+			3 => 'MB_Quantity'
 		), $aParsed);
 		Log::get()->log(print_r($this->_arrRawData, true));
 		$this->_normalise();
@@ -117,9 +118,9 @@ class NormalisationModuleM2NBN extends NormalisationModule {
 		$this->setNormalised('CarrierRef', $this->getNormalised('FileName') . ":" . trim($this->getRaw('Username')) . ":" . $this->getRaw('Direction'));
 
 		// FNN
-		$sUsername = trim($this->getRaw('Username'));
-		$this->setNormalised('FNN', $sUsername);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  ' . $this->_describeNormalisedField('FNN', 'Username'));
+		$sServiceReference = substr(trim($this->getRaw('ServiceReference')), 2, 10) . "n";
+		$this->setNormalised('FNN', $sServiceReference);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  ' . $this->_describeNormalisedField('FNN', 'ServiceReference'));
 
 		// Cost
 		$this->setNormalised('Cost', 0.0);
